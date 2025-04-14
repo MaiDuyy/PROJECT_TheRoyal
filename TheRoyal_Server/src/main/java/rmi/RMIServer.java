@@ -1,25 +1,10 @@
 package rmi;
 
-import dao.LoaiPhongDAO;
-import dao.NhanVienDAO;
-import dao.PhongDAO;
-import dao.TaiKhoanDAO;
-import dao.impl.LoaiPhongDAOImpl;
-import dao.impl.NhanVienDAOImpl;
-import dao.impl.PhongDAOImpl;
-import dao.impl.TaiKhoanDAOImpl;
-import entity.LoaiPhong;
-import entity.NhanVien;
-import entity.Phong;
-import entity.TaiKhoan;
-import service.LoaiPhongService;
-import service.NhanVienService;
-import service.PhongService;
-import service.TaiKhoanService;
-import service.impl.LoaiPhongServiceImpl;
-import service.impl.NhanVienServiceImpl;
-import service.impl.PhongServiceImpl;
-import service.impl.TaiKhoanServiceImpl;
+import dao.*;
+import dao.impl.*;
+import entity.*;
+import service.*;
+import service.impl.*;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -52,6 +37,17 @@ public class RMIServer {
         LoaiPhongService loaiPhongService = new LoaiPhongServiceImpl(loaiPhongDAO);
         context.bind("rmi://DESKTOP-Q4NO7E1:9090/loaiPhongService", loaiPhongService);
 
+        KhuyenMaiDAO  khuyenMaiDAO = new KhuyenMaiDAOImpl(KhuyenMai.class);
+        KhuyenMaiService khuyenMaiService = new KhuyenMaiServiceImpl(khuyenMaiDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/khuyenMaiService", khuyenMaiService);
+
+        KhachHangDAO khachHangDAO = new KhachHangDAOImpl(KhachHang.class);
+        KhachHangService khachHangService = new KhachHangServiceImpl(khachHangDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/khachHangService", khachHangService);
+
+        HoaDonDAO hoaDonDAO =  new HoaDonDAOImpl(HoaDon.class);
+        HoaDonService hoaDonService = new HoaDonServiceImpl(hoaDonDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/hoaDonService", hoaDonService);
         System.out.println("RMI server is running...");
 
     }

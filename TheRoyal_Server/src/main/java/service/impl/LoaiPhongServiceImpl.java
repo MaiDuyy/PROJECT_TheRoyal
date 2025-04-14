@@ -20,8 +20,6 @@ public class LoaiPhongServiceImpl extends GenericServiceImpl<LoaiPhong, String> 
 
     @Override
     public LoaiPhong getLoaiPhongTheoMa(String maLoai) {
-        TypedQuery<LoaiPhong> query = JPAUtil.getEntityManager().createQuery("SELECT l FROM LoaiPhong l WHERE l.maLoai = :maLoai", LoaiPhong.class);
-        query.setParameter("maLoai", maLoai);
-        return query.getResultStream().findFirst().orElse(null);
+       return loaiPhongDAO.getLoaiPhongTheoMa(maLoai);
     }
 }

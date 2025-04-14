@@ -1,9 +1,7 @@
 package rmi;
 
-import service.LoaiPhongService;
-import service.NhanVienService;
-import service.PhongService;
-import service.TaiKhoanService;
+import dao.KhuyenMaiDAO;
+import service.*;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -11,7 +9,7 @@ import javax.naming.NamingException;
 import java.rmi.RemoteException;
 
 public class Client {
-    public static void main(String[] args) throws NamingException {
+    public static void main(String[] args) throws NamingException, RemoteException {
         Context context = new InitialContext();
 
         PhongService phongService = (PhongService) context.lookup("rmi://DESKTOP-Q4NO7E1:9090/phongService");
@@ -21,11 +19,14 @@ public class Client {
 
         LoaiPhongService loaiPhongService = (LoaiPhongService) context.lookup("rmi://DESKTOP-Q4NO7E1:9090/loaiPhongService");
 
-        try {
-            loaiPhongService.getAll().forEach(st -> System.out.println(st.getMaLoai()));
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        KhuyenMaiService  khuyenMaiService = (KhuyenMaiService) context.lookup("rmi://DESKTOP-Q4NO7E1:9090/khuyenMaiService");
+
+        KhachHangService khachHangService = (KhachHangService) context.lookup("rmi://DESKTOP-Q4NO7E1:9090/khachHangService");
+
+        HoaDonService hoaDonService = (HoaDonService) context.lookup("rmi://DESKTOP-Q4NO7E1:9090/hoaDonService");
+
+
+        hoaDonService.getAll().forEach(st -> System.out.println(st.getMaHD()));
 
     }
 }

@@ -1,6 +1,7 @@
 package dao.impl;
 
 import dao.GenericDAO;
+import dao.KhachHangDAO;
 import entity.Phong;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -21,6 +22,7 @@ public abstract  class GenericDAOImpl <T,ID>implements GenericDAO<T, ID> {
         this.em = em;
         this.clazz = clazz;
     }
+
 
     @Override public boolean save(T t) {
         EntityTransaction tr = em.getTransaction();

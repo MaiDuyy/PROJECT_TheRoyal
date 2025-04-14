@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.GenericDAO;
+
 import dao.LoaiPhongDAO;
 import entity.LoaiPhong;
 import jakarta.persistence.TypedQuery;

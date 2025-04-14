@@ -2,6 +2,9 @@ package service;
 
 import entity.LoaiPhong;
 
-public interface LoaiPhongService extends GenericService<LoaiPhong, String> {
-    LoaiPhong getLoaiPhongTheoMa(String maLoai);
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface LoaiPhongService extends GenericService<LoaiPhong, String>, Remote {
+    LoaiPhong getLoaiPhongTheoMa(String maLoai) throws RemoteException;
 }

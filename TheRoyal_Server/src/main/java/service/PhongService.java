@@ -1,5 +1,6 @@
 package service;
 
+
 import entity.Phong;
 
 import java.rmi.Remote;
@@ -7,7 +8,7 @@ import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface PhongService  extends Remote  {
+public interface PhongService  extends Remote  ,GenericService<Phong, String>  {
     List<Phong> getListPhong() throws RemoteException;
 
     List<Phong> getPhongTheoMaPhong(String maPhong) throws RemoteException;

@@ -6,7 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public interface TaiKhoanService extends Remote {
+public interface TaiKhoanService extends Remote , GenericService<TaiKhoan, String> {
     List<TaiKhoan> getAllTaiKhoan() throws RemoteException ;
 
     List<TaiKhoan> getTaiKhoanTheoMaTK(String maTK) throws RemoteException ;

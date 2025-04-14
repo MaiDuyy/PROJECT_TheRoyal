@@ -1,0 +1,75 @@
+package entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+@Table(name = "HoaDon")
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Inheritance(strategy = InheritanceType.JOINED)
+public class HoaDon implements Serializable  {
+    @Id
+    @Column(name = "maHD", columnDefinition = "VARCHAR(50)")
+    @EqualsAndHashCode.Include
+    private String maHD;
+
+    // Mối quan hệ n - 1 với KhachHang
+    @ManyToOne
+    @JoinColumn(name = "maKH")
+    private KhachHang khachHang;
+
+    // Mối quan hệ n - 1 với Phong
+    @ManyToOne
+    @JoinColumn(name = "maPhong")
+    private Phong phong;
+
+    // Mối quan hệ n - 1 với NhanVien
+    @ManyToOne
+    @JoinColumn(name = "maNV")
+    private NhanVien nhanVien;
+
+    // Mối quan hệ n - 1 với DonDatPhong
+    @ManyToOne
+    @JoinColumn(name = "maDDP")
+    private DonDatPhong donDatPhong;
+
+    // Mối quan hệ n - 1 với KhuyenMai
+    @ManyToOne
+    @JoinColumn(name = "maKM")
+    private KhuyenMai khuyenMai;
+
+    @Column(name = "thoiGianLapHD", columnDefinition = "DATETIME")
+    private LocalDateTime thoiGianLapHD;
+
+    @Column(name = "tienPhong", columnDefinition = "DECIMAL(18, 2) CHECK (tienPhong >= 0)")
+    private double tienPhong;
+
+    @Column(name = "tienPhat", columnDefinition = "DECIMAL(18, 2) CHECK (tienPhat >= 0)")
+    private double tienPhat;
+
+    @Column(name = "tienKhuyenMai", columnDefinition = "DECIMAL(18, 2) CHECK (tienKhuyenMai >= 0)")
+    private double tienKhuyenMai;
+
+    @Column(name = "tienDichVu", columnDefinition = "DECIMAL(18, 2) CHECK (tienDichVu >= 0)")
+    private double tienDichVu;
+
+    @Column(name = "tienSanPham", columnDefinition = "DECIMAL(18, 2) CHECK (tienSanPham >= 0)")
+    private double tienSanPham;
+
+    @Column(name = "tongTien", columnDefinition = "DECIMAL(18, 2) CHECK (tongTien >= 0)")
+    private double tongTien;
+
+    @Column(name = "trangThai", columnDefinition = "NVARCHAR(50)")
+    private String trangThai;
+
+    @OneToMany(mappedBy = "hoaDon")
+    private Set<CTHoaDon> ctHoaDon;
+}

@@ -20,7 +20,9 @@ public interface CTHoaDonDAO extends GenericDAO<CTHoaDon, String> {
 
     CTHoaDon getCTHoaDonByMaSP(String maSP, String maHD);
 
-    int getTongTienNam(int nam);
+    double getTongTienNam(int nam);
 
-    int getTongTienThang(int thang, int nam);
+    double getTongTienThang(int thang, int nam);
+
+    double getTongDVTienNgay(Date ngay);
 }

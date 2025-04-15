@@ -154,7 +154,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public int getTongTienNam(int nam) {
+    public double getTongTienNam(int nam) {
         try {
             List<Double> top5TongTien = em.createQuery("""
             SELECT SUM(od.soLuongDV * dv.giaDV) 
@@ -173,7 +173,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     .mapToDouble(Double::doubleValue)
                     .sum();
 
-            return (int) Math.round(tongTatCaTienDVNam);
+            return tongTatCaTienDVNam;
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -181,7 +181,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public int getTongTienThang(int thang, int nam) {
+    public double getTongTienThang(int thang, int nam) {
         try {
             List<Double> top5TongTien = em.createQuery("""
             SELECT SUM(od.soLuongDV * dv.giaDV)
@@ -202,14 +202,15 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     .mapToDouble(Double::doubleValue)
                     .sum();
 
-            return (int) Math.round(tongTatCaTienDVThang);
+            return tongTatCaTienDVThang;
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
     }
 
-    public int getTongDVTienNgay(Date ngay) {
+    @Override
+    public double getTongDVTienNgay(Date ngay) {
         try {
             List<Double> top5TongTien = em.createQuery("""
             SELECT SUM(od.soLuongDV * dv.giaDV)
@@ -228,7 +229,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     .mapToDouble(Double::doubleValue)
                     .sum();
 
-            return (int) Math.round(tongTien);
+            return tongTien;
         } catch (Exception e) {
             e.printStackTrace();
             return 0;

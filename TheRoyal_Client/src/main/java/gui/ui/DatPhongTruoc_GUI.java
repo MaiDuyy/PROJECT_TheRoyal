@@ -39,14 +39,15 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
+import gui.format_ui.RadiusButton;
 import org.jdesktop.swingx.prompt.PromptSupport;
 
 import com.toedter.calendar.JDateChooser;
 
-import Format_UI.RadiusButton;
-import Format_UI.RoundedBorder;
-import Format_UI.Table;
-import connectDB.ConnectDB;
+import gui.format_ui.RadiusButton;
+import gui.format_ui.RoundedBorder;
+import gui.format_ui.Table;
+
 import dao.*;
 import entity.*;
 import gui.dialog.ThongTinPhong_Dialog;

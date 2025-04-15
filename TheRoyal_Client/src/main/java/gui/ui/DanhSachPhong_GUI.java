@@ -1,7 +1,5 @@
 package gui.ui;
 
-import java.awt.EventQueue;
-
 import javax.swing.JInternalFrame;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
@@ -13,21 +11,14 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
 import com.toedter.calendar.JDateChooser;
 
 import gui.format_ui.RadiusButton;
 import gui.format_ui.RoundedBorder;
-import controller.TimDichVu;
 import controller.TimDonDatDonDatPhong;
-import dao.CTHoaDonDAO;
 import dao.DonDatPhongDAO;
-import dao.HoaDonDAO;
 import dao.KhachHangDAO;
 import dao.PhongDAO;
-import entity.CTHoaDon;
 import entity.DonDatPhong;
 import entity.HoaDon;
 import entity.KhachHang;
@@ -36,7 +27,9 @@ import gui.component.ButtonCustom;
 import gui.component.panelPopUpMoreDatPhong;
 import gui.dialog.ThongTinPhong_Dialog;
 import gui.event.EventPopUpMoreDatPhong;
-import net.miginfocom.swing.MigLayout;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.*;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -45,38 +38,29 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.sql.SQLException;
+import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,30 +69,16 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JComboBox;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.AncestorListener;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import javax.swing.ScrollPaneConstants;
-import java.awt.Insets;
 import javax.swing.DefaultComboBoxModel;
-import java.awt.Button;
 
 public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener {
 
-	private static final long serialVersionUID = 1;
-
 	private JPanel danhSachPhong;
-	private Phong_DAO phongDAO;
-	private PhongDAO phongdao;
-	private KhachHangDAO khachhangdao;
+	private PhongService phongService;
+	private KhachHangService khachHangService;
 	private JPanel pn_p_bottom;
 	private LocalTime now;
 	DateTimeFormatter formatter;
@@ -128,10 +98,10 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 	public JButton btn_HuyDP;
 	public JButton btn_traPhong;
 	public JButton btn_donDep;
-	private HoaDonDAO hoadondao;
-	private CTHoaDonDAO cthddao;
-	private DonDatPhongDAO dondatphongdao;
-	private ArrayList<DonDatPhong> dsDDP;
+	private HoaDonService hoaDonService;
+	private CTHoaDonService ctHoaDonService;
+	private DonDatPhongService donDatPhongService;
+	private List<DonDatPhong> dsDDP;
 	private ArrayList<HoaDon> dsHD;
 	private ArrayList<KhachHang> dsKH;
 	private JTextField txtTim;
@@ -149,20 +119,23 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 	private ThongTinPhong_Dialog thongtinphongdialog;
 	JFrame owner = (JFrame) SwingUtilities.getWindowAncestor(this);
 	private KhachHang khachHang;
-	private Date selectedDate ;
+	private Date selectedDate;
 	public JDateChooser date_DSPhong;
 	private java.sql.Date sqlSelectedDate;
 	public Date ngayHienTai;
-	   private JComboBox < String > cbxLuachon;
-	    private DefaultComboBoxModel < String > modelLuaChon;
+	private JComboBox<String> cbxLuachon;
+	private DefaultComboBoxModel<String> modelLuaChon;
 
 	/**
 	 * Create the frame.
 	 */
 	public DanhSachPhong_GUI() {
-		phongdao = new PhongDAO();
-		dondatphongdao = new DonDatPhongDAO();
-		khachhangdao = new KhachHangDAO();
+		phongService = RMIClient.getInstance().getPhongService();
+		donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
+		khachHangService = RMIClient.getInstance().getKhachHangService();
+		hoaDonService = RMIClient.getInstance().getHoaDonService();
+		ctHoaDonService = RMIClient.getInstance().getCtHoaDonService();
+
 		setBackground(new Color(153, 255, 204));
 		getContentPane().setBackground(new Color(244, 164, 96));
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -262,7 +235,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		date_DSPhong.getCalendarButton().setBackground(new Color(204, 255, 204));
 		date_DSPhong.setToolTipText("");
 		date_DSPhong.getCalendarButton()
-				.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/date.png")));
+				.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/date.png")));
 		date_DSPhong.setDateFormatString("dd/MM/yyyy");
 		date_DSPhong.setBounds(10, 56, 165, 42);
 		Calendar calendar = Calendar.getInstance();
@@ -282,14 +255,28 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		        danhSachPhong.removeAll();
 		        List<Phong> dsPhong = null;
 		        List<DonDatPhong> dsDDP = null;
-		        dsPhong = phongDAO.getAllPhong();
-		        dsDDP = dondatphongdao.getListDonDatPhong();
-		        
-		        java.sql.Date sqlSelectedDate = new java.sql.Date(selectedDate.getTime());
+				try {
+					dsPhong = phongService.getAll();
+				} catch (RemoteException e) {
+					throw new RuntimeException(e);
+				}
+				;
+				try {
+					dsDDP = donDatPhongService.getAll();
+				} catch (RemoteException e) {
+					throw new RuntimeException(e);
+				}
+
+				java.sql.Date sqlSelectedDate = new java.sql.Date(selectedDate.getTime());
 
 		        for (Phong phong : dsPhong) {
-		                String trangThai = dondatphongdao.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlSelectedDate);
-		                if(trangThai.equals("Đặt trước")) {
+					String trangThai = null;
+					try {
+						trangThai = donDatPhongService.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlSelectedDate);
+					} catch (RemoteException e) {
+						throw new RuntimeException(e);
+					}
+					if(trangThai.equals("Đặt trước")) {
 		                	hienThiPhongDatTruoc(phong);
 		                }else if(trangThai.equals("Đang ở")) {
 		                	hienThiPhongDangO(phong);
@@ -473,19 +460,19 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		jpanel_DSPhong_header_right.add(soPhongTrong);
 
 		JLabel lblNewLabel_1 = new JLabel("Có khách");
-		lblNewLabel_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/khachdango24.png")));
+		lblNewLabel_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/khachdango24.png")));
 		lblNewLabel_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_1.setBounds(10, 0, 100, 41);
 		jpanel_DSPhong_header_right.add(lblNewLabel_1);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Phòng trống");
-		lblNewLabel_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongtrong16.png")));
+		lblNewLabel_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong16.png")));
 		lblNewLabel_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_1_1.setBounds(120, 0, 111, 41);
 		jpanel_DSPhong_header_right.add(lblNewLabel_1_1);
 
 		JLabel lblNewLabel_1_1_1 = new JLabel("Đang dọn");
-		lblNewLabel_1_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongdangdon24.png")));
+		lblNewLabel_1_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongdangdon24.png")));
 		lblNewLabel_1_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_1_1_1.setBounds(241, 1, 100, 41);
 		jpanel_DSPhong_header_right.add(lblNewLabel_1_1_1);
@@ -515,7 +502,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		btnMore.setBounds(1227, 11, 68, 48);
 		jpanel_DSPhong_header.add(btnMore);
 
-		btnMore.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/square-plus.png")));
+		btnMore.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/square-plus.png")));
 
 		btnMore.setBorder(null);
 
@@ -541,7 +528,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
 		ui.setNorthPane(null);
 		// Khởi tạo dao để truy xuất dữ liệu
-		phongDAO = new Phong_DAO();
+
 
 		// Hiển thị danh sách phòng
 		hienThiDanhSachPhong();
@@ -553,10 +540,11 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 	}
 
+	@SneakyThrows
 	public void hienThiDanhSachPhong() {
 		danhSachPhong.removeAll();
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -567,10 +555,11 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 	}
 
+	@SneakyThrows
 	private void hienThiDanhSachPhongThuong(java.sql.Date selectedDate) {
 		danhSachPhong.removeAll();
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -582,10 +571,11 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		}
 	}
 
+	@SneakyThrows
 	private void hienThiDanhSachPhongVip(java.sql.Date selectedDate) {
 		danhSachPhong.removeAll();
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -598,10 +588,11 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		}
 	}
 
+	@SneakyThrows
 	private void hienThiDanhSachPhongPenthouse(java.sql.Date selectedDate) {
 		danhSachPhong.removeAll();
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -614,6 +605,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		}
 	}
 
+	@SneakyThrows
 	private void hienThiPhong(Phong phong, String th) {
 
 		String maPhong = phong.getMaPhong(); // Lấy mã phòng
@@ -624,13 +616,13 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
 		int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 		String trangThai = phong.getTrangThai();
-		Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
 		
 		Date utilDate = date_DSPhong.getDate();
 		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 	
-        String trangThaiDDP = dondatphongdao.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(),sqlDate);
+        String trangThaiDDP = donDatPhongService.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(),sqlDate);
 	
         if((!th.isEmpty() && th.equals("Đặt trước")) || trangThaiDDP.equals("Đặt trước")) {
         	hienThiPhongDatTruoc2(phong);
@@ -658,7 +650,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
 		int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 		String trangThai = phong.getTrangThai();
-		Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
 		panelPhong.addMouseListener(new MouseAdapter() {
 
@@ -680,7 +672,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongtrong24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong24.png")));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Phòng trống");
@@ -782,6 +774,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		danhSachPhong.repaint();
 	}
 
+	@SneakyThrows
 	private void hienThiPhongDatTruoc2(Phong phong) {
 		String maPhong = phong.getMaPhong(); // Lấy mã phòng
 		String tenPhong = phong.getTenPhong(); // Lấy tên phòng
@@ -794,11 +787,11 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		
 		java.sql.Date ngayDaChon = getSelectedDate();
 		
-		DonDatPhong ddp = dondatphongdao.getDonDatPhongTheoPhongVaTrangThai(maPhong, "Đặt trước");
+		DonDatPhong ddp = donDatPhongService.getDonDatTruocTheoPhongVaTrangThai(maPhong, "Đặt trước");
 		if(ddp == null ) {
 			return ;
 		}
-		Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
 		panelPhong.addMouseListener(new MouseAdapter() {
 
@@ -820,7 +813,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongtrong24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong24.png")));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Đặt trước");
@@ -885,7 +878,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_5 = new JLabel("");
 			lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/oclock.png")));
+			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
 			lblNewLabel_5.setBounds(0, 0, 90, 41);
 			panel_4.add(lblNewLabel_5);
 
@@ -914,7 +907,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_4_1);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/oclock.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
 			lblNewLabel_5_1.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabel_5_1.setBounds(0, 0, 90, 41);
 			panel_4_1.add(lblNewLabel_5_1);
@@ -961,9 +954,8 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1.setBounds(0, 29, 118, 36);
 			panel_5.add(lblNewLabel_1_2_1_2_1);
-			KhachHangDAO khDAO = new KhachHangDAO();
-			KhachHang kh = khDAO.getKhachHangTheoMa(ddp.getKhachHang().getMaKH());
-			lblNewLabel_1_2_1_2_1.setText(kh.getsDT());
+			KhachHang kh = khachHangService.getKhachHangTheoMa(ddp.getKhachHang().getMaKH());
+			lblNewLabel_1_2_1_2_1.setText(kh.getSDT());
 			
 			JPanel panel_5_1 = new JPanel();
 			panel_5_1.setLayout(null);
@@ -984,7 +976,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1_1.setBounds(20, 29, 110, 36);
 			panel_5_1.add(lblNewLabel_1_2_1_2_1_1);
-			java.sql.Date tgNhan = ddp.getThoiGianNhanPhong();
+		LocalDateTime tgNhan = ddp.getThoiGianNhanPhong();
 			LocalDateTime nhanPhongLocal = tgNhan.toLocalDate().atStartOfDay();
 			nhanPhongLocal = nhanPhongLocal.plusHours(12); 
 
@@ -1022,6 +1014,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		danhSachPhong.revalidate();
 		danhSachPhong.repaint();
 	}
+	@SneakyThrows
 	private void hienThiPhongDatTruoc(Phong phong) {
 		String maPhong = phong.getMaPhong(); // Lấy mã phòng
 		String tenPhong = phong.getTenPhong(); // Lấy tên phòng
@@ -1032,13 +1025,13 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 		String trangThai = phong.getTrangThai();
 		
-		java.sql.Date ngayDaChon = getSelectedDate();
+		Date ngayDaChon = getSelectedDate();
 		
-		DonDatPhong ddp = dondatphongdao.getDonDatTruocTheoPhongVaNgay(maPhong, ngayDaChon);
+		DonDatPhong ddp = donDatPhongService.getDonDatTruocTheoPhongVaNgay(maPhong, ngayDaChon);
 		if(ddp == null ) {
 			return ;
 		}
-		Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
 		panelPhong.addMouseListener(new MouseAdapter() {
 
@@ -1060,7 +1053,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongtrong24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong24.png")));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Đặt trước");
@@ -1125,7 +1118,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_5 = new JLabel("");
 			lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/oclock.png")));
+			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
 			lblNewLabel_5.setBounds(0, 0, 90, 41);
 			panel_4.add(lblNewLabel_5);
 
@@ -1154,7 +1147,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_4_1);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/oclock.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
 			lblNewLabel_5_1.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabel_5_1.setBounds(0, 0, 90, 41);
 			panel_4_1.add(lblNewLabel_5_1);
@@ -1201,9 +1194,9 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1.setBounds(0, 29, 118, 36);
 			panel_5.add(lblNewLabel_1_2_1_2_1);
-			KhachHangDAO khDAO = new KhachHangDAO();
-			KhachHang kh = khDAO.getKhachHangTheoMa(ddp.getKhachHang().getMaKH());
-			lblNewLabel_1_2_1_2_1.setText(kh.getsDT());
+
+			KhachHang kh = khachHangService.getKhachHangTheoMa(ddp.getKhachHang().getMaKH());
+			lblNewLabel_1_2_1_2_1.setText(kh.getSDT());
 			
 			JPanel panel_5_1 = new JPanel();
 			panel_5_1.setLayout(null);
@@ -1224,7 +1217,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1_1.setBounds(20, 29, 110, 36);
 			panel_5_1.add(lblNewLabel_1_2_1_2_1_1);
-			java.sql.Date tgNhan = ddp.getThoiGianNhanPhong();
+			LocalDateTime tgNhan = ddp.getThoiGianNhanPhong();
 			LocalDateTime nhanPhongLocal = tgNhan.toLocalDate().atStartOfDay();
 			nhanPhongLocal = nhanPhongLocal.plusHours(12); 
 
@@ -1262,6 +1255,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		danhSachPhong.revalidate();
 		danhSachPhong.repaint();
 	}
+	@SneakyThrows
 	private void hienThiPhongDangO(Phong phong) {
 		String maPhong = phong.getMaPhong(); // Lấy mã phòng
 		String tenPhong = phong.getTenPhong(); // Lấy tên phòng
@@ -1273,9 +1267,9 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		String trangThai = phong.getTrangThai();
 		
 
-		DonDatPhong ddp = dondatphongdao.getDonDatPhongTheoPhongVaTrangThai(maPhong, "Đang ở");
+		DonDatPhong ddp = donDatPhongService.getDonDatTruocTheoPhongVaTrangThai(maPhong, "Đang ở");
 		
-		Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
 		panelPhong.addMouseListener(new MouseAdapter() {
 
@@ -1297,7 +1291,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/khachdango24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/khachdango24.png")));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Có khách");
@@ -1445,7 +1439,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panel_5.add(lblh);
 
 
-			java.sql.Date tgTra = ddp.getThoiGianTraPhong();
+			LocalDateTime tgTra = ddp.getThoiGianTraPhong();
 
 			
 			LocalDateTime traPhongLocal = tgTra.toLocalDate().atStartOfDay();
@@ -1512,7 +1506,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
 		int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 		String trangThai = phong.getTrangThai();
-		Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
 		panelPhong.addMouseListener(new MouseAdapter() {
 
@@ -1596,15 +1590,15 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_2);
 
 			JLabel lblNewLabel_5 = new JLabel("");
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/broom.png")));
+			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/broom.png")));
 			panel_2.add(lblNewLabel_5);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/broom.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/broom.png")));
 			panel_2.add(lblNewLabel_5_1);
 
 			JLabel lblNewLabel_5_1_1 = new JLabel("");
-			lblNewLabel_5_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/broom.png")));
+			lblNewLabel_5_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/broom.png")));
 			panel_2.add(lblNewLabel_5_1_1);
 			danhSachPhong.add(panelPhong);
 //		}
@@ -1613,9 +1607,10 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		danhSachPhong.repaint();
 	}
 
+	@SneakyThrows
 	private void hienThiDanhSachPhongTrong() {
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -1627,7 +1622,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
 			int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 			String trangThai = phong.getTrangThai();
-			Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+			RoundedBorder panelPhong = new RoundedBorder(20);
 			panelPhong.setPreferredSize(new Dimension(300, 250));
 
 			if ("Phòng trống".equals(trangThai)) {
@@ -1639,9 +1634,10 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		danhSachPhong.repaint();
 	}
 
+	@SneakyThrows
 	private void hienThiDanhSachPhongDangO(java.sql.Date selectedDate) {
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -1653,9 +1649,9 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
 			int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 			String trangThai = phong.getTrangThai();
-			Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+			RoundedBorder panelPhong = new RoundedBorder(20);
 			panelPhong.setPreferredSize(new Dimension(300, 250));
-			String trangThaiDDP = dondatphongdao.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlSelectedDate);
+			String trangThaiDDP = donDatPhongService.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlSelectedDate);
 			if ("Đang ở".equals(trangThaiDDP)) {
 				hienThiPhongDangO(phong);
 			}
@@ -1665,9 +1661,10 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		danhSachPhong.repaint();
 	}
 
+	@SneakyThrows
 	private void hienThiDanhSachPhongDangDon() {
 		List<Phong> dsPhong = null;
-		dsPhong = phongDAO.getAllPhong();
+		dsPhong = phongService.getAll();
 
 		// Duyệt qua danh sách phòng và tạo các panel cho mỗi phòng
 		for (Phong phong : dsPhong) {
@@ -1679,7 +1676,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
 			int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
 			String trangThai = phong.getTrangThai();
-			Format_UI.RoundedBorder panelPhong = new Format_UI.RoundedBorder(20);
+			RoundedBorder panelPhong = new RoundedBorder(20);
 			panelPhong.setPreferredSize(new Dimension(300, 250));
 			if ("Đang dọn dẹp".equals(trangThai)) {
 				hienThiPhongDangDon(phong);
@@ -1711,17 +1708,19 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 //	}
 
 
+	@SneakyThrows
 	public void hienThiSoLuongTungPhong() {
 		
 		java.sql.Date ngayDaChon1 = getSelectedDate();
-		int trong = phongdao.getTongSoPhong() - dondatphongdao.countSLDonDangO(ngayDaChon1) - dondatphongdao.countSLDonDatTruoc(ngayDaChon1) - dondatphongdao.countSLDonDangDon(ngayDaChon1);
-		soPhongDangO.setText("("+dondatphongdao.countSLDonDangO(ngayDaChon1)+") Đang ở");
-		soPhongDatTruoc.setText("("+dondatphongdao.countSLDonDatTruoc(ngayDaChon1)+") Đặt trước");
-		soPhongDangDon.setText("("+dondatphongdao.countSLDonDangDon(ngayDaChon1)+") Đang dọn");
+		int trong = phongService.getTongSoPhong() - donDatPhongService.countSLDonDangO(ngayDaChon1) - donDatPhongService.countSLDonDatTruoc(ngayDaChon1) - donDatPhongService.countSLDonDangDon(ngayDaChon1);
+		soPhongDangO.setText("("+donDatPhongService.countSLDonDangO(ngayDaChon1)+") Đang ở");
+		soPhongDatTruoc.setText("("+donDatPhongService.countSLDonDatTruoc(ngayDaChon1)+") Đặt trước");
+		soPhongDangDon.setText("("+donDatPhongService.countSLDonDangDon(ngayDaChon1)+") Đang dọn");
 		soPhongTrong.setText("("+trong+") Phòng trống");
-		lblTatCa.setText("(" + phongdao.getTongSoPhong()+ ") Tất cả");
+		lblTatCa.setText("(" + phongService.getTongSoPhong()+ ") Tất cả");
 	}
 
+	@SneakyThrows
 	private void timDDP(Phong phong) {
 
 		  String luachon = (String) cbxLuachon.getSelectedItem();
@@ -1734,7 +1733,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
        
         case "Mã đơn đặt phòng":
             danhSachPhong.removeAll(); 
-            ArrayList<Phong> dsPhong = PhongDAO.getInstance().getListPhong();
+            ArrayList<Phong> dsPhong = (ArrayList<Phong>) phongService.getAll();
             dsDDP = TimDonDatDonDatPhong.getInstance().searhMa(searchContent); 
             if (!dsDDP.isEmpty()) {
                 DonDatPhong ddp = dsDDP.get(0);
@@ -1755,16 +1754,17 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
         case "Số điện thoại khách hàng đang ở":
             danhSachPhong.removeAll(); 
 
-            ArrayList<Phong> dsPhong2 = PhongDAO.getInstance().getListPhong();
+            List<Phong> dsPhong2 = phongService.getAll();
 
-            dsDDP = DonDatPhongDAO.getInstance().findPhongByTrangThaiAndSDTDangO(searchContent);
+            dsDDP = (ArrayList<DonDatPhong>) donDatPhongService.findPhongByTrangThaiAndSDTDangO(searchContent);
+
 
             if (!dsDDP.isEmpty()) {
                 for (DonDatPhong ddp : dsDDP) {
-                    ArrayList<KhachHang> khachHangs = KhachHangDAO.getInstance().getListKhachHang();
+                    ArrayList<KhachHang> khachHangs = (ArrayList<KhachHang>) khachHangService.getAll();
                     KhachHang khachHang = null;
                     for (KhachHang k : khachHangs) {
-                        if (k.getsDT().equals(searchContent)) { 
+                        if (k.getSDT().equals(searchContent)) {
                             khachHang = k;
                             break;
                         }
@@ -1790,17 +1790,17 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
         case "Số điện thoại khách hàng đặt trước":
         	  danhSachPhong.removeAll(); 
 
-              ArrayList<Phong> dsPhong3 = PhongDAO.getInstance().getListPhong();
+              ArrayList<Phong> dsPhong3 = (ArrayList<Phong>) phongService.getAll();
 
-              dsDDP = DonDatPhongDAO.getInstance().findPhongByTrangThaiAndSDTDaDat(searchContent);
+			dsDDP = (ArrayList<DonDatPhong>) donDatPhongService.findPhongByTrangThaiAndSDTDangO(searchContent);
 
               if (!dsDDP.isEmpty()) {
                   for (DonDatPhong ddp : dsDDP) {
                 	  if (ddp.getTrangThai().equals("Đặt trước")) {
-                      ArrayList<KhachHang> khachHangs = KhachHangDAO.getInstance().getListKhachHang();
+                      ArrayList<KhachHang> khachHangs = (ArrayList<KhachHang>) khachHangService.getAll();
                       KhachHang khachHang = null;
                       for (KhachHang k : khachHangs) {
-                          if (k.getsDT().equals(searchContent)) { 
+                          if (k.getSDT().equals(searchContent)) {
                               khachHang = k;
                               break;
                           }

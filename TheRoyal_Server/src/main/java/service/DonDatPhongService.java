@@ -5,6 +5,7 @@ import entity.DonDatPhong;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DonDatPhongService extends Remote, GenericService<DonDatPhong, String> {
@@ -47,4 +48,6 @@ public interface DonDatPhongService extends Remote, GenericService<DonDatPhong, 
     DonDatPhong getDonDatPhongTheoMaHD(String maHD) throws RemoteException;
 
     int countSLDonDangDon(Date ngayDuocChon) throws RemoteException;
+
+    public  DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon)   throws RemoteException;
 }

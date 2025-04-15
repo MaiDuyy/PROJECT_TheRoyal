@@ -7,6 +7,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> implements DonDatPhongDAO {
@@ -315,5 +316,29 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
             e.printStackTrace();
             return 0;
         }
+    }
+
+    @Override
+    public DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon) {
+        DonDatPhong result = null;
+        try {
+            String jpql = "SELECT d FROM DonDatPhong d JOIN d.phong p " +
+                    "WHERE p.maPhong = :maPhong " +
+                    "AND d.trangThai = :trangThai " +
+                    "AND :thoiGianChon BETWEEN d.thoiGianNhanPhong AND d.thoiGianTraPhong";
+
+            result = em.createQuery(jpql, DonDatPhong.class)
+                    .setParameter("maPhong", maPhong)
+                    .setParameter("trangThai", "Đặt trước")
+                    .setParameter("thoiGianChon", thoiGianChon)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return result;
     }
 }

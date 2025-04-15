@@ -6,6 +6,7 @@ import service.DonDatPhongService;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class DonDatPhongServiceImpl extends GenericServiceImpl<DonDatPhong, String> implements DonDatPhongService {
@@ -114,5 +115,10 @@ public class DonDatPhongServiceImpl extends GenericServiceImpl<DonDatPhong, Stri
     @Override
     public int countSLDonDangDon(Date ngayDuocChon) throws RemoteException{
         return donDatPhongDAO.countSLDonDangDon(ngayDuocChon);
+    }
+
+    @Override
+    public DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon) throws RemoteException {
+        return donDatPhongDAO.getDonDatTruocTheoPhongVaNgay(maPhong, thoiGianChon);
     }
 }

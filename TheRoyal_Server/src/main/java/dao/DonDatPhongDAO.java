@@ -3,6 +3,7 @@ package dao;
 import entity.DonDatPhong;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DonDatPhongDAO extends GenericDAO<DonDatPhong, String> {
@@ -46,4 +47,6 @@ public interface DonDatPhongDAO extends GenericDAO<DonDatPhong, String> {
     DonDatPhong getDonDatPhongTheoMaHD(String maHD);
 
     int countSLDonDangDon(Date ngayDuocChon);
+
+    public  DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon) ;
 }

@@ -14,7 +14,6 @@ public interface PhongDAO extends GenericDAO<Phong, String>, Remote {
     static PhongDAO getInstance() {
         return new PhongDAOImpl(JPAUtil.getEntityManager(), Phong.class);
     }
-    List<Phong> getListPhong();
 
     List<Phong> getPhongTheoMaPhong(String maPhong);
 

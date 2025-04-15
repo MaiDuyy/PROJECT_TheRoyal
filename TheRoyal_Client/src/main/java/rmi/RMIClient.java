@@ -1,18 +1,11 @@
 package rmi;
 
-import java.rmi.RemoteException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import service.NhanVienService;
-import service.PhongService;
-import service.TaiKhoanService;
+import service.*;
 
-/**
- * Lớp RMIClient quản lý kết nối đến các dịch vụ RMI
- * Sử dụng mẫu thiết kế Singleton để đảm bảo chỉ có một instance của RMIClient
- */
 public class RMIClient {
     private static RMIClient instance;
     private Context context;
@@ -23,16 +16,19 @@ public class RMIClient {
     private PhongService phongService;
     private TaiKhoanService taiKhoanService;
     private NhanVienService nhanVienService;
+    private LoaiPhongService loaiPhongService;
+    private KhuyenMaiService khuyenMaiService;
+    private KhachHangService khachHangService;
+    private HoaDonService hoaDonService;
+    private DonDatPhongService donDatPhongService;
+    private DichVuService dichVuService;
+    private CTHoaDonService ctHoaDonService;
 
-    /**
-     * Constructor riêng tư để thực hiện mẫu Singleton
-     */
+    private SanPhamService sanPhamService;
+
     private RMIClient() {
         try {
-            // Khởi tạo context
             context = new InitialContext();
-
-            // Kết nối đến các dịch vụ
             connectServices();
         } catch (NamingException e) {
             System.err.println("Lỗi khởi tạo RMIClient: " + e.getMessage());
@@ -40,10 +36,6 @@ public class RMIClient {
         }
     }
 
-    /**
-     * Phương thức để lấy instance của RMIClient (Singleton)
-     * @return instance của RMIClient
-     */
     public static synchronized RMIClient getInstance() {
         if (instance == null) {
             instance = new RMIClient();
@@ -51,75 +43,59 @@ public class RMIClient {
         return instance;
     }
 
-    /**
-     * Kết nối đến các dịch vụ RMI
-     */
     private void connectServices() {
         try {
-            // Kết nối đến PhongService
             phongService = (PhongService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/phongService");
-
-            // Kết nối đến TaiKhoanService
             taiKhoanService = (TaiKhoanService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/taiKhoanService");
-
-            // Kết nối đến NhanVienService
             nhanVienService = (NhanVienService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/nhanVienService");
+            loaiPhongService = (LoaiPhongService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/loaiPhongService");
+            khuyenMaiService = (KhuyenMaiService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/khuyenMaiService");
+            khachHangService = (KhachHangService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/khachHangService");
+            hoaDonService = (HoaDonService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/hoaDonService");
+            donDatPhongService = (DonDatPhongService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/donDatPhongService");
+            dichVuService = (DichVuService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/dichVuService");
+            ctHoaDonService = (CTHoaDonService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/ctHoaDonService");
+            sanPhamService = (SanPhamService) context.lookup("rmi://" + rmiHost + ":" + rmiPort + "/sanPhamService");
 
-            System.out.println("Đã kết nối thành công đến các dịch vụ RMI");
+            System.out.println("Đã kết nối thành công đến tất cả các dịch vụ RMI");
         } catch (NamingException e) {
             System.err.println("Lỗi kết nối đến dịch vụ RMI: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    /**
-     * Thiết lập host và port cho RMI
-     * @param host Tên host
-     * @param port Số port
-     */
     public void setRmiHostPort(String host, int port) {
         this.rmiHost = host;
         this.rmiPort = port;
-        // Kết nối lại các dịch vụ với host và port mới
         connectServices();
     }
 
-    /**
-     * Lấy dịch vụ PhongService
-     * @return PhongService
-     */
-    public PhongService getPhongService() {
-        return phongService;
-    }
+    public PhongService getPhongService() { return phongService; }
+    public TaiKhoanService getTaiKhoanService() { return taiKhoanService; }
+    public NhanVienService getNhanVienService() { return nhanVienService; }
+    public LoaiPhongService getLoaiPhongService() { return loaiPhongService; }
+    public KhuyenMaiService getKhuyenMaiService() { return khuyenMaiService; }
+    public KhachHangService getKhachHangService() { return khachHangService; }
+    public HoaDonService getHoaDonService() { return hoaDonService; }
+    public DonDatPhongService getDonDatPhongService() { return donDatPhongService; }
+    public DichVuService getDichVuService() { return dichVuService; }
+    public CTHoaDonService getCtHoaDonService() { return ctHoaDonService; }
 
-    /**
-     * Lấy dịch vụ TaiKhoanService
-     * @return TaiKhoanService
-     */
-    public TaiKhoanService getTaiKhoanService() {
-        return taiKhoanService;
-    }
+    public SanPhamService getSanPhamService() { return sanPhamService; }
 
-    /**
-     * Lấy dịch vụ NhanVienService
-     * @return NhanVienService
-     */
-    public NhanVienService getNhanVienService() {
-        return nhanVienService;
-    }
-
-    /**
-     * Kiểm tra kết nối đến các dịch vụ
-     * @return true nếu tất cả các dịch vụ đều đã kết nối, false nếu không
-     */
     public boolean isConnected() {
-        return phongService != null && taiKhoanService != null && nhanVienService != null;
+        return phongService != null && taiKhoanService != null && nhanVienService != null &&
+                loaiPhongService != null && khuyenMaiService != null && khachHangService != null &&
+                hoaDonService != null && donDatPhongService != null &&
+                dichVuService != null && ctHoaDonService != null && sanPhamService != null ;
     }
 
-    /**
-     * Kết nối lại đến các dịch vụ
-     */
     public void reconnect() {
         connectServices();
+    }
+
+    public static void main(String[] args) {
+        boolean b = getInstance().isConnected();
+        System.out.println(b);
     }
 }

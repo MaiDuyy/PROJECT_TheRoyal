@@ -22,17 +22,7 @@ public class SanPhamDAOImpl  extends GenericDAOImpl<SanPham, String > implements
         super(em, clazz);
     }
 
-    @Override public List<SanPham> getDanhSachSanPham() {
-        List<SanPham> dssp = new ArrayList<>();
-        try {
-            TypedQuery<SanPham> query = em.createQuery("SELECT sp FROM SanPham sp", SanPham.class);
-            dssp = query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dssp;
-    }
-    
+
     @Override public List<SanPham> getSanPhamTheoMa(String maSP) {
         List<SanPham> dssp = new ArrayList<>();
         try {
@@ -62,25 +52,7 @@ public class SanPhamDAOImpl  extends GenericDAOImpl<SanPham, String > implements
         return dssptt;
     }
     
-    @Override public boolean insert(SanPham sp) {
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            String newId = generateNewId();
-            sp.setMaSP(newId);
-            
-            em.persist(sp);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
+
     @Override public String getLatestID() {
         try {
             TypedQuery<String> query = em.createQuery(

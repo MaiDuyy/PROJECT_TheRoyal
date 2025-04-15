@@ -40,6 +40,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="activation-1.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: jakarta.enterprise:jakarta.enterprise.cdi-api:3.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: jakarta.el:jakarta.el-api:4.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: jakarta.interceptor:jakarta.interceptor-api:2.0.0" level="project" />
@@ -97,6 +98,5 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="activation-1.1.1" level="project" />
   </component>
 </module>

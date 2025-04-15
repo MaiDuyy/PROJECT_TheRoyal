@@ -27,16 +27,7 @@ public class TaiKhoanDAOImpl extends GenericDAOImpl<TaiKhoan ,String> implements
 
 
 
-    @Override public List<TaiKhoan> getAllTaiKhoan() {
-        List<TaiKhoan> dsTaiKhoan = new ArrayList<>();
-        try {
-            TypedQuery<TaiKhoan> query = em.createQuery("SELECT tk FROM TaiKhoan tk", TaiKhoan.class);
-            dsTaiKhoan = query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dsTaiKhoan;
-    }
+
     
     @Override public List<TaiKhoan> getTaiKhoanTheoMaTK(String maTK) {
         List<TaiKhoan> dsTaiKhoan = new ArrayList<>();
@@ -119,42 +110,7 @@ public class TaiKhoanDAOImpl extends GenericDAOImpl<TaiKhoan ,String> implements
         }
     }
     
-    public boolean insert(TaiKhoan tk) {
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.persist(tk);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    @Override public boolean delete(String maTK) {
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            TaiKhoan tk = em.find(TaiKhoan.class, maTK);
-            if (tk != null) {
-                em.remove(tk);
-                transaction.commit();
-                return true;
-            }
-            transaction.rollback();
-            return false;
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            return false;
-        }
-    }
+
 
 
     @Override public boolean validateLogin(String userName, String password) {

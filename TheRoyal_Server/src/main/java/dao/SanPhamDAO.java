@@ -16,13 +16,13 @@ public interface SanPhamDAO extends GenericDAO<SanPham, String> , Remote {
         return new SanPhamDAOImpl(JPAUtil.getEntityManager(), SanPham.class);
     }
 
-    List<SanPham> getDanhSachSanPham();
+
 
     List<SanPham> getSanPhamTheoMa(String maSP);
 
     List<SanPham> getSanPhamTheoLoai(String tenSP);
 
-    boolean insert(SanPham sp);
+
 
     default String generateNewId() {
         try {

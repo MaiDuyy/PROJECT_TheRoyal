@@ -16,9 +16,7 @@ public class PhongServiceImpl extends GenericServiceImpl<Phong, String>  impleme
         this.phongDAO = phongDAO;
     }
 
-    @Override public List<Phong> getListPhong () throws RemoteException {
-        return phongDAO.getListPhong();
-    }
+
 
     @Override
     public List<Phong> getPhongTheoMaPhong(String maPhong) {

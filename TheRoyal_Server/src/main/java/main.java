@@ -17,7 +17,7 @@ public class main {
 //        PhongDAO phongDAO = new PhongDAOImpl(em, Phong.class);
 //        List<Phong> list = phongDAO.getPhongTheoMaPhong("P101");
 //        System.out.println(list);
-        List<TaiKhoan> list = TaiKhoanDAO.getInstance().getAllTaiKhoan();
+        List<TaiKhoan> list = TaiKhoanDAO.getInstance().getAll();
 
 
     }

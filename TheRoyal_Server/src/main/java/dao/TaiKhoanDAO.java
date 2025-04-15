@@ -12,7 +12,6 @@ public interface TaiKhoanDAO  extends GenericDAO<TaiKhoan, String> , Remote {
         return new TaiKhoanDAOImpl(JPAUtil.getEntityManager(), TaiKhoan.class);
     }
 
-    List<TaiKhoan> getAllTaiKhoan();
 
     List<TaiKhoan> getTaiKhoanTheoMaTK(String maTK);
 
@@ -24,7 +23,6 @@ public interface TaiKhoanDAO  extends GenericDAO<TaiKhoan, String> , Remote {
 
     boolean updateMatKhau(TaiKhoan tk);
 
-    boolean delete(String maTK);
 
     boolean validateLogin(String userName, String password);
 

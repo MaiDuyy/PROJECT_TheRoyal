@@ -18,15 +18,6 @@ public class PhongDAOImpl extends GenericDAOImpl<Phong, String> implements Phong
         super(em, clazz);
     }
 
-    @Override
-    public List<Phong> getAll() {
-        return super.getAll();
-    }
-
-    @Override
-    public List<Phong> getListPhong() {
-        return em.createQuery("SELECT p FROM Phong p", Phong.class).getResultList();
-    }
 
     @Override 
     public List<Phong> getPhongTheoMaPhong(String maPhong) {

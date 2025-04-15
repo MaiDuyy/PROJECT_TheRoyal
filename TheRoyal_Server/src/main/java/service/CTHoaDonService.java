@@ -1,41 +1,30 @@
 package service;
 
-import dao.GenericDAO;
 import entity.CTHoaDon;
 
-import java.io.Serializable;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.List;
 
-public interface CTHoaDonService extends Remote, GenericDAO<CTHoaDon, String> {
-    //Lấy danh sách khuyến mãi theo mã hoá đơn
-    List<CTHoaDon> getListCTHoaDonByMaHD(String maHD);
+public interface CTHoaDonService extends GenericService<CTHoaDon, String> , Remote {
+    List<CTHoaDon> getListCTHoaDonByMaHD(String maHD) throws RemoteException;
 
-    //Lấy mã CTHD mới nhất
-    String getLatestID();
+    String getLatestID() throws RemoteException;
 
-    //Check hoá đơn liệu có tồn tại
-    boolean checkIfCTHoaDonExists(CTHoaDon cthd);
+    boolean checkIfCTHoaDonExists(CTHoaDon cthd) throws RemoteException;
 
-    //Cập nhật số lượng SP
-    boolean updateSLSP(CTHoaDon ctHoaDon);
+    boolean updateSLSP(CTHoaDon ctHoaDon) throws RemoteException;
 
-    //Cập nhật số lượng DV
-    boolean updateSLDV(CTHoaDon ctHoaDon);
+    boolean updateSLDV(CTHoaDon ctHoaDon) throws RemoteException;
 
-    //Lấy CTHD từ mã Dịch vụ
-    CTHoaDon getCTHoaDonByMaDV(String maDV, String maHD);
+    CTHoaDon getCTHoaDonByMaDV(String maDV, String maHD) throws RemoteException;
 
-    //Lấy CTHD từ mã Sản phẩm
-    CTHoaDon getCTHoaDonByMaSP(String maSP, String maHD);
+    CTHoaDon getCTHoaDonByMaSP(String maSP, String maHD) throws RemoteException;
 
-    //Tính tổng tiền năm
-    double getTongTienNam(int nam);
+    double getTongTienNam(int nam) throws RemoteException;
 
-    //Tính tổng tiền tháng
-    double getTongTienThang(int thang, int nam);
+    double getTongTienThang(int thang, int nam) throws RemoteException;
 
-    //Tính tổng tiền ngày
-    double getTongDVTienNgay(Date ngay);
+    double getTongDVTienNgay(Date ngay) throws RemoteException;
 }

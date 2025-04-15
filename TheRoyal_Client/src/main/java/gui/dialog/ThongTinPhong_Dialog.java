@@ -20,14 +20,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-import UI.DanhSachPhong_GUI;
-import UI.DatPhong;
-import UI.DatPhongTruoc_GUI;
-import UI.DichVuSanPham_GUI;
-import UI.NhanPhong_GUI;
-import UI.QLKhachHang_GUI;
-import UI.ThanhToan_GUI;
-import UI.ThongTinDatPhongTruoc_DL;
+import gui.ui.DanhSachPhong_GUI;
+import gui.ui.DatPhong;
+import gui.ui.DatPhongTruoc_GUI;
+import gui.ui.DichVuSanPham_GUI;
+import gui.ui.NhanPhong_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.ThanhToan_GUI;
+import gui.ui.ThongTinDatPhongTruoc_DL;
 import dao.DonDatPhongDAO;
 import dao.HoaDonDAO;
 import dao.KhachHangDAO;
@@ -63,8 +63,8 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		showRoomInfoDialog(phong);
 		setLocationRelativeTo(null);
 	}
-	
-	
+
+
 	private void showRoomInfoDialog(Phong phong) {
 		List<Phong> dsPhong = null;
 		dsPhong = PhongDAO.getInstance().getListPhong();
@@ -142,7 +142,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		btn_DatTruoc.setForeground(Color.WHITE);
 		btn_DatTruoc.setOpaque(true);
 		btn_DatTruoc.setBorder(null);
-		
+
 		btn_NhanPhong = new JButton("Nhận phòng");
 		btn_NhanPhong.setFont(new Font("Tahoma", Font.BOLD, 10));
 		btn_NhanPhong.setBounds(72, 21, 69, 23);
@@ -183,7 +183,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		btn_donDep.setForeground(Color.WHITE);
 		btn_donDep.setOpaque(true);
 		btn_donDep.setBorder(null);
-		
+
 		java.util.Date utilDate = home.date_DSPhong.getDate();
 		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 		String trangThai = DonDatPhongDAO.getInstance().getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlDate);
@@ -200,11 +200,11 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 						if (ddp != null) {
 							getddp(phong,ddp);
 							dispose();
-		
+
 						}
 					}
 				});
-				
+
 				btn_SuDungDV.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -217,8 +217,8 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 						}
 					}
 				});
-				
-			} 
+
+			}
 //				else {
 //				pn_p_bottom.add(btn_traPhong);
 //
@@ -261,7 +261,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 //                    	   NhanPhong_GUI xemDon = new NhanPhong_GUI(phong, DanhSachPhong_GUI.this);
 //                    	   xemDon.setVisible(true);
 //                    	   PhongDAO phongdao = new PhongDAO();
-//                    	   
+//
 //                	       capNhatLaiDanhSachPhong();
 //                       }
 //                   });
@@ -286,8 +286,8 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			calendarCurrentDate.set(Calendar.SECOND, 0);
 			calendarCurrentDate.set(Calendar.MILLISECOND, 0);
 
-		
-			
+
+
 			// So sánh chỉ ngày tháng năm
 			if (calendarSelectedDate.getTime().equals(calendarCurrentDate.getTime())) {
 			    pn_p_bottom.add(btn_VaoThue);
@@ -295,9 +295,9 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			}else {
 				btn_DatTruoc.setBounds(135, 21, 69, 23);
 				pn_p_bottom.add(btn_DatTruoc);
-				
+
 			}
-				
+
 		} else if ("Đặt trước".equals(trangThai)) {
 			pn_p_bottom.add(btn_HuyDP);
 			pn_p_bottom.add(btn_NhanPhong);
@@ -306,7 +306,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			btn_donDep.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					
+
 					DonDatPhongDAO ddpDao = new DonDatPhongDAO();
 					String maPhong = phong.getMaPhong();
 					DonDatPhong ddp = ddpDao.getDonDatPhongTheoPhongVaTrangThai(maPhong, trangThai);
@@ -314,9 +314,9 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 					ddpDao.updateTinhTrang(ddp.getMaDDP(), "Hoàn tất");
 					phong.setTrangThai("Phòng trống");
 					dispose();
-					
+
 					home.capNhatLaiDanhSachPhong();
-					
+
 //					boolean dondepthanhcong = phongdao.updateTinhTrang(phong, "Phòng trống");
 //
 //					if (dondepthanhcong) {
@@ -393,7 +393,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			return;
 		}
 	}
-	
+
 	public void open_DLDatPhongTruoc(Phong p) {
 
 		DatPhongTruoc_GUI	datphongtruoc = new DatPhongTruoc_GUI(this.home,  p ,this, true);

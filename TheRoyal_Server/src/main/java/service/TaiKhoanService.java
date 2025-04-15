@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface TaiKhoanService extends Remote , GenericService<TaiKhoan, String> {
-    List<TaiKhoan> getAllTaiKhoan() throws RemoteException ;
+
 
     List<TaiKhoan> getTaiKhoanTheoMaTK(String maTK) throws RemoteException ;
 
@@ -18,8 +18,6 @@ public interface TaiKhoanService extends Remote , GenericService<TaiKhoan, Strin
     TaiKhoan getTaiKhoanTheoMaNv(String maNV)throws RemoteException;
 
     boolean updateMatKhau(TaiKhoan tk) throws RemoteException;
-
-    boolean delete(String maTK) throws RemoteException;
 
     boolean validateLogin(String userName, String password) throws RemoteException;
 

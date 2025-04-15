@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PhongService  extends Remote  ,GenericService<Phong, String>  {
-    List<Phong> getListPhong() throws RemoteException;
+
 
     List<Phong> getPhongTheoMaPhong(String maPhong) throws RemoteException;
 

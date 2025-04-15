@@ -17,8 +17,6 @@ public class RMIServer {
 
         LocateRegistry.createRegistry(9090);
 
-
-
         PhongDAO phongDAO = new PhongDAOImpl(Phong.class);
         PhongService phongService =  new PhongServiceImpl(phongDAO) ;
         context.bind("rmi://DESKTOP-Q4NO7E1:9090/phongService", phongService);
@@ -48,6 +46,27 @@ public class RMIServer {
         HoaDonDAO hoaDonDAO =  new HoaDonDAOImpl(HoaDon.class);
         HoaDonService hoaDonService = new HoaDonServiceImpl(hoaDonDAO);
         context.bind("rmi://DESKTOP-Q4NO7E1:9090/hoaDonService", hoaDonService);
+
+        DonDatPhongDAO donDatPhongDAO = new DonDatPhongDAOImpl(DonDatPhong.class);
+        DonDatPhongService  donDatPhongService = new DonDatPhongServiceImpl(donDatPhongDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/donDatPhongService", donDatPhongService);
+
+        SanPhamDAO sanPhamDAO = new SanPhamDAOImpl(SanPham.class);
+        SanPhamService sanPhamService = new SanPhamServiceImpl(sanPhamDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/sanPhamService", sanPhamService);
+
+
+        DichVuDAO dichVuDAO = new DichVuDAOImpl(DichVu.class);
+        DichVuService dichVuService = new DichVuServiceImpl(dichVuDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/dichVuService", dichVuService);
+
+
+        CTHoaDonDAO ctHoaDonDAO = new CTHoaDonDAOImpl(CTHoaDon.class);
+        CTHoaDonService ctHoaDonService =  new CTHoaDonServiceImpl(ctHoaDonDAO);
+        context.bind("rmi://DESKTOP-Q4NO7E1:9090/ctHoaDonService", ctHoaDonService);
+
+
+
         System.out.println("RMI server is running...");
 
     }

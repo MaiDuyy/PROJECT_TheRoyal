@@ -16,10 +16,7 @@ public class TaiKhoanServiceImpl extends   GenericServiceImpl<TaiKhoan, String>i
     }
 
 
-    @Override
-    public List<TaiKhoan> getAllTaiKhoan() {
-        return taiKhoanDAO.getAllTaiKhoan();
-    }
+
 
     @Override
     public List<TaiKhoan> getTaiKhoanTheoMaTK(String maTK) {
@@ -46,10 +43,7 @@ public class TaiKhoanServiceImpl extends   GenericServiceImpl<TaiKhoan, String>i
         return taiKhoanDAO.updateMatKhau(tk);
     }
 
-    @Override
-    public boolean delete(String maTK) {
-        return taiKhoanDAO.delete(maTK);
-    }
+
 
     @Override
     public boolean validateLogin(String userName, String password) {

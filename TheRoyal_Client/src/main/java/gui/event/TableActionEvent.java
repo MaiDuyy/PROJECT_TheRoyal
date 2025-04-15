@@ -1,8 +1,10 @@
 package gui.event;
 
-public interface TableActionEvent {
-    void tangSoLuong(int row);
+import java.rmi.RemoteException;
 
-    void giamSoLuong(int row);
+public interface TableActionEvent {
+    void tangSoLuong(int row) throws RemoteException;
+
+    void giamSoLuong(int row) throws RemoteException;
 
 }

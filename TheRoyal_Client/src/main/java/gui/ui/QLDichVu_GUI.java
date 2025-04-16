@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 
-import Format_UI.Table;
+import gui.format_ui.Table;
 import dao.*;
 
 import entity.*;
@@ -31,8 +31,9 @@ import gui.dialog.ThemDichVu_Dialog;
 import gui.dialog.ThemKhachHang_Dialog;
 import gui.dialog.ThemDichVu_Dialog;
 import gui.swing.notification.Notification;
-import connectDB.ConnectDB;
 import controller.TimDichVu;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -195,10 +196,10 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
 
         btnTim = new JButton("Tìm Kiếm");
         btnTim.setBounds(376, 34, 107, 29);
-        btnTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/search_16.png")));
+        btnTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/search_16.png")));
         btnHuyTim = new ButtonCustom("Xem tất cả","rest", 12);
         btnHuyTim.setBounds(493, 34, 112, 29);
-        btnHuyTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/refresh.png")));
+        btnHuyTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/refresh.png")));
         searchPanel.setLayout(null);
         searchPanel.add(txtTim);
 //        searchPanel.add(btnTim);
@@ -215,7 +216,7 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
                 new Font("Segoe UI", Font.PLAIN, 12), new Color(246, 167, 193)));
 
         btnThem = new JButton("Thêm",
-            new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/blueAdd_16.png")));
+            new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/blueAdd_16.png")));
         btnThem.setBackground(new Color(255, 255, 255));
         btnThem.setBounds(37, 25, 67, 63);
         btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -313,7 +314,8 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
                     "Cảnh báo", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    DichVuDAO.getInstance().xoaDichVu(sp);
+
+                    RMIClient.getInstance().getDichVuService().delete(sp.getMaDV());
                     ((DefaultTableModel) tblDichVu.getModel()).removeRow(row);
                     loadListDichVu();
                     thongBao(0, "Xóa Thành công");
@@ -362,8 +364,9 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
         }
     }
 
+    @SneakyThrows
     public void loadListDichVu() {
-        dsDV = DichVuDAO.getInstance().getDanhSachDichVu();
+        dsDV = (ArrayList<DichVu>) RMIClient.getInstance().getDichVuService().getAll();
     }
 
     private boolean validDataTim() {
@@ -425,13 +428,14 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
         DocDuLieuDVVaoTable();
 
     }
+    @SneakyThrows
     public DichVu getSanPhanSelect() {
         int i_row = tblDichVu.getSelectedRow();
         if (i_row == -1) {
             throw new IllegalArgumentException("Không chọn được dòng nào");
         }
         String maNV = tblDichVu.getValueAt(i_row, 0).toString();
-        return DichVuDAO.getInstance().getDichVuTheoMaDV(maNV);
+        return RMIClient.getInstance().getDichVuService().getDichVuByMaDV(maNV);
     }
 
 }

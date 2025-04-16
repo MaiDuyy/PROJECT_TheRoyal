@@ -10,6 +10,8 @@ public  interface GenericService<T, ID> extends Remote {
 
     boolean update(T t) throws RemoteException;
 
+    boolean delete(ID id) throws RemoteException;
+
     T findById(ID id) throws RemoteException;
 
     List<T> getAll() throws RemoteException;

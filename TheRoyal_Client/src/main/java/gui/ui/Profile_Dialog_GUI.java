@@ -27,8 +27,8 @@ import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
 import gui.component.InputForm;
 import gui.component.NumericDocumentFilter;
-import validata.BCrypt;
-import validata.Validation;
+import gui.validata.BCrypt;
+import gui.validata.Validation;
 
 public class Profile_Dialog_GUI extends JDialog implements ActionListener {
 
@@ -54,7 +54,7 @@ public class Profile_Dialog_GUI extends JDialog implements ActionListener {
         this.setLayout(new BorderLayout(0, 0));
         this.setBackground(Color.WHITE);
         this.setResizable(false);
-         nv = LoginFrame.getNhanVienDangNhap();
+         nv = Login.getNhanVienDangNhap();
         top = new JPanel();
         top.setBackground(Color.WHITE);
         top.setLayout(new FlowLayout(0, 0, 0));
@@ -92,7 +92,7 @@ public class Profile_Dialog_GUI extends JDialog implements ActionListener {
         phone = new InputForm("Số điện thoại");
         PlainDocument phonex = (PlainDocument) phone.getTxtForm().getDocument();
         phonex.setDocumentFilter((new NumericDocumentFilter()));
-        phone.setText(nv.getsDT());
+        phone.setText(nv.getSDT());
         panel[0].add(phone);
 
         panel[1] = new JPanel(new GridLayout(1, 1));
@@ -159,7 +159,7 @@ public class Profile_Dialog_GUI extends JDialog implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Số điện thoại không được rỗng và phải có 10 ký tự sô", "Chỉnh sửa số điện thoại", JOptionPane.WARNING_MESSAGE);
                 } else {
                     String sdt = phone.getText();
-                    NhanVien nvdto = new NhanVien(nv.getMaNV()	,nv.getTenNV() 	, nv.isGioiTinh(), nv.getcCCD(), nv.getNgaySinh(), sdt, 
+                    NhanVien nvdto = new NhanVien(nv.getMaNV()	,nv.getTenNV() 	, nv.isGioiTinh(), nv.getCCCD(), nv.getNgaySinh(), sdt,
                     		nv.getEmail(), new TaiKhoan(nv.getTaiKhoan().getMaTK()), nv.getNgayVaoLam(), nv.getChucVu(), nv.getTrangThai());
                     NhanVienDAO.getInstance().update(nvdto);
                     NhanVienDAO.getInstance().getListNhanVien();QLNhanVien_GUI.DocDuLieuNVVaoTable();

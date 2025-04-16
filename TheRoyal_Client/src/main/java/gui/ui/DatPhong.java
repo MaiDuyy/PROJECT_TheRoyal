@@ -13,6 +13,9 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import connectDB.ConnectDB;
+
 import dao.*;
 import entity.*;
 import gui.dialog.ThongTinPhong_Dialog;
@@ -46,15 +49,20 @@ import gui.dialog.ThongTinPhong_Dialog;
 import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.border.EtchedBorder;
-import Format_UI.RoundedBorder;
+import gui.format_ui.RoundedBorder;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.*;
+import service.impl.LoaiPhongServiceImpl;
+
 import javax.swing.border.MatteBorder;
 
 public class DatPhong extends JDialog implements ActionListener, MouseListener {
 
-	private PhongDAO phongdao;
-	private KhachHangDAO khachhangdao;
-	private DonDatPhongDAO dondatphongdao;
-	private HoaDonDAO hoadondao;
+	private PhongService phongdao;
+	private KhachHangService khachhangdao;
+	private DonDatPhongService dondatphongdao;
+	private HoaDonService hoadondao;
 	private JButton btnThem, btnLamLai;
 	private JTextField txtSDT, txtTenKH, txtTrangThai;
 	private JDateChooser dateDatPhong;
@@ -104,10 +112,10 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		this.phong1 = phong1;
 		this.thongtinphong = thongtinphong;
 		
-		phongdao = new PhongDAO();
-		khachhangdao = new KhachHangDAO();
-		dondatphongdao = new DonDatPhongDAO();
-		hoadondao = new HoaDonDAO();
+		phongdao = RMIClient.getInstance().getPhongService();
+		khachhangdao =RMIClient.getInstance().getKhachHangService();
+		dondatphongdao = RMIClient.getInstance().getDonDatPhongService();
+		hoadondao = RMIClient.getInstance().getHoaDonService();
 
 		setBounds(100, 100, 810, 720);
 		setLocationRelativeTo(this);
@@ -275,17 +283,18 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		staffInfoPanel.add(btnTimKiemKH);
 		
 		btnTimKiemKH.addMouseListener(new MouseAdapter() {
-        	@Override
+        	@SneakyThrows
+			@Override
         	public void mouseClicked(MouseEvent e) {
-        		khachhangdao = new KhachHangDAO();
+
         		KhachHang kh = khachhangdao.getKhachHangTheoSDTHoacCCCD(txtTimKiemKH.getText());
         		if (kh == null) {
         		    JOptionPane.showMessageDialog(null, "Không tìm thấy khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
         		} else {
         			cboMaKH.setSelectedItem(kh.getMaKH());
 	        		txtTenKH.setText(kh.getTenKH());
-					txtCCCD.setText(kh.getcCCD());
-					txtSDT.setText(kh.getsDT());
+					txtCCCD.setText(kh.getCCCD());
+					txtSDT.setText(kh.getSDT());
 					cboLoaiKH.setSelectedItem(kh.getLoaiKH());
 					cboGioiTinh.setSelectedItem(kh.isGioiTinh());
         		}
@@ -351,6 +360,7 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 
 	}
 
+	@SneakyThrows
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnThem)) {
@@ -361,10 +371,10 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		    if (chkKH.isSelected()) {
 		        kh = dataKhachHang();
 		        if (validData(ADD)) {
-		            boolean result = khachhangdao.insert(kh);
+		            boolean result = khachhangdao.save(kh);
 		            if (result) {
 		                String maKH = khachhangdao.getLatestID();
-		                kh = new KhachHang(maKH, kh.getTenKH(), kh.getsDT(), kh.getLoaiKH(), kh.getcCCD(), kh.isGioiTinh());
+		                kh = new KhachHang(maKH, kh.getTenKH(), kh.getSDT(), kh.getLoaiKH(), kh.getCCCD(), kh.isGioiTinh() , null , null);
 		                showMessage("Khách hàng mới được thêm thành công!", SUCCESS);
 		                loadListKhachHang();
 		            } else {
@@ -395,35 +405,36 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		            return;
 		        }
 
-		        boolean result1 = dondatphongdao.insert(ddp);
-		        String maDDP = dondatphongdao.getLatestID();
+		        boolean result1 = dondatphongdao.save(ddp);
+		        String maDDP = dondatphongdao.getLatestId();
 
 		        if (result1) {
 		            Date ngaydat = convertFromJAVADateToSQLDate(ddp.getThoiGianDatPhong());
 		            Date ngaytra = convertFromJAVADateToSQLDate(ddp.getThoiGianTraPhong());
 
 		            ddp = new DonDatPhong(maDDP, ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra, kh,
-		                                  new Phong(ddp.getPhong().getMaPhong()), "Đang ở", ddp.getSoLuongNGLon(),
-		                                  ddp.getSoLuongTreEm());
+		                                  new Phong(ddp.getPhong().getMaPhong()), "Đang ở", ddp.getSoTreEm(),
+		                                  ddp.getSoNguoiLon(), null );
 		        } else {
 		            showMessage("Lỗi: Thêm đơn đặt phòng thất bại", ERROR);
 		            return;
 		        }
-		        NhanVien nhanVienDangNhap = LoginFrame.getNhanVienDangNhap();
-		        try {
+		        NhanVien nhanVienDangNhap = Login.getNhanVienDangNhap();
+
+
+
 		            hd = new HoaDon(hoadondao.taoMaHoaDonTheoNgay(), kh, new Phong(ddp.getPhong().getMaPhong()),
 		                           new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, new KhuyenMai(), new Date(System.currentTimeMillis()),
-		                            phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán");
-		        } catch (SQLException e1) {
-		            e1.printStackTrace();
-		        }
+		                            phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán" , null);
+//					hd = new HoaDon(hoadondao.taoMaHoaDonTheoNgay(), );
 
-		        boolean hdInserted = hoadondao.insert(hd);
+
+		        boolean hdInserted = hoadondao.save(hd);
 
 		        if (hdInserted) {
 		            dondatphongdao.updateTinhTrang(maDDP, ddp.getTrangThai());
 //		            phong.setTrangThai("Đang ở");
-		            phongdao.updateTinhTrang(phong, phong.getTrangThai());
+		            phongdao.updateTinhTrang(String.valueOf(phong), phong.getTrangThai());
 
 		            loadDataPhong();
 		            danhSachPhong.capNhatLaiDanhSachPhong();
@@ -452,8 +463,8 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 			} else {
 				indx -= 1;
 				txtTenKH.setText(dsKH.get(indx).getTenKH());
-				txtCCCD.setText(dsKH.get(indx).getcCCD());
-				txtSDT.setText(dsKH.get(indx).getsDT());
+				txtCCCD.setText(dsKH.get(indx).getCCCD());
+				txtSDT.setText(dsKH.get(indx).getSDT());
 				cboLoaiKH.setSelectedItem(dsKH.get(indx).getLoaiKH());
 				cboGioiTinh.setSelectedItem(dsKH.get(indx).isGioiTinh());
 			}
@@ -515,8 +526,9 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 
 	}
 
+	@SneakyThrows
 	private void loadCboMaKhachHang() {
-		dsKH = khachhangdao.getListKhachHang();
+		dsKH = (ArrayList<KhachHang>) khachhangdao.getAll();
 		if (dsKH == null || dsKH.size() <= 0)
 			return;
 		cboMaKH.addItem("");
@@ -525,12 +537,14 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		}
 	}
 
+	@SneakyThrows
 	private void loadDataPhong() {
-		dsPhong = phongdao.getListPhong();
+		dsPhong = (ArrayList<Phong>) phongdao.getAll();
 	}
 
+	@SneakyThrows
 	private void loadListKhachHang() {
-		dsKH = khachhangdao.getListKhachHang();
+		dsKH = (ArrayList<KhachHang>) khachhangdao.getAll();
 	}
 
 	private DonDatPhong dataDDP(String ma) {
@@ -545,7 +559,7 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		int treem = txtTreEm.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtTreEm.getText().trim());
 
 		DonDatPhong ddp = new DonDatPhong("", ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra,
-				new KhachHang(ma), new Phong(maphong), "", nglon, treem);
+				new KhachHang(ma), new Phong(maphong), "", nglon, treem , null );
 		return ddp;
 	}
 
@@ -556,7 +570,7 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		String cccd = txtCCCD.getText().trim();
 		boolean gioiTinh = cboGioiTinh.getSelectedItem().toString().equalsIgnoreCase("Nam");
 
-		KhachHang kh = new KhachHang("", tenKH, sDT, loaiKH, cccd, gioiTinh);
+		KhachHang kh = new KhachHang("", tenKH, sDT, loaiKH, cccd, gioiTinh , null , null);
 		return kh;
 	}
 
@@ -686,7 +700,7 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		} else {
 			if (type == ADD)
 				for (KhachHang item : dsKH) {
-					if (item.getcCCD().equalsIgnoreCase(cccd)) {
+					if (item.getCCCD().equalsIgnoreCase(cccd)) {
 						showMessage("Lỗi: CCCD đã tồn tại", txtCCCD);
 						return false;
 					}
@@ -696,9 +710,10 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		return true;
 	}
 	
+	@SneakyThrows
 	private void loadDataPhongMoi(Phong phong) {
-		lpDao = new LoaiPhongDAO();
-		LoaiPhong lp = lpDao.getLoaiPhongTheoMa(phong.getLoaiPhong().getMaLoai());
+		LoaiPhongService loaiPhongService = RMIClient.getInstance().getLoaiPhongService();
+		LoaiPhong lp = loaiPhongService.getLoaiPhongTheoMa(phong.getLoaiPhong().getMaLoai());
 		txtMPhong.setText(phong.getMaPhong());
 		txtLoaiPhong.setText(lp.getTenLoai());
 		txtGiaPhong.setText(String.valueOf(phong.getGiaTien()));

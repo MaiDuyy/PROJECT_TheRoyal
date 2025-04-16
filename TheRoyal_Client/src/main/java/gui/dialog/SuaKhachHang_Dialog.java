@@ -17,14 +17,17 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import UI.QLKhachHang_GUI;
-import UI.QLNhanVien_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.QLNhanVien_GUI;
 import dao.KhachHangDAO;
 import entity.KhachHang;
 import entity.NhanVien;
 import entity.TaiKhoan;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.KhachHangService;
 
 public class SuaKhachHang_Dialog extends JDialog {
 	private JTextField txtMaKH;
@@ -38,16 +41,18 @@ public class SuaKhachHang_Dialog extends JDialog {
 	private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
 	private QLKhachHang_GUI home;
 
+	private KhachHangService khachHangService = RMIClient.getInstance().getKhachHangService();
+	@SneakyThrows
 	public SuaKhachHang_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
 		super(owner, modal);
 		GuiKhachHang();
 		setLocationRelativeTo(null);
 		home = (QLKhachHang_GUI) parent;
-		dsKH = KhachHangDAO.getInstance().getListKhachHang();
+		dsKH = (ArrayList<KhachHang>) khachHangService.getAll();
 		KhachHang kh = home.getKhachHangSelect();
 		txtMaKH.setText(kh.getMaKH());
-		txtCCCD.setText(kh.getcCCD());
-		txtSDT.setText(kh.getsDT());
+		txtCCCD.setText(kh.getCCCD());
+		txtSDT.setText(kh.getSDT());
 		cboGioiTinh.setSelectedItem(kh.isGioiTinh());
 		cboLoaiKH.setSelectedItem(kh.getLoaiKH());
 		txtTenKH.setText(kh.getTenKH());
@@ -137,10 +142,11 @@ public class SuaKhachHang_Dialog extends JDialog {
 	}
 
 	
+	@SneakyThrows
 	private void themNV() {
 		 if(validData(UPDATE)) {
 		KhachHang nv = dataKhachHang();
-        KhachHangDAO.getInstance().update(nv);
+        khachHangService.update(nv);
         this.dispose();
         home.huytim();
         home.thongBao(0, "Cập nhật thành công");
@@ -156,7 +162,7 @@ public class SuaKhachHang_Dialog extends JDialog {
 		String cccd = txtCCCD.getText().trim();
 		boolean gioiTinh = cboGioiTinh.getSelectedItem().toString().equalsIgnoreCase("Nam");
 
-		KhachHang kh = new KhachHang(maKH, tenKH, sDT, loaiKH, cccd, gioiTinh);
+		KhachHang kh = new KhachHang(maKH, tenKH, sDT, loaiKH, cccd, gioiTinh, null , null);
 		return kh;
 	}
 
@@ -185,7 +191,7 @@ public class SuaKhachHang_Dialog extends JDialog {
 		} else {
 			
 			for (KhachHang item : dsKH) {
-				if (item.getsDT().equalsIgnoreCase(sDT)) {
+				if (item.getSDT().equalsIgnoreCase(sDT)) {
 					home.showMessage("Lỗi: Số điện thoại đã tồn tại ", txtSDT);
 					return false;
 				}
@@ -194,7 +200,7 @@ public class SuaKhachHang_Dialog extends JDialog {
 			
 			if (type == ADD)
 				for (KhachHang item : dsKH) {
-					if (item.getcCCD().equalsIgnoreCase(cccd)) {
+					if (item.getCCCD().equalsIgnoreCase(cccd)) {
 						home.showMessage("Lỗi: CCCD đã tồn tại", txtCCCD);
 						return false;
 					}

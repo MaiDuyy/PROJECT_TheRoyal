@@ -23,6 +23,12 @@ public  class GenericServiceImpl<T,ID>  extends UnicastRemoteObject implements G
 
         return genericDAO.update(t);
     }
+
+    @Override
+    public boolean delete(ID id) throws RemoteException {
+        return genericDAO.delete(id);
+    }
+
     @Override public T findById(ID id) throws RemoteException {
         return genericDAO.findById(id);
     }

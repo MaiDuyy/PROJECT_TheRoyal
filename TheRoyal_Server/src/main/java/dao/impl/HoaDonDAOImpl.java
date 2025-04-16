@@ -8,6 +8,8 @@ import jakarta.persistence.TypedQuery;
 import util.JPAUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements HoaDonDAO {
@@ -143,5 +145,36 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                 "SELECT h FROM HoaDon h WHERE FUNCTION('YEAR', h.thoiGianLapHD) = :nam", HoaDon.class);
         query.setParameter("nam", nam);
         return query.getResultList();
+    }
+    public int soLuongHoaDonTrongNgay() {
+        EntityManager em = JPAUtil.getEntityManager();
+        int count = 0;
+        try {
+            LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+            LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+            String jpql = "SELECT COUNT(h) FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfDay AND h.thoiGianLapHD < :endOfDay";
+
+            count = ((Long) em.createQuery(jpql)
+                    .setParameter("startOfDay", startOfDay)
+                    .setParameter("endOfDay", endOfDay)
+                    .getSingleResult()).intValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return count;
+    }
+
+    public String taoMaHoaDonTheoNgay()  {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+
+        LocalDate currentDate = LocalDate.now();
+        String dateString = currentDate.format(dateFormatter);
+
+        int soLuongHoaDon = soLuongHoaDonTrongNgay();
+        return dateString + String.format("%05d", soLuongHoaDon + 1);
     }
 }

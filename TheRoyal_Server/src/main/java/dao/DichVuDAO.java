@@ -22,4 +22,8 @@ public interface DichVuDAO extends GenericDAO<DichVu, String> {
     List<Object[]> getMHNam(int nam);
 
     Double getTongTienNam(int nam);
+
+    public String getLatestID();
+
+
 }

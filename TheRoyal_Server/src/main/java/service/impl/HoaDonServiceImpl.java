@@ -76,4 +76,9 @@ public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> imple
     @Override public List<HoaDon> getDoanhThuNam(String nam)throws RemoteException {
         return hoaDonDAO.getDoanhThuNam(nam);
     }
+
+    @Override
+    public String taoMaHoaDonTheoNgay() throws RemoteException {
+        return hoaDonDAO.taoMaHoaDonTheoNgay();
+    }
 }

@@ -42,4 +42,6 @@ public interface HoaDonService extends GenericService<HoaDon, String> , Remote {
 
     // Lấy doanh thu theo năm
     List<HoaDon> getDoanhThuNam(String nam) throws RemoteException;
+
+    public String taoMaHoaDonTheoNgay() throws  RemoteException;
 }

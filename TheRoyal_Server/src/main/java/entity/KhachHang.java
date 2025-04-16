@@ -43,4 +43,8 @@ public class KhachHang  implements Serializable {
     // Mối quan hệ 1-n với HoaDon
     @OneToMany(mappedBy = "khachHang")
     private Set<HoaDon> dsHoaDon;
+
+    public KhachHang(String maKH) {
+        this.maKH = maKH;
+    }
 }

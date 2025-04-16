@@ -19,15 +19,18 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import UI.QLKhachHang_GUI;
-import UI.QLNhanVien_GUI;
-import UI.QLDichVu_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.QLNhanVien_GUI;
+import gui.ui.QLDichVu_GUI;
 import dao.KhachHangDAO;
 import dao.DichVuDAO;
 import entity.KhachHang;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
 import entity.DichVu;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.DichVuService;
 
 public class ThemDichVu_Dialog extends JDialog {
 
@@ -41,12 +44,17 @@ public class ThemDichVu_Dialog extends JDialog {
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private QLDichVu_GUI home;
 
+    private DichVuService dichVuService = RMIClient.getInstance().getDichVuService();
+
+
+    @SneakyThrows
     public ThemDichVu_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLDichVu_GUI) parent;
-        dsDV = DichVuDAO.getInstance().getDanhSachDichVu();
+
+        dsDV = (ArrayList<DichVu>) dichVuService.getAll();
 
     }
 
@@ -151,8 +159,8 @@ public class ThemDichVu_Dialog extends JDialog {
         sp = dataDichVu();
         if (validData(ADD)) {
             try {
-                boolean result = DichVuDAO.getInstance().insert(sp);
-                String maKH = DichVuDAO.getInstance().getLatestID();
+                boolean result = dichVuService.save(sp);
+                String maKH = dichVuService.getLatestID();
                 txtMa.setText(String.valueOf(maKH));
                 if (result == true) {
                     double number = sp.getGiaDV();
@@ -261,7 +269,7 @@ public class ThemDichVu_Dialog extends JDialog {
             }
         }
 
-        DichVu dv = new DichVu(maDV, tenDV, moTaDV, giaTri, soLuong);
+        DichVu dv = new DichVu(maDV, tenDV, moTaDV, giaTri, soLuong, null ,null);
         return dv;
     }
 

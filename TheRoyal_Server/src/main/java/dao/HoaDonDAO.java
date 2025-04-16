@@ -41,4 +41,6 @@ public interface HoaDonDAO extends GenericDAO<HoaDon, String> {
 
     // Lấy doanh thu theo năm
     List<HoaDon> getDoanhThuNam(String nam);
+
+    public String taoMaHoaDonTheoNgay();
 }

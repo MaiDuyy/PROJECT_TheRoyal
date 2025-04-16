@@ -42,9 +42,9 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import Format_UI.RadiusButton;
-import Format_UI.Table;
-import connectDB.ConnectDB;
+import gui.format_ui.RadiusButton;
+import gui.format_ui.Table;
+
 import controller.TimNhanVien;
 import dao.NhanVienDAO;
 import dao.TaiKhoanDAO;
@@ -57,7 +57,7 @@ import gui.dialog.SuaNhanVien_Dialog;
 import gui.dialog.ThemNhanVien_Dialog;
 import gui.dialog.ThemTaiKhoan_Dialog;
 import gui.swing.notification.Notification;
-import validata.BCrypt;
+import gui.validata.BCrypt;
 
 public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, MouseListener, KeyListener {
 
@@ -136,7 +136,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 
 	}
 	private void ChucNang()	{
-		
+
 		// Panel tìm kiếm
 		JPanel searchPanel = new JPanel();
 		searchPanel.setBounds(616, 51, 682, 96);
@@ -522,7 +522,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 
 	}
 
-	public String formatDate(Date date) {
+	public String formatDate(java.util.Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		return sdf.format(date);
 	}

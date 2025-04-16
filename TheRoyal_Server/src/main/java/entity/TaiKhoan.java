@@ -33,5 +33,8 @@ public class TaiKhoan implements Serializable {
     @OneToOne(mappedBy = "taiKhoan", cascade = CascadeType.ALL)
     private NhanVien nhanVien;
 
+    public TaiKhoan(String maTK) {
+        this.maTK = maTK;
+    }
 }
 

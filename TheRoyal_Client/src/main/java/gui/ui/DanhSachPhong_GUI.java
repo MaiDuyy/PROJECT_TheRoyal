@@ -11,14 +11,13 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import com.toedter.calendar.JDateChooser;
 
+
+import com.toedter.calendar.JDateChooser;
 import gui.format_ui.RadiusButton;
 import gui.format_ui.RoundedBorder;
 import controller.TimDonDatDonDatPhong;
-import dao.DonDatPhongDAO;
-import dao.KhachHangDAO;
-import dao.PhongDAO;
+
 import entity.DonDatPhong;
 import entity.HoaDon;
 import entity.KhachHang;
@@ -115,7 +114,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 	private JLabel lblTatCa;
 	private DatPhong datphong;
 	private DatPhongTruoc_GUI datphongtruoc;
-	private DatNhieuPhong_GUI datnhieuphong;
+//	private DatNhieuPhong_GUI datnhieuphong;
 	private ThongTinPhong_Dialog thongtinphongdialog;
 	JFrame owner = (JFrame) SwingUtilities.getWindowAncestor(this);
 	private KhachHang khachHang;
@@ -976,7 +975,8 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1_1.setBounds(20, 29, 110, 36);
 			panel_5_1.add(lblNewLabel_1_2_1_2_1_1);
-		LocalDateTime tgNhan = ddp.getThoiGianNhanPhong();
+
+		LocalDateTime tgNhan = LocalDateTime.parse(formatDate(ddp.getThoiGianNhanPhong()));
 			LocalDateTime nhanPhongLocal = tgNhan.toLocalDate().atStartOfDay();
 			nhanPhongLocal = nhanPhongLocal.plusHours(12); 
 
@@ -1217,7 +1217,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1_1.setBounds(20, 29, 110, 36);
 			panel_5_1.add(lblNewLabel_1_2_1_2_1_1);
-			LocalDateTime tgNhan = ddp.getThoiGianNhanPhong();
+			LocalDateTime tgNhan = LocalDateTime.parse(formatDate(ddp.getThoiGianNhanPhong()));
 			LocalDateTime nhanPhongLocal = tgNhan.toLocalDate().atStartOfDay();
 			nhanPhongLocal = nhanPhongLocal.plusHours(12); 
 
@@ -1439,7 +1439,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panel_5.add(lblh);
 
 
-			LocalDateTime tgTra = ddp.getThoiGianTraPhong();
+			LocalDateTime tgTra = LocalDateTime.parse(formatDate(ddp.getThoiGianTraPhong()));
 
 			
 			LocalDateTime traPhongLocal = tgTra.toLocalDate().atStartOfDay();
@@ -1870,8 +1870,8 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 	public void open_DLDatNhieuPhong() {
 
-		datnhieuphong = new DatNhieuPhong_GUI(this);
-		datnhieuphong.setVisible(true);
+//		datnhieuphong = new DatNhieuPhong_GUI(this);
+//		datnhieuphong.setVisible(true);
 
 	}
 

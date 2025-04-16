@@ -265,13 +265,13 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
                 tableModelDichVu.fireTableDataChanged();
                 switch (luachon) {
                 case "Tất cả":
-                    dsDV = TimDichVu.getInstance().searchTatCa(searchContent);
+                    dsDV = (ArrayList<DichVu>) TimDichVu.getInstance().searchTatCa(searchContent);
                     break;
                 case "Tên":
-                    dsDV = TimDichVu.getInstance().searchTen(searchContent);
+                    dsDV = (ArrayList<DichVu>) TimDichVu.getInstance().searchTen(searchContent);
                     break;
                 case "Mã sản phẩm":
-                    dsDV = TimDichVu.getInstance().searhMa(searchContent);
+                    dsDV = (ArrayList<DichVu>) TimDichVu.getInstance().searhMa(searchContent);
                     break;
                 }
                 if (dsDV == null || dsDV.isEmpty()) {

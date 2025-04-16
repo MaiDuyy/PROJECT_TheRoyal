@@ -1,107 +1,124 @@
 package controller;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
-import dao.KhuyenMaiDAO;
-import dao.TaiKhoanDAO;
 import entity.KhuyenMai;
-import entity.TaiKhoan;
+import rmi.RMIClient;
+import service.KhuyenMaiService;
 
 public class TimKhuyenMai {
 	public static TimKhuyenMai getInstance() {
-        return new TimKhuyenMai();
-    }
+		return new TimKhuyenMai();
+	}
 
-	
-	 public ArrayList<KhuyenMai> searchTatCa(String text) {
-	        ArrayList<KhuyenMai> result = new ArrayList<>();
-	        ArrayList<KhuyenMai> armt = KhuyenMaiDAO.getInstance().getListUuDai();
-	        for (var ncc : armt) {
-	            if (ncc.getTenKM().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getMaKM().toLowerCase().contains(text.toLowerCase())
-	                    
-	                    
-	            		) {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 
-	 public ArrayList<KhuyenMai> searchTen(String text) {
-	        ArrayList<KhuyenMai> result = new ArrayList<>();
-	        ArrayList<KhuyenMai> armt = KhuyenMaiDAO.getInstance().getListUuDai();
-	        for (var ncc : armt) {
-	            if (ncc.getTenKM().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 public ArrayList<KhuyenMai> searhMa(String text) {
-	        ArrayList<KhuyenMai> result = new ArrayList<>();
-	        ArrayList<KhuyenMai> armt = KhuyenMaiDAO.getInstance().getListUuDai();
-	        for (var ncc : armt ) {
-	            if (ncc.getMaKM().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 public ArrayList<KhuyenMai> searhNgayBatDau(String text) {
-		    ArrayList<KhuyenMai> result = new ArrayList<>();
-		    ArrayList<KhuyenMai> armt = KhuyenMaiDAO.getInstance().getListUuDai();
+	private final KhuyenMaiService khuyenMaiService = RMIClient.getInstance().getKhuyenMaiService();
 
-		    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		    
-		    for (var km : armt) {
-		        try {
-		            String formattedDate = sdf.format(km.getNgayBatDau()); 
-		            if (formattedDate.contains(text)) {
-		                result.add(km);
-		            }
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		        }
-		    }
-		    return result;
-	    }
-	 public ArrayList<KhuyenMai> searchNgayKetThuc(String text) {
-		    ArrayList<KhuyenMai> result = new ArrayList<>();
-		    ArrayList<KhuyenMai> armt = KhuyenMaiDAO.getInstance().getListUuDai();
-
-		    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		    
-		    for (var km : armt) {
-		        try {
-		            String formattedDate = sdf.format(km.getNgayKetThuc()); 
-		            if (formattedDate.contains(text)) {
-		                result.add(km);
-		            }
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		        }
-		    }
-		    return result;
+	public List<KhuyenMai> searchTatCa(String text) {
+		List<KhuyenMai> result = new ArrayList<>();
+		try {
+			List<KhuyenMai> armt = khuyenMaiService.getAll();
+			for (KhuyenMai km : armt) {
+				if (km.getTenKM().toLowerCase().contains(text.toLowerCase())
+						|| km.getMaKM().toLowerCase().contains(text.toLowerCase())) {
+					result.add(km);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
-	 public ArrayList<KhuyenMai> searchLocNgayKetThuc(Date time) {
-		    ArrayList<KhuyenMai> result = new ArrayList<>();
-		    ArrayList<KhuyenMai> armt = KhuyenMaiDAO.getInstance().getListUuDai();
+		return result;
+	}
 
-		    for (KhuyenMai km : armt) {
-		        if (km.getNgayKetThuc() != null && km.getNgayKetThuc().before(time)) {
-		            result.add(km);
-		        }
-		    }
+	public List<KhuyenMai> searchTen(String text) {
+		List<KhuyenMai> result = new ArrayList<>();
+		try {
+			List<KhuyenMai> armt = khuyenMaiService.getAll();
+			for (KhuyenMai km : armt) {
+				if (km.getTenKM().toLowerCase().contains(text.toLowerCase())) {
+					result.add(km);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
-		    return result;
+	public List<KhuyenMai> searhMa(String text) {
+		List<KhuyenMai> result = new ArrayList<>();
+		try {
+			List<KhuyenMai> armt = khuyenMaiService.getAll();
+			for (KhuyenMai km : armt) {
+				if (km.getMaKM().toLowerCase().contains(text.toLowerCase())) {
+					result.add(km);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<KhuyenMai> searhNgayBatDau(String text) {
+		List<KhuyenMai> result = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+		try {
+			List<KhuyenMai> armt = khuyenMaiService.getAll();
+			for (KhuyenMai km : armt) {
+				if (km.getThoiGianBatDau() != null) {
+					String formatted = sdf.format(km.getThoiGianBatDau());
+					if (formatted.contains(text)) {
+						result.add(km);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-	
+		return result;
+	}
+
+	public List<KhuyenMai> searchNgayKetThuc(String text) {
+		List<KhuyenMai> result = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+		try {
+			List<KhuyenMai> armt = khuyenMaiService.getAll();
+			for (KhuyenMai km : armt) {
+				if (km.getThoiGianKetThuc() != null) {
+					String formatted = sdf.format(km.getThoiGianKetThuc());
+					if (formatted.contains(text)) {
+						result.add(km);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public List<KhuyenMai> searchLocNgayKetThuc(Date time) {
+		List<KhuyenMai> result = new ArrayList<>();
+		try {
+			List<KhuyenMai> armt = khuyenMaiService.getAll();
+			for (KhuyenMai km : armt) {
+				if (km.getThoiGianKetThuc() != null &&
+						km.getThoiGianKetThuc().before(time)) {
+					result.add(km);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 }

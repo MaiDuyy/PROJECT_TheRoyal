@@ -44,8 +44,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import Format_UI.Table;
-import connectDB.ConnectDB;
+import gui.format_ui.Table;
+
 import controller.TimPhong;
 import dao.*;
 

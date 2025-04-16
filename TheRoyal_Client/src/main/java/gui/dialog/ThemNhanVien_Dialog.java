@@ -29,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import UI.QLNhanVien_GUI;
+import gui.ui.QLNhanVien_GUI;
 import dao.NhanVienDAO;
 import dao.TaiKhoanDAO;
 import entity.NhanVien;
@@ -37,7 +37,12 @@ import entity.TaiKhoan;
 import formatdate.FormatDate;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
-import validata.Validation;
+import gui.validata.Validation;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.NhanVienService;
+
+import static formatdate.FormatDate.formatDate;
 
 public class ThemNhanVien_Dialog extends JDialog {
 	private ButtonCustom btnThem, btnDong;
@@ -54,12 +59,15 @@ public class ThemNhanVien_Dialog extends JDialog {
 	private ArrayList<TaiKhoan> dsTk;
 	private QLNhanVien_GUI home ; 
 	private JTextField txtEmail;
+
+	private NhanVienService nhanVienService = RMIClient.getInstance().getNhanVienService();
+	@SneakyThrows
 	public ThemNhanVien_Dialog(javax.swing.JInternalFrame parent, JFrame owner, boolean modal) {
         super(owner, modal);
         GuiNhanVien();
         setLocationRelativeTo(null);
         home = (QLNhanVien_GUI) parent;
-        dsNV = home.nhanviendao.getListNhanVien();
+        dsNV = (ArrayList<NhanVien>) nhanVienService.getAll();
     }
 
 	private void GuiNhanVien() {
@@ -207,16 +215,16 @@ public class ThemNhanVien_Dialog extends JDialog {
 
 				try {
 
-					boolean result = home.nhanviendao.insert(nv);
+					boolean result = home.nhanviendao.save(nv);
 					String maNV = home.nhanviendao.getLatestID();
 					txtMaNV.setText(String.valueOf(maNV));
 					if (result == true) {
-						String ngaysinh = home.formatDate(nv.getNgaySinh());
-						String ngayvaolam = home.formatDate(nv.getNgayVaoLam());
+						String ngaysinh = formatDate(nv.getNgaySinh());
+						String ngayvaolam = formatDate(nv.getNgayVaoLam());
 						String gioiTinh = nv.isGioiTinh() ? "Nữ" : "Nam";
 						
 						home.tableModelNV.addRow(
-								new Object[] { maNV, nv.getTenNV(), gioiTinh, nv.getcCCD(), ngaysinh, nv.getsDT(),
+								new Object[] { maNV, nv.getTenNV(), gioiTinh, nv.getCCCD(), ngaysinh, nv.getSDT(),
 										 nv.getEmail(), ngayvaolam,null, nv.getChucVu(), nv.getTrangThai() });
 						home.thongBao(0, "Thêm nhân viên thành công");
 						home.showMessage("Thêm nhân viên thành công", SUCCESS);
@@ -237,7 +245,7 @@ public class ThemNhanVien_Dialog extends JDialog {
 //		String matkhau = txtMatKhau.getText().trim();
 		String loaiTk = cboChucVu.getSelectedItem().toString().trim();
 
-		TaiKhoan tk = new TaiKhoan("", "", loaiTk);
+		TaiKhoan tk = new TaiKhoan("", "", loaiTk, null);
 		return tk;
 	}
 
@@ -261,7 +269,7 @@ public class ThemNhanVien_Dialog extends JDialog {
 		// NhanVien nv = new NhanVien(maNV, tenNV, gioiTinh, cccd, ngaysinh, sdt,
 		// ngayvaolam, chucvu, trangthai);
 		NhanVien nv = new NhanVien(maNV, tenNV, gioiTinh, cccd, ngaysinh, sdt, email, null, ngayvaolam,
-				chucvu, trangthai);
+				chucvu, trangthai, null);
 		return nv;
 	}
 
@@ -277,7 +285,7 @@ public class ThemNhanVien_Dialog extends JDialog {
 		Date ngayVaoLam = FormatDate.convertFromJAVADateToSQLDate(chonNgayVaoLam.getDate());
 		Date ngayHienTai = Date.valueOf(java.time.LocalDate.now());
 
-		String nS = FormatDate.formatDate(ngaySinh);
+		String nS = formatDate(ngaySinh);
 //		String tenDangNhap = txtMaTK.getText().trim();
 		String email = txtEmail.getText().trim();
 
@@ -297,7 +305,7 @@ public class ThemNhanVien_Dialog extends JDialog {
 		} else {
 			if (type == ADD) {
 				for (NhanVien item : dsNV) {
-					if (item.getsDT().equalsIgnoreCase(sDT)) {
+					if (item.getSDT().equalsIgnoreCase(sDT)) {
 						home.showMessage("Lỗi: Số điện thoại đã tồn tại ", txtSDT);
 						return false;
 					}
@@ -312,7 +320,7 @@ public class ThemNhanVien_Dialog extends JDialog {
 		} else {
 			if (type == ADD) {
 				for (NhanVien item : dsNV) {
-					if (item.getcCCD().equalsIgnoreCase(cccd)) {
+					if (item.getCCCD().equalsIgnoreCase(cccd)) {
 						home.showMessage("Lỗi: CMND hoặc CCCD đã tồn tại", txtCCCD);
 						return false;
 					}

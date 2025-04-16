@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import UI.QLNhanVien_GUI;
+import gui.ui.QLNhanVien_GUI;
 import dao.NhanVienDAO;
 import dao.TaiKhoanDAO;
 import entity.NhanVien;
@@ -34,7 +34,9 @@ import entity.TaiKhoan;
 import formatdate.FormatDate;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
-import validata.Validation;
+import gui.validata.Validation;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
 
 public class SuaNhanVien_Dialog extends JDialog {
 	private JTextField txtTenNV;
@@ -53,7 +55,7 @@ public class SuaNhanVien_Dialog extends JDialog {
 	private JComboBox<String> cboMaTK;
 	private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
 	public JFrame popup = new JFrame();
-	private ArrayList<NhanVien> dsNV;
+	private ArrayList<NhanVien> dsNV = (ArrayList<NhanVien>) RMIClient.getInstance().getNhanVienService();
 	private ArrayList<TaiKhoan> dsTk;
 	private QLNhanVien_GUI home ; 
 	private JTextField txtMaTK;
@@ -62,16 +64,16 @@ public class SuaNhanVien_Dialog extends JDialog {
         GuiNhanVien();
         setLocationRelativeTo(null);
         home = (QLNhanVien_GUI) parent;
-        dsNV = home.nhanviendao.getListNhanVien();
+        dsNV = (ArrayList<NhanVien>) home.nhanviendao.getAll();
         NhanVien nv = home.getNhanVienSelect();
         txtMaNV.setText(nv.getMaNV());
         txtTenNV.setText(nv.getTenNV());
-		txtCCCD.setText(nv.getcCCD());
-		cboChucVu.setSelectedItem(nv.getcCCD());
+		txtCCCD.setText(nv.getCCCD());
+		cboChucVu.setSelectedItem(nv.getCCCD());
 		chonNgaySinh.setDate(nv.getNgaySinh());
 		chonNgayVaoLam.setDate(nv.getNgayVaoLam());
 		cboGioiTinh.setSelectedItem(nv.isGioiTinh());
-		txtSDT.setText(nv.getsDT());
+		txtSDT.setText(nv.getSDT());
 		txtTrangThai.setText(nv.getTrangThai());
 		txtMaTK.setText(nv.getTaiKhoan().getMaTK());
 		txtEmail.setText(nv.getEmail());
@@ -211,10 +213,11 @@ public class SuaNhanVien_Dialog extends JDialog {
 	
 	
 	
+	@SneakyThrows
 	private void themNV() {
 		if (validData(UPDATE)) {
 			NhanVien nv = dataNVien();
-	        NhanVienDAO.getInstance().update(nv);
+			RMIClient.getInstance().getNhanVienService().update(nv);
 	        this.dispose();
 	        home.huytim();
 	        home.thongBao(0, "Cập nhật thành công");
@@ -253,7 +256,7 @@ public class SuaNhanVien_Dialog extends JDialog {
 		} else {
 			if (type == ADD) {
 				for (NhanVien item : dsNV) {
-					if (item.getsDT().equalsIgnoreCase(sDT)) {
+					if (item.getSDT().equalsIgnoreCase(sDT)) {
 						home.showMessage("Lỗi: Số điện thoại đã tồn tại ", txtSDT);
 						return false;
 					}
@@ -268,7 +271,7 @@ public class SuaNhanVien_Dialog extends JDialog {
 		} else {
 			if (type == ADD) {
 				for (NhanVien item : dsNV) {
-					if (item.getcCCD().equalsIgnoreCase(cccd)) {
+					if (item.getCCCD().equalsIgnoreCase(cccd)) {
 						home.showMessage("Lỗi: CMND hoặc CCCD đã tồn tại", txtCCCD);
 						return false;
 					}
@@ -321,7 +324,7 @@ public class SuaNhanVien_Dialog extends JDialog {
 		String chucvu = cboChucVu.getSelectedItem().toString().trim();
 
 		NhanVien nv = new NhanVien(maNV, tenNV, gioiTinh, cccd, ngaysinh, sdt, email, new TaiKhoan(matk), ngayvaolam,
-				chucvu, trangthai);
+				chucvu, trangthai, null );
 		return nv;
 	}
 }

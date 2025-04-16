@@ -19,15 +19,18 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import UI.QLKhachHang_GUI;
-import UI.QLNhanVien_GUI;
-import UI.QLSanPham_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.QLNhanVien_GUI;
+import gui.ui.QLSanPham_GUI;
 import dao.KhachHangDAO;
 import dao.SanPhamDAO;
 import entity.KhachHang;
 import entity.SanPham;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.SanPhamService;
 
 public class ThemSanPham_Dialog extends JDialog {
 
@@ -42,12 +45,15 @@ public class ThemSanPham_Dialog extends JDialog {
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private QLSanPham_GUI home;
 
+    private SanPhamService sanPhamService = RMIClient.getInstance().getSanPhamService();
+
+    @SneakyThrows
     public ThemSanPham_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLSanPham_GUI) parent;
-        dsSP = SanPhamDAO.getInstance().getDanhSachSanPham();
+        dsSP = (ArrayList<SanPham>) sanPhamService.getAll();
 
     }
 
@@ -152,8 +158,8 @@ public class ThemSanPham_Dialog extends JDialog {
         sp = dataDichVu();
         if (validData(ADD)) {
             try {
-                boolean result = SanPhamDAO.getInstance().insert(sp);
-                String maKH = SanPhamDAO.getInstance().getLatestID();
+                boolean result = sanPhamService.save(sp);;
+                String maKH = sanPhamService.getLatestID();
                 txtMa.setText(String.valueOf(maKH));
                 if (result == true) {
                     double number = sp.getGiaSP();
@@ -262,7 +268,7 @@ public class ThemSanPham_Dialog extends JDialog {
             }
         }
 
-        SanPham dv = new SanPham(maDV, tenDV, moTaDV, giaTri, soLuong);
+        SanPham dv = new SanPham(maDV, tenDV, moTaDV, giaTri, soLuong , null ,null);
         return dv;
     }
 

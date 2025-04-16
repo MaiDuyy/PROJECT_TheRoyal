@@ -17,14 +17,14 @@ import javax.swing.table.DefaultTableModel;
 
 import dao.*;
 import entity.*;
-import Format_UI.ButtonCellEditor;
-import Format_UI.ButtonCellRenderer;
-import Format_UI.MaterialTabbed;
-import Format_UI.RoundedBorder;
-import Format_UI.SpinnerCellEditor;
-import Format_UI.SpinnerCellRenderer;
-import Format_UI.Table;
-import connectDB.ConnectDB;
+import gui.format_ui.ButtonCellEditor;
+import gui.format_ui.ButtonCellRenderer;
+import gui.format_ui.MaterialTabbed;
+import gui.format_ui.RoundedBorder;
+import gui.format_ui.SpinnerCellEditor;
+import gui.format_ui.SpinnerCellRenderer;
+import gui.format_ui.Table;
+
 import dao.DichVuDAO;
 
 import javax.swing.GroupLayout;

@@ -29,6 +29,8 @@ import gui.component.InputForm;
 import gui.component.NumericDocumentFilter;
 import gui.validata.BCrypt;
 import gui.validata.Validation;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
 
 public class Profile_Dialog_GUI extends JDialog implements ActionListener {
 
@@ -126,6 +128,7 @@ public class Profile_Dialog_GUI extends JDialog implements ActionListener {
         this.setLocationRelativeTo(null);
     }
 
+    @SneakyThrows
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == cancel) {
@@ -160,9 +163,11 @@ public class Profile_Dialog_GUI extends JDialog implements ActionListener {
                 } else {
                     String sdt = phone.getText();
                     NhanVien nvdto = new NhanVien(nv.getMaNV()	,nv.getTenNV() 	, nv.isGioiTinh(), nv.getCCCD(), nv.getNgaySinh(), sdt,
-                    		nv.getEmail(), new TaiKhoan(nv.getTaiKhoan().getMaTK()), nv.getNgayVaoLam(), nv.getChucVu(), nv.getTrangThai());
-                    NhanVienDAO.getInstance().update(nvdto);
-                    NhanVienDAO.getInstance().getListNhanVien();QLNhanVien_GUI.DocDuLieuNVVaoTable();
+                    		nv.getEmail(), new TaiKhoan(nv.getTaiKhoan().getMaTK()), nv.getNgayVaoLam(), nv.getChucVu(), nv.getTrangThai() ,null);
+                    RMIClient.getInstance().getNhanVienService().update(nvdto);
+                    RMIClient.getInstance().getNhanVienService().getAll();
+
+                    QLNhanVien_GUI.DocDuLieuNVVaoTable();
                     JOptionPane.showMessageDialog(this, "Cập nhật thành công");
                 }
             }
@@ -174,10 +179,10 @@ public class Profile_Dialog_GUI extends JDialog implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Email không được rỗng và phải đúng định dạng", "Chỉnh sửa email", JOptionPane.WARNING_MESSAGE);
                 } else {
                     String emailString = email.getText();
-                    NhanVien nvdto = new NhanVien(nv.getMaNV()	,nv.getTenNV() 	, nv.isGioiTinh(), nv.getcCCD(), nv.getNgaySinh(), nv.getsDT(), 
-                    		emailString, new TaiKhoan(nv.getTaiKhoan().getMaTK()), nv.getNgayVaoLam(), nv.getChucVu(), nv.getTrangThai());
-                    NhanVienDAO.getInstance().update(nvdto);
-                    NhanVienDAO.getInstance().getListNhanVien();
+                    NhanVien nvdto = new NhanVien(nv.getMaNV()	,nv.getTenNV() 	, nv.isGioiTinh(), nv.getCCCD(), nv.getNgaySinh(), nv.getSDT(),
+                    		emailString, new TaiKhoan(nv.getTaiKhoan().getMaTK()), nv.getNgayVaoLam(), nv.getChucVu(), nv.getTrangThai() ,null);
+                    RMIClient.getInstance().getNhanVienService().update(nvdto);
+                    RMIClient.getInstance().getNhanVienService().getAll();
                     QLNhanVien_GUI.DocDuLieuNVVaoTable();
                     JOptionPane.showMessageDialog(this, "Cập nhật thành công");
 

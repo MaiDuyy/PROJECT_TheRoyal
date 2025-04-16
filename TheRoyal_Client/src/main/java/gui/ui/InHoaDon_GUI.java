@@ -4,6 +4,11 @@ import entity.*;
 import dao.CTHoaDonDAO;
 import dao.DonDatPhongDAO;
 import dao.HoaDonDAO;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.CTHoaDonService;
+import service.DonDatPhongService;
+import service.HoaDonService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,17 +29,21 @@ public class InHoaDon_GUI implements Printable {
     private final SimpleDateFormat formatTime = new SimpleDateFormat("hh:mm:ss");
     
     private final DecimalFormat df = new DecimalFormat("#,##0");
-    private ArrayList<CTHoaDonDetail> dsCT;
-    private HoaDonDAO hoadondao;
-    private CTHoaDonDAO cthoadondao;
+    private ArrayList<CTHoaDon> dsCT;
+    private HoaDonService hoaDonService;
+    private CTHoaDonService ctHoaDonService;
+
+    private DonDatPhongService donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
+
 
     public InHoaDon_GUI(HoaDon hoaDon) {
         this.hoaDon = hoaDon;
-        this.hoadondao = new HoaDonDAO();
-        this.cthoadondao = new CTHoaDonDAO();
+        this.hoaDonService = RMIClient.getInstance().getHoaDonService();
+        this.ctHoaDonService = RMIClient.getInstance().getCtHoaDonService();
         
     }
 
+    @SneakyThrows
     @Override
     public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
         if (pageIndex > 0) {
@@ -45,8 +54,8 @@ public class InHoaDon_GUI implements Printable {
         g2.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
         int y = 20;
         int yShift = 15; 
-        NhanVien nhanVienDangNhap = LoginFrame.getNhanVienDangNhap();
-        DonDatPhong ddp = DonDatPhongDAO.getInstance().getDonDatPhongTheoMaHD(hoaDon.getMaHD());
+        NhanVien nhanVienDangNhap = Login.getNhanVienDangNhap();
+        DonDatPhong ddp = donDatPhongService.getDonDatPhongTheoMaHD(hoaDon.getMaHD());
         g2.setFont(new Font("Monospaced", Font.PLAIN, 9));
         y += yShift + 45;
 
@@ -71,15 +80,15 @@ public class InHoaDon_GUI implements Printable {
         g2.drawString("----------------------------------------------------", 12, y);
         y += yShift;
 
-        dsCT = cthoadondao.getListSPDVByMaCTHD(hoaDon.getMaHD());
-        for (CTHoaDonDetail chiTiet : dsCT) {
-            String tenMatHangDV = chiTiet.getTenDV();
-            double giaDV = chiTiet.getGiaDV();
+        dsCT = (ArrayList<CTHoaDon>) ctHoaDonService.getListCTHoaDonByMaHD(hoaDon.getMaHD());
+        for (CTHoaDon chiTiet : dsCT) {
+            String tenMatHangDV = chiTiet.getDichVu().getTenDV();
+            double giaDV = chiTiet.getDichVu().getGiaDV();
             int soLuongDV = chiTiet.getSoLuongDV();
             double thanhTienDV = giaDV * soLuongDV;
             
-            String tenMatHangSP = chiTiet.getTenSP();
-            double giaSP = chiTiet.getGiaSP();
+            String tenMatHangSP = chiTiet.getSanPham().getTenSP();
+            double giaSP = chiTiet.getSanPham().getGiaSP();
             int soLuongSP = chiTiet.getSoLuongSP();
             double thanhTienSP = giaSP * soLuongSP;
 

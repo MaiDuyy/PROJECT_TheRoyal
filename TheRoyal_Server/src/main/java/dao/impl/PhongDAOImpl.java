@@ -2,9 +2,7 @@ package dao.impl;
 
 import dao.PhongDAO;
 import entity.Phong;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -105,6 +103,49 @@ public class PhongDAOImpl extends GenericDAOImpl<Phong, String> implements Phong
         Long count = em.createQuery("SELECT COUNT(p) FROM Phong p", Long.class)
                 .getSingleResult();
         return count.intValue();
+    }
+
+    @Override
+    public String getLatestID() {
+        String id = null;
+        try {
+            String jpql = "SELECT p.maPhong FROM Phong p ORDER BY p.maPhong DESC";
+
+            id = em.createQuery(jpql, String.class)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            id = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    @Override
+    public boolean updateTinhTrangPhong(Phong phong, String trangThai) {
+
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
+        try {
+            tx.begin();
+            String jpql = "UPDATE Phong p SET p.trangThai = :trangThai WHERE p.maPhong = :maPhong";
+
+            int rows = em.createQuery(jpql)
+                    .setParameter("trangThai", trangThai)
+                    .setParameter("maPhong", phong.getMaPhong())
+                    .executeUpdate();
+
+            tx.commit();
+            updated = rows > 0;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        }
+        return updated;
     }
 
 

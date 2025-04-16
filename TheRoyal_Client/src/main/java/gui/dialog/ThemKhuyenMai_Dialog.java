@@ -29,6 +29,9 @@ import entity.KhuyenMai;
 import formatdate.FormatDate;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.KhuyenMaiService;
 
 public class ThemKhuyenMai_Dialog extends JDialog {
 
@@ -41,12 +44,15 @@ public class ThemKhuyenMai_Dialog extends JDialog {
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private QLUuDai_GUI home;
 
+    private KhuyenMaiService khuyenMaiService = RMIClient.getInstance().getKhuyenMaiService();
+
+    @SneakyThrows
     public ThemKhuyenMai_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLUuDai_GUI) parent;
-        dsKM = KhuyenMaiDAO.getInstance().getListUuDai();
+        dsKM = (ArrayList<KhuyenMai>) khuyenMaiService.getAll();
 
     }
 
@@ -169,12 +175,12 @@ public class ThemKhuyenMai_Dialog extends JDialog {
         if(validData(ADD)) {
         	try {
                
-               boolean result = KhuyenMaiDAO.getInstance().insert(km);
-                 String maKM = KhuyenMaiDAO.getInstance().getLatestID();
+               boolean result =khuyenMaiService.save(km);
+                 String maKM = khuyenMaiService.getLatestID();
                  	txtMa.setText(String.valueOf(maKM));
                   if (result == true) {
-                      String ngaysinh = home.formatDate(km.getNgayBatDau());
-                      String ngayvaolam = home.formatDate(km.getNgayKetThuc());
+                      String ngaysinh = home.formatDate(km.getThoiGianBatDau());
+                      String ngayvaolam = home.formatDate(km.getThoiGianKetThuc());
                       float giaTri = Float.parseFloat(txtGiaTri.getText());
                       String giaTriPhanTram = String.format("%.0f%%", giaTri);
 //                      String gioiTinh = nv.isGioiTinh() ? "Nữ" : "Nam";
@@ -319,7 +325,7 @@ public class ThemKhuyenMai_Dialog extends JDialog {
          } 
      
 
-        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri , ngayBD, ngayKT, moTa, soluong);
+        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri , ngayBD, ngayKT, moTa, soluong,null, null );
         return ud;
     }
     

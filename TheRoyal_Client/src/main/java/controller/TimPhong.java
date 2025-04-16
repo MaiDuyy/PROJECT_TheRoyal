@@ -1,99 +1,118 @@
 package controller;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-import dao.PhongDAO;
-import dao.TaiKhoanDAO;
-import entity.LoaiPhong;
 import entity.Phong;
-import entity.TaiKhoan;
+import rmi.RMIClient;
+import service.PhongService;
 
 public class TimPhong {
 	public static TimPhong getInstance() {
-        return new TimPhong();
-    }
-private String loaiPhong;
-	
-	 public ArrayList<Phong> searchTatCa(String text) {
-	        ArrayList<Phong> result = new ArrayList<>();
-	        ArrayList<Phong> armt = PhongDAO.getInstance().getListPhong();
-	        for (var ncc : armt) {
-	        	setLoaiPhong(ncc);
-	            if (ncc.getTenPhong().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getMaPhong().toLowerCase().contains(text.toLowerCase())
-	                    ||  loaiPhong.toLowerCase().contains(text.toLowerCase())
-	                    
-	                    
-	            		) {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 private void setLoaiPhong(Phong ph) {
-	        if (ph.getLoaiPhong().getMaLoai().equals("LP01")) {
-	            loaiPhong = "Phòng Đơn";
-	        }else if (ph.getLoaiPhong().getMaLoai().equals("LP02")) {
-	            loaiPhong = "Phòng Đôi";
-	        }else if (ph.getLoaiPhong().getMaLoai().equals("LP03")) {
-	            loaiPhong = "Phòng Penthouse";
-	        }
-	    }
-	 
-	 public ArrayList<Phong> searchTen(String text) {
-	        ArrayList<Phong> result = new ArrayList<>();
-	        ArrayList<Phong> armt = PhongDAO.getInstance().getListPhong();
-	        for (var ncc : armt) {
-	            if (ncc.getTenPhong().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 public ArrayList<Phong> searhMa(String text) {
-	        ArrayList<Phong> result = new ArrayList<>();
-	        ArrayList<Phong> armt = PhongDAO.getInstance().getListPhong();
-	        for (var ncc : armt ) {
-	            if (ncc.getMaPhong().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        
-	        
-	        return result;
-	    }
-	 public ArrayList<Phong> searchTrangThai(String text) {
-	        ArrayList<Phong> result = new ArrayList<>();
-	        ArrayList<Phong> armt = PhongDAO.getInstance().getListPhong();
-	        for (var ncc : armt ) {
-	            if (ncc.getTrangThai().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        
-	        
-	        return result;
-	    }
-	 
-	 
-	 public ArrayList<Phong> searchPhongVip(String text) {
-	        ArrayList<Phong> result = new ArrayList<>();
-	        ArrayList<Phong> armt = PhongDAO.getInstance().getListPhong();
-	        for (var ncc : armt ) {
-	        	setLoaiPhong(ncc);
-	            if (loaiPhong.toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        
-	        
-	        return result;
-	    }
-	
-	
+		return new TimPhong();
+	}
+
+	private final PhongService phongService = RMIClient.getInstance().getPhongService();
+
+	private String loaiPhong;
+
+	public List<Phong> searchTatCa(String text) {
+		List<Phong> result = new ArrayList<>();
+		try {
+			List<Phong> armt = phongService.getAll();
+			for (Phong p : armt) {
+				setLoaiPhong(p);
+				if (p.getTenPhong().toLowerCase().contains(text.toLowerCase())
+						|| p.getMaPhong().toLowerCase().contains(text.toLowerCase())
+						|| loaiPhong.toLowerCase().contains(text.toLowerCase())) {
+					result.add(p);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<Phong> searchTen(String text) {
+		List<Phong> result = new ArrayList<>();
+		try {
+			List<Phong> armt = phongService.getAll();
+			for (Phong p : armt) {
+				if (p.getTenPhong().toLowerCase().contains(text.toLowerCase())) {
+					result.add(p);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<Phong> searhMa(String text) {
+		List<Phong> result = new ArrayList<>();
+		try {
+			List<Phong> armt = phongService.getAll();
+			for (Phong p : armt) {
+				if (p.getMaPhong().toLowerCase().contains(text.toLowerCase())) {
+					result.add(p);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<Phong> searchTrangThai(String text) {
+		List<Phong> result = new ArrayList<>();
+		try {
+			List<Phong> armt = phongService.getAll();
+			for (Phong p : armt) {
+				if (p.getTrangThai().toLowerCase().contains(text.toLowerCase())) {
+					result.add(p);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<Phong> searchPhongVip(String text) {
+		List<Phong> result = new ArrayList<>();
+		try {
+			List<Phong> armt = phongService.getAll();
+			for (Phong p : armt) {
+				setLoaiPhong(p);
+				if (loaiPhong.toLowerCase().contains(text.toLowerCase())) {
+					result.add(p);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	private void setLoaiPhong(Phong ph) {
+		if (ph.getLoaiPhong() == null || ph.getLoaiPhong().getMaLoai() == null) {
+			loaiPhong = "";
+			return;
+		}
+		switch (ph.getLoaiPhong().getMaLoai()) {
+			case "LP01":
+				loaiPhong = "Phòng Đơn";
+				break;
+			case "LP02":
+				loaiPhong = "Phòng Đôi";
+				break;
+			case "LP03":
+				loaiPhong = "Phòng Penthouse";
+				break;
+			default:
+				loaiPhong = "";
+		}
+	}
 }

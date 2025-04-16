@@ -27,6 +27,9 @@ public class LoaiPhong implements Serializable {
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Phong> phong;
 
+    public LoaiPhong(String maLoai) {
+        this.maLoai = maLoai;
+    }
 
     public LoaiPhong(String maLoai, String tenLoai) {
         this.maLoai = maLoai;

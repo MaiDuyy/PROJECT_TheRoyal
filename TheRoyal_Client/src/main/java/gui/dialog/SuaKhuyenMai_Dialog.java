@@ -25,9 +25,9 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import UI.QLKhachHang_GUI;
-import UI.QLNhanVien_GUI;
-import UI.QLUuDai_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.QLNhanVien_GUI;
+import gui.ui.QLUuDai_GUI;
 import dao.DichVuDAO;
 import dao.KhachHangDAO;
 import dao.KhuyenMaiDAO;
@@ -37,6 +37,9 @@ import entity.KhuyenMai;
 import formatdate.FormatDate;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.KhuyenMaiService;
 
 public class SuaKhuyenMai_Dialog extends JDialog {
 
@@ -49,23 +52,26 @@ public class SuaKhuyenMai_Dialog extends JDialog {
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private QLUuDai_GUI home;
 
+    private KhuyenMaiService khuyenMaiService = RMIClient.getInstance().getKhuyenMaiService();
+
+    @SneakyThrows
     public SuaKhuyenMai_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLUuDai_GUI) parent;
-        dsKM = KhuyenMaiDAO.getInstance().getListUuDai();
+        dsKM = (ArrayList<KhuyenMai>) khuyenMaiService.getAll();
         KhuyenMai km = home.getSanPhanSelect();
         txtMa.setText(km.getMaKM());
         txtTen.setText(km.getTenKM()); 
         
-        double gia = km.getGiaTriKM();
+        double gia = km.getGiaTriKhuyenMai();
         txtGiaTri.setText(Double.toString(gia).replace(".0", ""));
         txtMoTa.setText(km.getMoTaKM());
 
         
-        ngaybatdau.setDate(km.getNgayBatDau());
-        ngayketthuc.setDate(km.getNgayKetThuc());
+        ngaybatdau.setDate(km.getThoiGianBatDau());
+        ngayketthuc.setDate(km.getThoiGianKetThuc());
         
     
         int soluong = km.getSoLuong();
@@ -184,10 +190,11 @@ public class SuaKhuyenMai_Dialog extends JDialog {
         staffInfoPanel.add(btnThem);
 
     }
+    @SneakyThrows
     private void themNV() {
     	 if(validData(UPDATE)) {
         KhuyenMai nv = dataUuDai();
-        KhuyenMaiDAO.getInstance().update(nv);
+        khuyenMaiService.update(nv);
         this.dispose();
         home.huytim();
         home.thongBao(0, "Cập nhật thành công");
@@ -316,7 +323,7 @@ public class SuaKhuyenMai_Dialog extends JDialog {
          } 
      
 
-        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri , ngayBD, ngayKT, moTa, soluong);
+        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri , ngayBD, ngayKT, moTa, 0 , null ,null );
         return ud;
     }
     

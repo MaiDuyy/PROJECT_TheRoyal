@@ -19,14 +19,18 @@ import javax.swing.border.TitledBorder;
 
 import com.toedter.calendar.JDateChooser;
 
-import UI.QLNhanVien_GUI;
+import gui.ui.QLNhanVien_GUI;
 import dao.NhanVienDAO;
 import dao.TaiKhoanDAO;
 import entity.NhanVien;
 import entity.TaiKhoan;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
-import validata.BCrypt;
+import gui.validata.BCrypt;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.NhanVienService;
+import service.TaiKhoanService;
 
 public class ThemTaiKhoan_Dialog extends JDialog {
 
@@ -42,6 +46,11 @@ public class ThemTaiKhoan_Dialog extends JDialog {
 	private ArrayList<TaiKhoan> dsTk;
 	private QLNhanVien_GUI home;
 
+	private TaiKhoanService taiKhoanService = RMIClient.getInstance().getTaiKhoanService();
+
+	private NhanVienService nhanVienService = RMIClient.getInstance().getNhanVienService();
+
+	@SneakyThrows
 	public ThemTaiKhoan_Dialog(javax.swing.JInternalFrame parent, JFrame owner, boolean modal) {
 		super(owner, modal);
 		GuiNhanVien();
@@ -50,7 +59,7 @@ public class ThemTaiKhoan_Dialog extends JDialog {
 		NhanVien nv = home.getNhanVienSelect();
 		txtTenNV.setText(nv.getTenNV());
 		txtChucVu.setText(nv.getChucVu());
-		dsTk = TaiKhoanDAO.getInstance().getAllTaiKhoan();
+		dsTk = (ArrayList<TaiKhoan>) taiKhoanService.getAll();
 	}
 
 	private void GuiNhanVien() {
@@ -140,16 +149,16 @@ public class ThemTaiKhoan_Dialog extends JDialog {
 					return;
 
 				String maNV = home.getNhanVienSelect().getMaNV();
-				String existingMaTK = NhanVienDAO.getInstance().getTaiKhoanCuaNhanVien(maNV);
+				String existingMaTK = nhanVienService.getTaiKhoanCuaNhanVien(maNV);
 				if (existingMaTK != null && !existingMaTK.isEmpty()) {
 					home.thongBao(3, "Nhân viên này đã có tài khoản! Không thể thêm tài khoản mới.");
 					return;
 				}
 
-				boolean result = TaiKhoanDAO.getInstance().insert(tk);
+				boolean result = taiKhoanService.save(tk);
 
 				if (result) {
-					boolean ktra = NhanVienDAO.getInstance().capNhatTaiKhoanNhanVien(maNV, tk.getMaTK());
+					boolean ktra = nhanVienService.capNhatTaiKhoanNhanVien(maNV, tk.getMaTK());
 
 					if (ktra) {
 						home.tableModelTK.addRow(new Object[] { tk.getMaTK(), tk.getMatKhau(), tk.getLoaiTaiKhoan() });
@@ -205,7 +214,7 @@ public class ThemTaiKhoan_Dialog extends JDialog {
 		
 	        String hash = BCrypt.hashpw(matkhau, BCrypt.gensalt(12));
 
-		TaiKhoan tk = new TaiKhoan(maTk, hash, loaiTk);
+		TaiKhoan tk = new TaiKhoan(maTk, hash, loaiTk , null);
 		return tk;
 	}
 }

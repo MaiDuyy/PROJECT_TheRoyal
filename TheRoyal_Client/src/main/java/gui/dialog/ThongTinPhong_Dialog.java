@@ -37,6 +37,11 @@ import entity.HoaDon;
 import entity.KhachHang;
 import entity.Phong;
 import formatdate.FormatDate;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.DonDatPhongService;
+import service.HoaDonService;
+import service.PhongService;
 
 public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 
@@ -55,6 +60,11 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 	private JPanel pn_p_bottom;
 	private ThanhToan_GUI	thanhtoandialog ;
 	private DanhSachPhong_GUI home;
+
+	private PhongService phongService = RMIClient.getInstance().getPhongService();
+
+	private DonDatPhongService donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
+
 	public ThongTinPhong_Dialog( Phong phong, DonDatPhong ddp, DanhSachPhong_GUI parent, Frame owner  , boolean modal) {
 		super(owner, modal);
 		home = (DanhSachPhong_GUI) parent;
@@ -65,9 +75,10 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 	}
 
 
+	@SneakyThrows
 	private void showRoomInfoDialog(Phong phong) {
 		List<Phong> dsPhong = null;
-		dsPhong = PhongDAO.getInstance().getListPhong();
+		dsPhong =phongService.getAll();
 		this.phong = phong;
 		getContentPane().setBackground(new Color(255, 255, 255));
 		setTitle("Thông tin phòng");
@@ -186,10 +197,10 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 
 		java.util.Date utilDate = home.date_DSPhong.getDate();
 		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-		String trangThai = DonDatPhongDAO.getInstance().getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlDate);
+		String trangThai = donDatPhongService.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlDate);
 		if ("Đang ở".equals(trangThai)) {
 			String maPhong = phong.getMaPhong();
-			DonDatPhong ddp =  DonDatPhongDAO.getInstance().getDonDatPhongTheoPhongVaTrangThai(maPhong, trangThai);
+			DonDatPhong ddp =  donDatPhongService.getDonDatTruocTheoPhongVaTrangThai(maPhong, trangThai);
 
 			if (ddp.getThoiGianTraPhong() != null) {
 				pn_p_bottom.add(btn_ThanhToan);
@@ -206,10 +217,11 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 				});
 
 				btn_SuDungDV.addActionListener(new ActionListener() {
+					@SneakyThrows
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						HoaDonDAO HDDAO = new HoaDonDAO();
-						HoaDon hd = HDDAO.getHoaDonTheoDonDatPhong(ddp.getMaDDP());
+						HoaDonService hoaDonService = RMIClient.getInstance().getHoaDonService();
+						HoaDon hd = hoaDonService.getHoaDonTheoDonDatPhong(ddp.getMaDDP());
 						if (hd != null) {
 							getdichvusanpham(phong,ddp);
 //							dichvusanpham.dispose();
@@ -304,14 +316,15 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		} else  {
 			pn_p_bottom.add(btn_donDep);
 			btn_donDep.addActionListener(new ActionListener() {
+				@SneakyThrows
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					DonDatPhongDAO ddpDao = new DonDatPhongDAO();
+
 					String maPhong = phong.getMaPhong();
-					DonDatPhong ddp = ddpDao.getDonDatPhongTheoPhongVaTrangThai(maPhong, trangThai);
-					PhongDAO.getInstance().updateTinhTrang(phong, "Phòng trống");
-					ddpDao.updateTinhTrang(ddp.getMaDDP(), "Hoàn tất");
+					DonDatPhong ddp = donDatPhongService.getDonDatTruocTheoPhongVaTrangThai(maPhong, trangThai);
+					phongService.updateTinhTrangPhong(phong, "Phòng trống");
+					donDatPhongService.updateTinhTrang(ddp.getMaDDP(), "Hoàn tất");
 					phong.setTrangThai("Phòng trống");
 					dispose();
 
@@ -403,6 +416,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 	
 	
 	
+	@SneakyThrows
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btn_NhanPhong)) {
@@ -444,7 +458,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 //		}
 
 		if (e.getSource().equals(btn_VaoThue)) {
-			List<Phong> dsPhong = PhongDAO.getInstance().getListPhong();
+			List<Phong> dsPhong = phongService.getAll();
 			for (Phong phong : dsPhong) {
 				String maPhong = phong.getMaPhong();
 				Phong p = PhongDAO.getInstance().getPhongByMaPhong(maPhong);
@@ -458,7 +472,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		}
 
 		if (e.getSource().equals(btn_DatTruoc)) {
-			List<Phong> dsPhong = PhongDAO.getInstance().getListPhong();
+			List<Phong> dsPhong = phongService.getAll();
 			for (Phong phong : dsPhong) {
 				String maPhong = phong.getMaPhong();
 				Phong p = PhongDAO.getInstance().getPhongByMaPhong(maPhong);

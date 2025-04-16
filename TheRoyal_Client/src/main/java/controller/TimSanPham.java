@@ -1,59 +1,63 @@
 package controller;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-import dao.SanPhamDAO;
-import dao.TaiKhoanDAO;
 import entity.SanPham;
-import entity.TaiKhoan;
+import rmi.RMIClient;
+import service.SanPhamService;
 
 public class TimSanPham {
 	public static TimSanPham getInstance() {
-        return new TimSanPham();
-    }
+		return new TimSanPham();
+	}
 
-	
-	 public ArrayList<SanPham> searchTatCa(String text) {
-	        ArrayList<SanPham> result = new ArrayList<>();
-	        ArrayList<SanPham> armt = SanPhamDAO.getInstance().getDanhSachSanPham();
-	        for (var ncc : armt) {
-	            if (ncc.getTenSP().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getMaSP().toLowerCase().contains(text.toLowerCase())
-	                    
-	                    
-	            		) {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 
-	 public ArrayList<SanPham> searchTen(String text) {
-	        ArrayList<SanPham> result = new ArrayList<>();
-	        ArrayList<SanPham> armt = SanPhamDAO.getInstance().getDanhSachSanPham();
-	        for (var ncc : armt) {
-	            if (ncc.getTenSP().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 public ArrayList<SanPham> searhMa(String text) {
-	        ArrayList<SanPham> result = new ArrayList<>();
-	        ArrayList<SanPham> armt = SanPhamDAO.getInstance().getDanhSachSanPham();
-	        for (var ncc : armt ) {
-	            if (ncc.getMaSP().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        
-	        
-	        return result;
-	    }
-	
-	
+	private final SanPhamService sanPhamService = RMIClient.getInstance().getSanPhamService();
+
+	public List<SanPham> searchTatCa(String text) {
+		List<SanPham> result = new ArrayList<>();
+		try {
+			List<SanPham> armt = sanPhamService.getAll();
+			for (SanPham sp : armt) {
+				if (sp.getTenSP().toLowerCase().contains(text.toLowerCase())
+						|| sp.getMaSP().toLowerCase().contains(text.toLowerCase())) {
+					result.add(sp);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<SanPham> searchTen(String text) {
+		List<SanPham> result = new ArrayList<>();
+		try {
+			List<SanPham> armt = sanPhamService.getAll();
+			for (SanPham sp : armt) {
+				if (sp.getTenSP().toLowerCase().contains(text.toLowerCase())) {
+					result.add(sp);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<SanPham> searhMa(String text) {
+		List<SanPham> result = new ArrayList<>();
+		try {
+			List<SanPham> armt = sanPhamService.getAll();
+			for (SanPham sp : armt) {
+				if (sp.getMaSP().toLowerCase().contains(text.toLowerCase())) {
+					result.add(sp);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

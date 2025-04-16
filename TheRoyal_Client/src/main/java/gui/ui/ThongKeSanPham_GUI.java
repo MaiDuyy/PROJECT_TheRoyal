@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import Format_UI.Table;
+import gui.format_ui.Table;
 import dao.CTHoaDonDAO;
 import dao.DichVuDAO;
 import dao.HoaDonDAO;

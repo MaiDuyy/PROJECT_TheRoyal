@@ -1,72 +1,81 @@
 package controller;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-import dao.KhachHangDAO;
-import dao.TaiKhoanDAO;
 import entity.KhachHang;
-import entity.TaiKhoan;
+import rmi.RMIClient;
+import service.KhachHangService;
 
 public class TimKhachHang {
 	public static TimKhachHang getInstance() {
-        return new TimKhachHang();
-    }
+		return new TimKhachHang();
+	}
 
-	
-	 public ArrayList<KhachHang> searchTatCa(String text) {
-	        ArrayList<KhachHang> result = new ArrayList<>();
-	        ArrayList<KhachHang> armt = KhachHangDAO.getInstance().getListKhachHang();
-	        for (var ncc : armt) {
-	            if (ncc.getMaKH().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getcCCD().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getsDT().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getLoaiKH().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getcCCD().toLowerCase().contains(text.toLowerCase())
-	                    || ncc.getTenKH().toLowerCase().contains(text.toLowerCase())
-	                    
-	            		) {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 
-	 public ArrayList<KhachHang> searchTen(String text) {
-	        ArrayList<KhachHang> result = new ArrayList<>();
-	        ArrayList<KhachHang> armt = KhachHangDAO.getInstance().getListKhachHang();
-	        for (var ncc : armt) {
-	            if (ncc.getTenKH().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	 
-	 public ArrayList<KhachHang> searhSDT(String text) {
-	        ArrayList<KhachHang> result = new ArrayList<>();
-	        ArrayList<KhachHang> armt = KhachHangDAO.getInstance().getListKhachHang();
-	        for (var ncc : armt ) {
-	            if (ncc.getsDT().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        
-	        
-	        return result;
-	    }
-	 public ArrayList<KhachHang> searchCCCD(String text) {
-	        ArrayList<KhachHang> result = new ArrayList<>();
-	        ArrayList<KhachHang> armt = KhachHangDAO.getInstance().getListKhachHang();
-	        for (var ncc : armt) {
-	            if (ncc.getcCCD().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        return result;
-	    }
-	
+	private final KhachHangService khachHangService = RMIClient.getInstance().getKhachHangService();
+
+	public List<KhachHang> searchTatCa(String text) {
+		List<KhachHang> result = new ArrayList<>();
+		try {
+			List<KhachHang> armt = khachHangService.getAll();
+			for (KhachHang kh : armt) {
+				if (kh.getMaKH().toLowerCase().contains(text.toLowerCase())
+						|| kh.getCCCD().toLowerCase().contains(text.toLowerCase())
+						|| kh.getSDT().toLowerCase().contains(text.toLowerCase())
+						|| kh.getLoaiKH().toLowerCase().contains(text.toLowerCase())
+						|| kh.getTenKH().toLowerCase().contains(text.toLowerCase())) {
+					result.add(kh);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<KhachHang> searchTen(String text) {
+		List<KhachHang> result = new ArrayList<>();
+		try {
+			List<KhachHang> armt = khachHangService.getAll();
+			for (KhachHang kh : armt) {
+				if (kh.getTenKH().toLowerCase().contains(text.toLowerCase())) {
+					result.add(kh);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<KhachHang> searchSDT(String text) {
+		List<KhachHang> result = new ArrayList<>();
+		try {
+			List<KhachHang> armt = khachHangService.getAll();
+			for (KhachHang kh : armt) {
+				if (kh.getSDT().toLowerCase().contains(text.toLowerCase())) {
+					result.add(kh);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List<KhachHang> searchCCCD(String text) {
+		List<KhachHang> result = new ArrayList<>();
+		try {
+			List<KhachHang> armt = khachHangService.getAll();
+			for (KhachHang kh : armt) {
+				if (kh.getCCCD().toLowerCase().contains(text.toLowerCase())) {
+					result.add(kh);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

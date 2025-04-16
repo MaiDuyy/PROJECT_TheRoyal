@@ -13,19 +13,26 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
-import Format_UI.RoundedBorder;
 import dao.DonDatPhongDAO;
 import dao.PhongDAO;
-import dao.Phong_DAO;
+
 import entity.Phong;
 import formatdate.FormatDate;
 import gui.component.PanelShadow;
+import gui.format_ui.RoundedBorder;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.DonDatPhongService;
+import service.PhongService;
 
 public class TrangChu extends JInternalFrame {
 
     JPanel top, center, bar1, bar2;
     private JPanel pnlPhongTrong , pnlPhongDangO , pnlPhongDat ;
-	
+
+    private PhongService phongService = RMIClient.getInstance().getPhongService();
+
+    private DonDatPhongService donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
 	
     public TrangChu() {
         initComponent();
@@ -96,6 +103,7 @@ public class TrangChu extends JInternalFrame {
     }
     
    
+    @SneakyThrows
     private void phongTrong() {
         pnlPhongTrong.setBackground(new Color(153, 255, 153));
         pnlPhongTrong.setLayout(null);
@@ -109,7 +117,7 @@ public class TrangChu extends JInternalFrame {
 
         JLabel lblNewLabel_2 = new JLabel();
         lblNewLabel_2.setBounds(40, 11, 24, 24);
-        lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongtrong24.png")));
+        lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/src/icon/phongtrong24.png")));
         panel_1.add(lblNewLabel_2);
 
         JLabel lblNewLabel_1_1 = new JLabel("Phòng trống");
@@ -128,7 +136,7 @@ public class TrangChu extends JInternalFrame {
         pnlPhongTrong.add(panel_3);
 
         JLabel lblNewLabel_4 = new JLabel();
-        int phongTrong = PhongDAO.getInstance().getSoPhongTrong();
+        int phongTrong = phongService.getTongSoPhong();
         lblNewLabel_4.setText(String.valueOf(phongTrong));
         lblNewLabel_4.setForeground(new Color(153, 255, 153));
         lblNewLabel_4.setFont(new Font("Bookman Old Style", Font.BOLD, 50));
@@ -138,6 +146,7 @@ public class TrangChu extends JInternalFrame {
 
     
     
+    @SneakyThrows
     private void phongDangO () {
     	pnlPhongDangO.setBackground(new Color(255, 153, 51));
 		JPanel panel_1 = new JPanel();
@@ -148,7 +157,7 @@ public class TrangChu extends JInternalFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setBounds(40, 11, 24, 24);
-		lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/khachdango24.png")));
+		lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/src/icon/khachdango24.png")));
 		panel_1.add(lblNewLabel_2);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Đang ở");
@@ -168,7 +177,7 @@ public class TrangChu extends JInternalFrame {
 
 		JLabel lblNewLabel_4 = new JLabel();
 		java.sql.Date ngayhientai = new java.sql.Date(System.currentTimeMillis());
-        int phongTrong = DonDatPhongDAO.getInstance().countSLDonDangO(ngayhientai);
+        int phongTrong = donDatPhongService.countSLDonDangO(ngayhientai);
 		lblNewLabel_4.setText(String.valueOf(phongTrong));
 		lblNewLabel_4.setForeground(new Color(255, 153, 51));
 		lblNewLabel_4.setFont(new Font("Bookman Old Style", Font.BOLD, 50));
@@ -181,6 +190,7 @@ public class TrangChu extends JInternalFrame {
     }
     
     
+    @SneakyThrows
     private void phongDangDat () {
     	pnlPhongDat.setBackground(Color.RED);
 		JPanel panel_1 = new JPanel();
@@ -191,7 +201,7 @@ public class TrangChu extends JInternalFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setBounds(40, 11, 24, 24);
-		lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/khachdango24.png")));
+		lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/src/icon/khachdango24.png")));
 		panel_1.add(lblNewLabel_2);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Đã đặt");
@@ -211,7 +221,7 @@ public class TrangChu extends JInternalFrame {
 
 		JLabel lblNewLabel_4 = new JLabel();
 		java.sql.Date ngayhientai = new java.sql.Date(System.currentTimeMillis());
-        int phongTrong = DonDatPhongDAO.getInstance().countSLDonDatTruoc(ngayhientai);
+        int phongTrong = donDatPhongService.countSLDonDatTruoc(ngayhientai);
 		lblNewLabel_4.setText(String.valueOf(phongTrong));
 		lblNewLabel_4.setForeground(Color.RED);
 		lblNewLabel_4.setFont(new Font("Bookman Old Style", Font.BOLD, 50));

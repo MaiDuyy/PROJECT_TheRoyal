@@ -40,6 +40,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import gui.format_ui.RadiusButton;
+import lombok.SneakyThrows;
 import org.jdesktop.swingx.prompt.PromptSupport;
 
 import com.toedter.calendar.JDateChooser;
@@ -51,6 +52,8 @@ import gui.format_ui.Table;
 import dao.*;
 import entity.*;
 import gui.dialog.ThongTinPhong_Dialog;
+import rmi.RMIClient;
+import service.*;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
@@ -60,10 +63,10 @@ import javax.swing.SwingConstants;
 
 public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseListener {
 
-	private PhongDAO phongdao;
-	private KhachHangDAO khachhangdao;
-	private DonDatPhongDAO dondatphongdao;
-	private HoaDonDAO hoadondao;
+	private PhongService phongdao;
+	private KhachHangService khachhangdao;
+	private DonDatPhongService dondatphongdao;
+	private HoaDonService hoadondao;
 	private RadiusButton btnMore;
 	private JButton btnThem, btnLamLai ;
 	private JTextField txtSDT, txtTenKH, txtTrangThai, txtTim;
@@ -99,7 +102,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 	private JTextField txtGiaPhong;
 	private JLabel lblLoaiPhong_5;
 	private JTextField txtSoGiuong;
-	private LoaiPhongDAO lpDao;
+	private LoaiPhongService lpDao;
 	private JLabel hinhAnh;
 	private JTextField txtTimKiemKH;
 	private JLabel lblTmKim;
@@ -113,10 +116,10 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		this.phong = phong;
 		this.thongtindattruoc= thongtindattruoc;
 	
-		phongdao = new PhongDAO();
-		khachhangdao = new KhachHangDAO();
-		dondatphongdao = new DonDatPhongDAO();
-		hoadondao = new HoaDonDAO();
+		phongdao = RMIClient.getInstance().getPhongService();
+		khachhangdao = RMIClient.getInstance().getKhachHangService();
+		dondatphongdao = RMIClient.getInstance().getDonDatPhongService();
+		hoadondao = RMIClient.getInstance().getHoaDonService();
 
 		setBounds(100, 100, 1276, 721);
 		setLocationRelativeTo(this);
@@ -127,6 +130,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		loadDonDatPhongToTable(phong.getMaPhong());
 	}
 
+	@SneakyThrows
 	private void GUIQLYPhong() {
 		getContentPane().setLayout(null);
 		JPanel staffInfoPanel = new JPanel();
@@ -171,14 +175,14 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		
 		staffInfoPanel.add(lblSoTreEm_1);
 
-		btnThem = new JButton("Đặt phòng", new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/ICON/icon/blueAdd_16.png")));
+		btnThem = new JButton("Đặt phòng", new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/blueAdd_16.png")));
 		btnThem.setBounds(303, 360, 132, 21);
 		staffInfoPanel.add(btnThem);
 
 		btnLamLai = new JButton("Làm Lại");
 		btnLamLai.setBounds(445, 360, 145, 21);
 		staffInfoPanel.add(btnLamLai);
-		btnLamLai.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/ICON/icon/refresh_16.png")));
+		btnLamLai.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/refresh_16.png")));
 
 		txtCCCD = new JTextField(15);
 		txtCCCD.setEnabled(false);
@@ -263,7 +267,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		panelTimKiemKH.add(txtTimKiemKH);
 		
 		JLabel btnTimKiemKH = new JLabel("");
-		btnTimKiemKH.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/search.png")));
+		btnTimKiemKH.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/search.png")));
 		btnTimKiemKH.setBounds(564, 22, 24, 32);
 		staffInfoPanel.add(btnTimKiemKH);
 		txtTimKiemKH.setBackground(Color.WHITE);
@@ -277,17 +281,18 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		staffInfoPanel.add(lblTmKim);
 		
 		btnTimKiemKH.addMouseListener(new MouseAdapter() {
-	        	@Override
+	        	@SneakyThrows
+				@Override
 	        	public void mouseClicked(MouseEvent e) {
-	        		khachhangdao = new KhachHangDAO();
+
 	        		KhachHang kh = khachhangdao.getKhachHangTheoSDTHoacCCCD(txtTimKiemKH.getText());
 	        		if (kh == null) {
 	        		    JOptionPane.showMessageDialog(null, "Không tìm thấy khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
 	        		} else {
 	        			cboMaKH.setSelectedItem(kh.getMaKH());
 		        		txtTenKH.setText(kh.getTenKH());
-						txtCCCD.setText(kh.getcCCD());
-						txtSDT.setText(kh.getsDT());
+						txtCCCD.setText(kh.getCCCD());
+						txtSDT.setText(kh.getSDT());
 						cboLoaiKH.setSelectedItem(kh.getLoaiKH());
 						cboGioiTinh.setSelectedItem(kh.isGioiTinh());
 	        		}
@@ -385,7 +390,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 				txtSoGiuong.setBounds(98, 176, 152, 38);
 				panel.add(txtSoGiuong);
 				
-				lpDao = new LoaiPhongDAO();
+				lpDao = RMIClient.getInstance().getLoaiPhongService();
 		
 				LoaiPhong lp = lpDao.getLoaiPhongTheoMa(phong.getLoaiPhong().getMaLoai());
 				txtLoaiPhong.setText(lp.getTenLoai());
@@ -398,18 +403,18 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 				
 				if(lp.getMaLoai().equals("LP01")) {
 					if(phong.getSoGiuong()==1) {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/phongThuongDon.png")));
+						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/phongThuongDon.png")));
 					}else {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/phongThuongDoi.png")));
+						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/phongThuongDoi.png")));
 					}
 				}else if(lp.getMaLoai().equals("LP02")) {
 					if(phong.getSoGiuong()==1) {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/hinhPhongVipDon.png")));
+						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/hinhPhongVipDon.png")));
 					}else {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/hinhAnhPhongVipDoi.png")));
+						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/hinhAnhPhongVipDoi.png")));
 					}
 				}else {
-					hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/hinhAnhPenthouse.png")));
+					hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/hinhAnhPenthouse.png")));
 				}
 				
 				hinhAnh.setBounds(276, 29, 300, 200);
@@ -424,6 +429,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 
 	}
 
+	@SneakyThrows
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnThem)) {
@@ -434,10 +440,10 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 			   if (chkKH.isSelected()) {
 			        kh = dataKhachHang();
 			        if (validData(ADD)) {
-			            boolean result = khachhangdao.insert(kh);
+			            boolean result = khachhangdao.save(kh);
 			            if (result) {
 			                String maKH = khachhangdao.getLatestID();
-			                kh = new KhachHang(maKH, kh.getTenKH(), kh.getsDT(), kh.getLoaiKH(), kh.getcCCD(), kh.isGioiTinh());
+			                kh = new KhachHang(maKH, kh.getTenKH(), kh.getSDT(), kh.getLoaiKH(), kh.getCCCD(), kh.isGioiTinh() , null , null);
 			                showMessage("Khách hàng mới được thêm thành công!", SUCCESS);
 			                loadListKhachHang();
 			            } else {
@@ -460,7 +466,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 
 			if (validData2(ADD)) {
 				try {
-					 if (!dondatphongdao.isRoomAvailable(ddp.getPhong().getMaPhong(), ddp.getThoiGianDatPhong(), ddp.getThoiGianTraPhong())) {
+					 if (!dondatphongdao.isRoomAvailable(ddp.getPhong().getMaPhong(), (Date) ddp.getThoiGianDatPhong(), (Date) ddp.getThoiGianTraPhong())) {
 					        showMessage("Phòng " + ddp.getPhong().getMaPhong() + " đã được đặt trong khoảng thời gian này, vui lòng chọn phòng khác!", ERROR);
 					        return;
 					    }
@@ -470,15 +476,15 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 					return;
 				}
 
-				boolean result1 = dondatphongdao.insert(ddp);
-				String maDDP = dondatphongdao.getLatestID();
+				boolean result1 = dondatphongdao.save(ddp);
+				String maDDP = dondatphongdao.getLatestId();
 
 				if (result1) {
 					Date ngaynhan = convertFromJAVADateToSQLDate(ddp.getThoiGianNhanPhong());
 					Date ngaytra = convertFromJAVADateToSQLDate(ddp.getThoiGianTraPhong());
 
 					ddp = new DonDatPhong(maDDP, Date.valueOf(java.time.LocalDate.now()), ngaynhan, ngaytra, kh, new Phong(ddp.getPhong().getMaPhong()),
-							"Đặt trước", ddp.getSoLuongNGLon(), ddp.getSoLuongTreEm());
+							"Đặt trước", ddp.getSoNguoiLon(), ddp.getSoTreEm(), null);
 //		        } else {
 //		            showMessage("Lỗi: Thêm đơn đặt phòng thất bại", ERROR);
 //		            return;
@@ -527,8 +533,8 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 			} else {
 				indx -= 1;
 				txtTenKH.setText(dsKH.get(indx).getTenKH());
-				txtCCCD.setText(dsKH.get(indx).getcCCD());
-				txtSDT.setText(dsKH.get(indx).getsDT());
+				txtCCCD.setText(dsKH.get(indx).getCCCD());
+				txtSDT.setText(dsKH.get(indx).getSDT());
 				cboLoaiKH.setSelectedItem(dsKH.get(indx).getLoaiKH());
 				cboGioiTinh.setSelectedItem(dsKH.get(indx).isGioiTinh());
 			}
@@ -619,8 +625,9 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 
 	}
 
+	@SneakyThrows
 	private void loadCboMaKhachHang() {
-		dsKH = khachhangdao.getListKhachHang();
+		dsKH = (ArrayList<KhachHang>) khachhangdao.getAll();
 		if (dsKH == null || dsKH.size() <= 0)
 			return;
 		cboMaKH.addItem("");
@@ -629,12 +636,14 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		}
 	}
 
+	@SneakyThrows
 	private void loadDataPhong() {
-		dsPhong = phongdao.getListPhong();
+		dsPhong = (ArrayList<Phong>) phongdao.getAll();
 	}
 
+	@SneakyThrows
 	private void loadListKhachHang() {
-		dsKH = khachhangdao.getListKhachHang();
+		dsKH = (ArrayList<KhachHang>) khachhangdao.getAll();
 	}
 
 	private DonDatPhong dataDDP(String maKH) {
@@ -647,7 +656,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		int treem = txtTreEm.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtTreEm.getText().trim());
 
 		DonDatPhong ddp = new DonDatPhong("", ngayDat, ngayNhan, ngayTra, new KhachHang(maKH), new Phong(maphong), "",
-				nglon, treem);
+				nglon, treem, null );
 		return ddp;
 	}
 
@@ -658,7 +667,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		String cccd = txtCCCD.getText().trim();
 		boolean gioiTinh = cboGioiTinh.getSelectedItem().toString().equalsIgnoreCase("Nam");
 
-		KhachHang kh = new KhachHang("", tenKH, sDT, loaiKH, cccd, gioiTinh);
+		KhachHang kh = new KhachHang("", tenKH, sDT, loaiKH, cccd, gioiTinh ,null ,null);
 		return kh;
 	}
 
@@ -787,7 +796,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		} else {
 			if (type == ADD)
 				for (KhachHang item : dsKH) {
-					if (item.getcCCD().equalsIgnoreCase(cccd)) {
+					if (item.getCCCD().equalsIgnoreCase(cccd)) {
 						showMessage("Lỗi: CCCD đã tồn tại", txtCCCD);
 						return false;
 					}
@@ -814,12 +823,13 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		}
 	}
 	
+	@SneakyThrows
 	public void loadDonDatPhongToTable(String maPhong) {
 	    tableModelPhong.setRowCount(0);
-	    ddpDao = new DonDatPhongDAO();
-	    List<DonDatPhong> listDonDatPhong = ddpDao.getListDonDatPhongByMaPhong(maPhong);
+
+	    List<DonDatPhong> listDonDatPhong = (List<DonDatPhong>) dondatphongdao.getDonDatPhongByRoomId(maPhong);
 	    
-	    khachhangdao = new KhachHangDAO();
+
 	    if (!listDonDatPhong.isEmpty()) {
 	        for (DonDatPhong ddp : listDonDatPhong) {
             	KhachHang kh = khachhangdao.getKhachHangTheoMa(ddp.getKhachHang().getMaKH());
@@ -828,11 +838,11 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 	            	Object[] row = {
 		                ddp.getPhong().getMaPhong(),
 		                kh.getTenKH(),
-		                kh.getsDT(),
+		                kh.getSDT(),
 		                ddp.getThoiGianNhanPhong(),
 		                ddp.getThoiGianTraPhong(),
-		                ddp.getSoLuongNGLon(),
-		                ddp.getSoLuongTreEm(),
+		                ddp.getSoNguoiLon(),
+		                ddp.getSoTreEm(),
 		                ddp.getTrangThai()
 		            };
 		            tableModelPhong.addRow(row);

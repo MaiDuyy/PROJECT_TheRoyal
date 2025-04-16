@@ -1,6 +1,7 @@
 package gui.ui;
 
 import entity.*;
+import formatdate.FormatDate;
 import gui.component.ButtonCustom;
 import gui.dialog.QuickLinkQrPanel;
 import gui.dialog.ThongTinPhong_Dialog;
@@ -522,8 +523,8 @@ public class ThanhToan_GUI extends JDialog {
     }
 
     private void loadReservationInfo(DonDatPhong ddp) {
-        txtTGNP.setText(formatDate(ddp.getThoiGianDatPhong()));
-        txtTGTP.setText(formatDate(ddp.getThoiGianTraPhong()));
+        txtTGNP.setText(FormatDate.formatDate(ddp.getThoiGianDatPhong()));
+        txtTGTP.setText(FormatDate.formatDate(ddp.getThoiGianTraPhong()));
     }
 
 
@@ -544,7 +545,7 @@ public class ThanhToan_GUI extends JDialog {
             double tienPhong = item.getTienPhong();
             double tienSanPham = item.getTienSanPham();
             double tongTien = item.getTongTien();
-            String ngaylaphoadon = formatDate(item.getThoiGianLapHD());
+            String ngaylaphoadon = FormatDate.formatDate(item.getThoiGianLapHD());
 
 
             DecimalFormat df = new DecimalFormat("#,###.##");
@@ -679,7 +680,7 @@ public class ThanhToan_GUI extends JDialog {
 		    }
 
          LocalDateTime ngayhientai = LocalDateTime.now();
-         LocalDateTime ngayketthuc = khuyenMai.getThoiGianKetThuc();
+         LocalDateTime ngayketthuc = LocalDateTime.parse(FormatDate.formatDate( khuyenMai.getThoiGianKetThuc()));
 
          if (ngayketthuc.isBefore(ngayhientai)) {
              JOptionPane.showMessageDialog(this, "Mã khuyến mãi đã hết hạn", "Error", JOptionPane.ERROR_MESSAGE);

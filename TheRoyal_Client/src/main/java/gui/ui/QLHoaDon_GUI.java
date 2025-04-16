@@ -14,8 +14,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,13 +35,21 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 
-import Format_UI.Table;
-import connectDB.ConnectDB;
+import gui.format_ui.Table;
+
 import dao.*;
 import entity.*;
 import gui.component.ButtonCustom;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.CTHoaDonService;
+import service.DichVuService;
+import service.HoaDonService;
+import service.SanPhamService;
 
 import java.awt.Component;
+import java.util.Date;
+import java.util.List;
 
 
 public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,MouseListener{
@@ -57,25 +65,25 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     public JFrame popup = new JFrame();
     private static final long serialVersionUID = 1;
-    private HoaDonDAO hoadondao;
-    private CTHoaDonDAO cthddao;
-    private SanPhamDAO sanphamdao;
-    private DichVuDAO dichvudao;
+    private HoaDonService hoadondao;
+    private CTHoaDonService cthddao;
+    private SanPhamService sanphamdao;
+    private DichVuService dichvudao;
      
     private ArrayList < CTHoaDon > dsCTHD;
-    private ArrayList < HoaDon > dsHD;
-    private ArrayList < CTHoaDonDetail > dsCT;
+    private List<HoaDon> dsHD;
+    private ArrayList < CTHoaDon > dsCT;
 
   
 
 	public QLHoaDon_GUI() {
 
 		getContentPane().setBackground(new Color(255, 255, 255));
-        hoadondao = new HoaDonDAO();
-        cthddao = new CTHoaDonDAO();
-        sanphamdao = new SanPhamDAO();
-        dichvudao = new DichVuDAO();
-
+        hoadondao = RMIClient.getInstance().getHoaDonService();
+        cthddao = RMIClient.getInstance().getCtHoaDonService();
+        sanphamdao = RMIClient.getInstance().getSanPhamService();
+        dichvudao = RMIClient.getInstance().getDichVuService();
+        dsHD = (ArrayList<HoaDon>) RMIClient.getInstance().getHoaDonService();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
       
         tieuDeLabel = new JLabel("Quản lý Hóa Đơn");
@@ -149,14 +157,15 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         txtTim = new JTextField(15);
         txtTim.setBounds(493, 24, 126, 25);
         txtTim.addKeyListener(new KeyAdapter() {
-        		@Override
+        		@SneakyThrows
+                @Override
         		public void keyReleased(KeyEvent e) {
         		      showMessage("", 2);
       	            if (validDataTim()) {
       	                String maHD = txtTim.getText().trim();
       	                tableModelHoaDon.getDataVector().removeAllElements();
       	                tableModelHoaDon.fireTableDataChanged();
-      	                dsHD = hoadondao.getHoaDonTheoMa(maHD);
+      	                dsHD = hoadondao.getHoaDonTheoMaList(maHD);
       	                if (dsHD == null || dsHD.size() <= 0) {
       	                    showMessage("Không tìm thấy hóa đơn", ERROR);
       	                } else
@@ -166,10 +175,10 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         });
         btnTim = new JButton("Tìm Kiếm");
         btnTim.setBounds(624, 23, 110, 21);
-        btnTim.setIcon(new ImageIcon(QLHoaDon_GUI.class.getResource("/src/ICON/icon/search_16.png")));
+        btnTim.setIcon(new ImageIcon(QLHoaDon_GUI.class.getResource("/src/icon/search_16.png")));
         btnXemTatCa = new ButtonCustom("Xem tất cả","rest", 12);
         btnXemTatCa.setBounds(661, 25, 110, 24);
-        btnXemTatCa.setIcon(new ImageIcon(QLHoaDon_GUI.class.getResource("/src/ICON/icon/refresh.png")));
+        btnXemTatCa.setIcon(new ImageIcon(QLHoaDon_GUI.class.getResource("/src/icon/refresh.png")));
         searchPanel.setLayout(null);
 
         searchPanel.add(searchLabel);
@@ -177,8 +186,8 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 //        searchPanel.add(btnTim);
         searchPanel.add(btnXemTatCa);
         getContentPane().add(searchPanel);
-      
-     
+
+
 
         // Bảng nhân viên
         JPanel tabelPanelPhong = new JPanel();
@@ -218,7 +227,7 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 
         tblHoaDon = new Table();
         tblHoaDon.setModel(tableModelHoaDon);
-        tblHoaDon.setFillsViewportHeight(true); 
+        tblHoaDon.setFillsViewportHeight(true);
         tblHoaDon.setBackground(new Color(255, 255, 255));
         tblHoaDon.setBackground(Color.white);
 
@@ -228,7 +237,7 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         getContentPane().add(tabelPanelPhong);
 
 
-        
+
       JPanel tabelPanelTK = new JPanel();
         tabelPanelTK.setBounds(29, 300, 583, 252);
         tabelPanelTK.setBackground(Color.white);
@@ -257,12 +266,12 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         tblDV = new Table();
         tblDV.setModel(tableModelDV);
         tblDV.setBackground(Color.white);
-        tblDV.setFillsViewportHeight(true); 
+        tblDV.setFillsViewportHeight(true);
         tblDV.setBackground(new Color(255, 255, 255));
-        
+
         JScrollPane scrollPaneTK = new JScrollPane(tblDV);
         scrollPaneTK.setBounds(10, 23, 563, 183);
-        
+
         JLabel lblGiaDV = new JLabel("Tổng giá dịch vụ");
         lblGiaDV.setLocation(151, 211);
         lblGiaDV.setSize(99, 31);
@@ -274,16 +283,16 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         txtGiaDV.setLocation(298, 211);
         txtGiaDV.setSize(275, 31);
         txtGiaDV.setBorder(BorderFactory.createEmptyBorder());
-        tabelPanelTK.add(lblGiaDV); 
+        tabelPanelTK.add(lblGiaDV);
         tabelPanelTK.add(txtGiaDV);
         tabelPanelTK.add(scrollPaneTK);
-        
-       
-        
-        
+
+
+
+
         getContentPane().add(tabelPanelTK);
-        
-        
+
+
         JPanel tabelPanelSP = new JPanel();
         tabelPanelSP.setBounds(622, 300, 628, 252);
         tabelPanelSP.setBackground(Color.white);
@@ -312,20 +321,20 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         tblSP = new Table();
         tblSP.setModel(tableModelSP);
         tblSP.setBackground(Color.white);
-        tblSP.setFillsViewportHeight(true); 
+        tblSP.setFillsViewportHeight(true);
         tblSP.setBackground(new Color(255, 255, 255));
-        
+
         tabelPanelSP.setLayout(null);
 
         JScrollPane scrollPaneSP = new JScrollPane(tblSP);
         scrollPaneSP.setBounds(10, 22, 608, 184);
         tabelPanelSP.add(scrollPaneSP);
         getContentPane().add(tabelPanelSP);
-        
+
         JLabel lblGiaDV_1 = new JLabel("Tổng giá sản phẩm");
         lblGiaDV_1.setBounds(171, 211, 124, 31);
         tabelPanelSP.add(lblGiaDV_1);
-        
+
         txtGiaSP = new JTextField(15);
         txtGiaSP.setFont(new Font("Tahoma", Font.BOLD, 17));
         txtGiaSP.setBackground(new Color(255, 255, 255));
@@ -333,9 +342,9 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         txtGiaSP.setBounds(336, 211, 282, 31);
         txtGiaSP.setBorder(BorderFactory.createEmptyBorder());
         tabelPanelSP.add(txtGiaSP);
-	        
-	        
-	        
+
+
+
 
         // Panel điều khiển
         JPanel controlPanel = new JPanel();
@@ -350,26 +359,26 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
             new Color(246, 167, 193)
         ));
 
-        btnThem = new JButton("Thêm ", new ImageIcon("src/ICON/icon/blueAdd_16.png"));
+        btnThem = new JButton("Thêm ", new ImageIcon("src/icon/blueAdd_16.png"));
         btnThem.setBounds(45, 23, 132, 21);
         btnCapNhat = new JButton("Cập Nhật ");
         btnCapNhat.setBounds(222, 23, 145, 21);
-        btnCapNhat.setIcon(new ImageIcon("src/ICON/icon/check2_16.png"));
+        btnCapNhat.setIcon(new ImageIcon("src/icon/check2_16.png"));
 
         btnLamLai = new JButton("Làm Lại");
         btnLamLai.setBounds(222, 47, 145, 21);
-        btnLamLai.setIcon(new ImageIcon("src/ICON/icon/refresh_16.png"));
+        btnLamLai.setIcon(new ImageIcon("src/icon/refresh_16.png"));
 
         btnThemTaiKhoanNV = new JButton("Đổi mật khẩu");
         btnThemTaiKhoanNV.setBounds(397, 23, 145, 21);
-        btnThemTaiKhoanNV.setIcon(new ImageIcon("src/ICON/icon/check2_16.png"));
+        btnThemTaiKhoanNV.setIcon(new ImageIcon("src/icon/check2_16.png"));
         controlPanel.setLayout(null);
 
         controlPanel.add(btnThem);
 
         btnXoa = new JButton("Xóa");
         btnXoa.setBounds(45, 47, 132, 21);
-        btnXoa.setIcon(new ImageIcon("src/ICON/icon/trash2_16.png"));
+        btnXoa.setIcon(new ImageIcon("src/icon/trash2_16.png"));
 
         lbShowMessages = new JLabel("");
         lbShowMessages.setBounds(170, 61, 295, 37);
@@ -392,21 +401,23 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 
     }
 
+    @SneakyThrows
     private void loadDataHoaDon() {
-    	dsHD = hoadondao.getListHoaDon();
+    	dsHD =  hoadondao.getAll();
     }
+    @SneakyThrows
     private void loadDataCTHD() {
-    	dsCTHD = cthddao.getListCTHoaDon();
+    	dsCTHD = (ArrayList<CTHoaDon>) cthddao.getAll();
     }
     private void DocDuLieuSPVaoTable() {
 //    	dsCT = cthddao.getCTHoaDonDetails();
     	tableModelSP.setRowCount(0);
-    	 for (CTHoaDonDetail detail : dsCT) {
+    	 for (CTHoaDon detail : dsCT) {
     		  DecimalFormat df = new DecimalFormat("#,###.##");
-  	        String giaSP = df.format(detail.getGiaSP());
+  	        String giaSP = df.format(detail.getSanPham().getGiaSP());
     		 tableModelSP.addRow(new Object[]{
                      detail.getSanPham().getMaSP(), 
-                     detail.getTenSP(), 
+                     detail.getSanPham().getTenSP(),
                      detail.getSoLuongSP(), 
                      giaSP
              });
@@ -417,14 +428,14 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 //    	dsCT = cthddao.getCTHoaDonDetails();
     	tableModelDV.setRowCount(0);
       
-    	 for (CTHoaDonDetail detail : dsCT) {
+    	 for (CTHoaDon detail : dsCT) {
     		  DecimalFormat df = new DecimalFormat("#,###.##");
-    	        String giaDV = df.format(detail.getGiaDV());
+    	        String giaDV = df.format(detail.getDichVu().getGiaDV());
     		 tableModelDV.addRow(new Object[]{
     				 
     				 
                      detail.getDichVu().getMaDV(), 
-                     detail.getTenDV(), 
+                     detail.getDichVu().getTenDV(),
                      detail.getSoLuongDV(), 
                      giaDV
              });
@@ -515,8 +526,9 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         return true;
     }
     
+    @SneakyThrows
     public void inHoaDon(String maHD) {
-        HoaDon hoaDon = hoadondao.getHoaDonTheoMa1(maHD);
+        HoaDon hoaDon = hoadondao.getHoaDonTheoMa(maHD);
 //        HoaDon.getInstance().setMaHD(maHD);
 //        HoaDon.getInstance().setNhanVien(hoaDon.getNhanVien());
         if (hoaDon != null) {
@@ -535,7 +547,8 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
             System.out.println("Hóa đơn không tồn tại với mã: " + maHD);
         }
     }
-	@Override
+	@SneakyThrows
+    @Override
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getSource().equals(tblHoaDon)) {
@@ -549,7 +562,7 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 			
 		
 
-			dsCT = cthddao.getListSPDVByMaCTHD(maHD);
+			dsCT = (ArrayList<CTHoaDon>) cthddao.getListCTHoaDonByMaHD(maHD);
 			
 			DocDuLieuDVVaoTable();
 			DocDuLieuSPVaoTable();
@@ -585,7 +598,8 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 		
 	}
 
-	@Override
+	@SneakyThrows
+    @Override
 	public void actionPerformed(ActionEvent e) {
 		  if (e.getSource().equals(btnTim)) {
 	            showMessage("", 2);
@@ -593,7 +607,7 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 	                String maHD = txtTim.getText().trim();
 	                tableModelHoaDon.getDataVector().removeAllElements();
 	                tableModelHoaDon.fireTableDataChanged();
-	                dsHD = hoadondao.getHoaDonTheoMa(maHD);
+	                dsHD = (List<HoaDon>) hoadondao.getHoaDonTheoMa(maHD);
 	                if (dsHD == null || dsHD.size() <= 0) {
 	                    showMessage("Không tìm thấy hóa đơn", ERROR);
 	                } else

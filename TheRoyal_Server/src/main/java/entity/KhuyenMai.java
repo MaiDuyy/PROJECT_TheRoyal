@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -29,10 +30,10 @@ public class KhuyenMai implements Serializable {
     private float giaTriKhuyenMai;
 
     @Column(name = "thoiGianBatDau", columnDefinition = "DATETIME")
-    private LocalDateTime thoiGianBatDau;
+    private Date thoiGianBatDau;
 
     @Column(name = "thoiGianKetThuc", columnDefinition = "DATETIME")
-    private LocalDateTime thoiGianKetThuc;
+    private Date thoiGianKetThuc;
 
     @Column(name = "moTaKM", columnDefinition = "NVARCHAR(50)")
     private String moTaKM;

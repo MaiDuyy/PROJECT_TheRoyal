@@ -32,4 +32,7 @@ public interface PhongDAO extends GenericDAO<Phong, String>, Remote {
     int getSoPhongTheoTrangThai(String trangThai);
 
     int getTongSoPhong();
+
+    public String getLatestID();
+    public boolean updateTinhTrangPhong(Phong phong, String trangThai);
 }

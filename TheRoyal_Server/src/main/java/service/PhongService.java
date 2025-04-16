@@ -28,4 +28,8 @@ public interface PhongService  extends Remote  ,GenericService<Phong, String>  {
     int getSoPhongTheoTrangThai(String trangThai)throws RemoteException;
 
     int getTongSoPhong() throws RemoteException;
+
+    public String getLatestID() throws RemoteException;
+
+    public boolean updateTinhTrangPhong(Phong phong, String trangThai) throws  RemoteException;
 }

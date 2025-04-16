@@ -30,7 +30,7 @@ import dao.TaiKhoanDAO;
 import entity.NhanVien;
 import entity.TaiKhoan;
 import gui.component.ButtonCustom;
-//import gui.dialog.DatLaiMatKhau;
+import gui.dialog.DatLaiMatKhau;
 import gui.validata.BCrypt;
 import gui.validata.Validation;
 import lombok.SneakyThrows;
@@ -85,12 +85,12 @@ public class Login extends JFrame {
         leftPanel.setLayout(null);
         getContentPane().add(leftPanel);
 
-//        ImageIcon originalIcon = new ImageIcon(Login.class.getResource("/icon/logo.png"));
-//        Image scaledImage = originalIcon.getImage().getScaledInstance(281, 354, Image.SCALE_SMOOTH);
-//        ImageIcon scaledIcon = new ImageIcon(scaledImage);
-//        JLabel imgBottom = new JLabel(scaledIcon);
-//        imgBottom.setBounds(0, 0, 281, 354);
-//        leftPanel.add(imgBottom);
+        ImageIcon originalIcon = new ImageIcon(Login.class.getResource("/src/icon/logo.png"));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(281, 354, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        JLabel imgBottom = new JLabel(scaledIcon);
+        imgBottom.setBounds(0, 0, 281, 354);
+        leftPanel.add(imgBottom);
 
         JLabel lblTitle = new JLabel("Đăng Nhập");
         lblTitle.setFont(new Font("Segoe UI", Font.PLAIN, 20));
@@ -192,7 +192,7 @@ public class Login extends JFrame {
         btnQuenMK.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                btnquenMK();
+                btnquenMK();
             }
         });
     }
@@ -240,12 +240,12 @@ public class Login extends JFrame {
         }
     }
 
-//    private void btnquenMK() {
-//
-//        DatLaiMatKhau a = new DatLaiMatKhau(this, (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this), rootPaneCheckingEnabled);
-//        a.setVisible(true);
-//
-//    }
+    private void btnquenMK() {
+
+        DatLaiMatKhau a = new DatLaiMatKhau(this, (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this), rootPaneCheckingEnabled);
+        a.setVisible(true);
+
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

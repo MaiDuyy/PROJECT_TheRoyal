@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 
-import Format_UI.Table;
+import gui.format_ui.Table;
 import dao.*;
 
 import entity.*;
@@ -30,7 +30,7 @@ import gui.dialog.SuaSanPham_Dialog;
 import gui.dialog.ThemKhachHang_Dialog;
 import gui.dialog.ThemSanPham_Dialog;
 import gui.swing.notification.Notification;
-import connectDB.ConnectDB;
+
 import controller.TimSanPham;
 
 import javax.swing.JList;

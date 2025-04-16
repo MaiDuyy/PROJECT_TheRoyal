@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 
 import gui.button.ActionButton;
 import gui.event.TableActionEvent;
+import lombok.SneakyThrows;
+
 import javax.swing.ImageIcon;
 
 /**
@@ -22,12 +24,14 @@ public class PanelAction extends javax.swing.JPanel {
 
     public void initEvent(TableActionEvent event, int row) {
         cmdAdd.addActionListener(new ActionListener() {
+            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent ae) {
                 event.tangSoLuong(row);
             }
         });
         cmdMinus.addActionListener(new ActionListener() {
+            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent ae) {
                 event.giamSoLuong(row);

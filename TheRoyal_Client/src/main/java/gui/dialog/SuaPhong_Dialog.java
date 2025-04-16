@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -25,10 +26,10 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import UI.QLKhachHang_GUI;
-import UI.QLNhanVien_GUI;
-import UI.QLPhong_GUI;
-import UI.QLUuDai_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.QLNhanVien_GUI;
+import gui.ui.QLPhong_GUI;
+import gui.ui.QLUuDai_GUI;
 import dao.KhachHangDAO;
 import dao.KhuyenMaiDAO;
 import dao.LoaiPhongDAO;
@@ -41,6 +42,10 @@ import entity.Phong;
 import entity.SanPham;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.LoaiPhongService;
+import service.PhongService;
 
 public class SuaPhong_Dialog extends JDialog {
 
@@ -51,7 +56,7 @@ public class SuaPhong_Dialog extends JDialog {
 	private JComboBox<String> cboMaLoaiP, cboTrangThai;
 	private JComboBox < String > cbxLuachon;
     private ArrayList < Phong > dsPhong;
-    private ArrayList < LoaiPhong > dsLoaiPhong;
+    private List<LoaiPhong> dsLoaiPhong;
     private DefaultComboBoxModel<String> modelMaPhong;
     private ButtonCustom btnThem, btnDong;
     private JLabel lbShowMessages;
@@ -59,13 +64,18 @@ public class SuaPhong_Dialog extends JDialog {
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private QLPhong_GUI home;
 
-    public SuaPhong_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
+	private PhongService phongService = RMIClient.getInstance().getPhongService();
+
+	private LoaiPhongService loaiPhongService = RMIClient.getInstance().getLoaiPhongService();
+
+    @SneakyThrows
+	public SuaPhong_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLPhong_GUI) parent;
-        dsPhong = PhongDAO.getInstance().getListPhong();
-        dsLoaiPhong = LoaiPhongDAO.getInstance().getListLoaiPhong();
+        dsPhong = (ArrayList<Phong>) phongService.getAll();
+        dsLoaiPhong = loaiPhongService.getAll();
         Phong p = home.getSanPhanSelect();
         
 		txtMaP.setText(p.getMaPhong());
@@ -233,7 +243,7 @@ public class SuaPhong_Dialog extends JDialog {
 		int sotreem = Integer.parseInt(spinSoTrem.getValue().toString());
 //        String trangthai = txtTrangThai.getText().trim();
 		String trangthai = cboTrangThai.getSelectedItem().toString().trim();
-		Phong phong = new Phong(maP, tenP, new LoaiPhong(loaiP), sogiuong, giaTri, songlon, sotreem, trangthai);
+		Phong phong = new Phong(maP, tenP, new LoaiPhong(loaiP), sogiuong, giaTri, songlon, sotreem, trangthai ,null ,null);
 		return phong;
 	}
 	private boolean validData(int type) {
@@ -263,8 +273,9 @@ public class SuaPhong_Dialog extends JDialog {
 		}
 		return true;
 	}
+	  @SneakyThrows
 	  public void loadCboMaLoaiPhong() {
-			dsLoaiPhong = LoaiPhongDAO.getInstance().getListLoaiPhong();
+			dsLoaiPhong = loaiPhongService.getAll();
 			if (dsLoaiPhong == null || dsLoaiPhong.size() <= 0)
 				return;
 			for (LoaiPhong item : dsLoaiPhong) {

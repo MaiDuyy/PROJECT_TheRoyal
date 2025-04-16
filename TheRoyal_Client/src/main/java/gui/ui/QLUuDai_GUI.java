@@ -32,6 +32,7 @@ import java.text.ParseException;
 
 import com.toedter.calendar.JDateChooser;
 
+import controller.TimKhuyenMai;
 import gui.format_ui.Table;
 import entity.DichVu;
 import entity.KhuyenMai;
@@ -215,7 +216,7 @@ public class QLUuDai_GUI extends JInternalFrame implements ActionListener {
 	                new Font("Segoe UI", Font.PLAIN, 12), new Color(246, 167, 193)));
 
 	        btnThem = new JButton("Thêm",
-	            new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/blueAdd_16.png")));
+	            new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/blueAdd_16.png")));
 	        btnThem.setBackground(new Color(255, 255, 255));
 	        btnThem.setBounds(37, 25, 67, 63);
 	        btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -226,7 +227,7 @@ public class QLUuDai_GUI extends JInternalFrame implements ActionListener {
 	        btnCapNhat = new JButton("Sửa");
 	        btnCapNhat.setBackground(new Color(255, 255, 255));
 	        btnCapNhat.setBounds(191, 25, 67, 63);
-	        btnCapNhat.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/updated.png")));
+	        btnCapNhat.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/updated.png")));
 	        btnCapNhat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 	        btnCapNhat.setFocusable(false);
 	        btnCapNhat.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -254,7 +255,7 @@ public class QLUuDai_GUI extends JInternalFrame implements ActionListener {
 	        		 Date ngayHT = Date.valueOf(LocalDate.now());
 	        		 tableModelUD.getDataVector().removeAllElements();
 	        		 tableModelUD.fireTableDataChanged();
-	        		 dsKM = TimKhuyenMai.getInstance().searchLocNgayKetThuc(ngayHT);
+	        		 dsKM = (ArrayList<KhuyenMai>) TimKhuyenMai.getInstance().searchLocNgayKetThuc(ngayHT);
 	        		 DocDuLieuNVVaoTable();
              
 	        	}
@@ -283,19 +284,19 @@ public class QLUuDai_GUI extends JInternalFrame implements ActionListener {
 
 	                switch (luachon) {
 	                    case "Tất cả":
-	                        dsKM = TimKhuyenMai.getInstance().searchTatCa(searchContent);
+	                        dsKM = (ArrayList<KhuyenMai>) TimKhuyenMai.getInstance().searchTatCa(searchContent);
 	                        break;
 	                    case "Tên":
-	                        dsKM = TimKhuyenMai.getInstance().searchTen(searchContent);
+	                        dsKM = (ArrayList<KhuyenMai>) TimKhuyenMai.getInstance().searchTen(searchContent);
 	                        break;
 	                    case "Mã sản phẩm":
-	                        dsKM = TimKhuyenMai.getInstance().searhMa(searchContent);
+	                        dsKM = (ArrayList<KhuyenMai>) TimKhuyenMai.getInstance().searhMa(searchContent);
 	                        break;
 	                    case "Ngày bắt đầu":
-	                        dsKM = TimKhuyenMai.getInstance().searhNgayBatDau(searchContent);
+	                        dsKM = (ArrayList<KhuyenMai>) TimKhuyenMai.getInstance().searhNgayBatDau(searchContent);
 	                        break;
 	                    case "Ngày kết thúc":
-	                        dsKM = TimKhuyenMai.getInstance().searchNgayKetThuc(searchContent);
+	                        dsKM = (ArrayList<KhuyenMai>) TimKhuyenMai.getInstance().searchNgayKetThuc(searchContent);
 	                        break;
 	                }
 
@@ -442,7 +443,7 @@ public class QLUuDai_GUI extends JInternalFrame implements ActionListener {
 	}
 
 	
-	 public String formatDate(Date date) {
+	 public String formatDate(java.util.Date date) {
 	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 	        return sdf.format(date);
 	    }

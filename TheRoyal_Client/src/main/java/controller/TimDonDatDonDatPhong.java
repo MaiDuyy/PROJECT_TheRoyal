@@ -1,48 +1,48 @@
 package controller;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-import dao.DonDatPhongDAO;
-import dao.TaiKhoanDAO;
 import entity.DonDatPhong;
-import entity.TaiKhoan;
+import rmi.RMIClient;
+import service.DonDatPhongService;
 
 public class TimDonDatDonDatPhong {
 	public static TimDonDatDonDatPhong getInstance() {
-        return new TimDonDatDonDatPhong();
-    }
-	
-	
+		return new TimDonDatDonDatPhong();
+	}
 
-	 
-	 public ArrayList<DonDatPhong> searchTen( String text) {
-		    ArrayList<DonDatPhong> result = new ArrayList<>();
-		    // Get the filtered list by trangThai
-		    ArrayList<DonDatPhong> armt = DonDatPhongDAO.getInstance().findPhongByTrangThaiAndSDTDangO( text);
-		    // Further filter by checking if sDT contains the search text
-		    for (DonDatPhong ddp : armt) {
-		        String sdt = ddp.getKhachHang().getsDT();
-		        if (sdt != null && sdt.toLowerCase().contains(text.toLowerCase())) {
-		            result.add(ddp);
-		        }
-		    }
-		    return result;
+	private final DonDatPhongService donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
+
+	public List<DonDatPhong> searchTen(String text) {
+		List<DonDatPhong> result = new ArrayList<>();
+		try {
+			List<DonDatPhong> list = donDatPhongService.findPhongByTrangThaiAndSDTDangO(text);
+			for (DonDatPhong ddp : list) {
+				String sdt = ddp.getKhachHang().getSDT();
+				if (sdt != null && sdt.toLowerCase().contains(text.toLowerCase())) {
+					result.add(ddp);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
+		return result;
+	}
 
-	 public ArrayList<DonDatPhong> searhMa(String text) {
-	        ArrayList<DonDatPhong> result = new ArrayList<>();
-	        ArrayList<DonDatPhong> armt = DonDatPhongDAO.getInstance().getListDonDatPhong();
-	        for (var ncc : armt ) {
-	            if (ncc.getMaDDP().toLowerCase().contains(text.toLowerCase()))
-	                   {
-	                result.add(ncc);
-	            }
-	        }
-	        
-	        
-	        return result;
-	    }
-	
-	
-	
+	public List<DonDatPhong> searhMa(String text) {
+		List<DonDatPhong> result = new ArrayList<>();
+		try {
+			List<DonDatPhong> list = donDatPhongService.getAll();
+			for (DonDatPhong ddp : list) {
+				if (ddp.getMaDDP().toLowerCase().contains(text.toLowerCase())) {
+					result.add(ddp);
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

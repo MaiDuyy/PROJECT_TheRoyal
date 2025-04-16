@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeExclude;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class NhanVien implements Serializable {
     private String CCCD;
 
     @Column(name = "ngaySinh", columnDefinition = "DATE")
-    private LocalDate ngaySinh;
+    private Date ngaySinh;
 
     @Column(name = "sDT", columnDefinition = "varchar(50)")
     private String sDT;
@@ -46,7 +47,7 @@ public class NhanVien implements Serializable {
     private TaiKhoan taiKhoan;
 
     @Column(name = "ngayVaoLam", columnDefinition = "DATE")
-    private LocalDate ngayVaoLam;
+    private Date ngayVaoLam;
 
     @Column(name = "chucVu", columnDefinition = "nvarchar(50)")
     private String chucVu;

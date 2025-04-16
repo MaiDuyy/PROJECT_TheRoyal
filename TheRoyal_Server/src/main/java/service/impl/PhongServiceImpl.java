@@ -63,5 +63,15 @@ public class PhongServiceImpl extends GenericServiceImpl<Phong, String>  impleme
         return phongDAO.getTongSoPhong();
     }
 
+    @Override
+    public String getLatestID() throws RemoteException {
+        return phongDAO.getLatestID();
+    }
+
+    @Override
+    public boolean updateTinhTrangPhong(Phong phong, String trangThai) throws RemoteException {
+        return phongDAO.updateTinhTrangPhong(phong, trangThai);
+    }
+
 
 }

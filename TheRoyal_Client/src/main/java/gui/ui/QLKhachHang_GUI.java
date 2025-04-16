@@ -28,8 +28,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
-import Format_UI.Table;
-import connectDB.ConnectDB;
+import gui.format_ui.Table;
+
 import controller.TimKhachHang;
 import controller.TimNhanVien;
 import dao.KhachHangDAO;
@@ -225,16 +225,16 @@ private void ChucNang()	{
 					        switch (luachon) {
 					            case "Tất cả":
 					            	
-					                dsKH = TimKhachHang.getInstance().searchTatCa(searchContent);
+					                dsKH = (ArrayList<KhachHang>) TimKhachHang.getInstance().searchTatCa(searchContent);
 					                break;
 					            case "Căn cước công dân":
-					            	   dsKH =  TimKhachHang.getInstance().searchCCCD(searchContent);
+					            	   dsKH = (ArrayList<KhachHang>) TimKhachHang.getInstance().searchCCCD(searchContent);
 					                break;
 					            case "Tên":
-					            	dsKH =  TimKhachHang.getInstance().searchTen(searchContent);
+					            	dsKH = (ArrayList<KhachHang>) TimKhachHang.getInstance().searchTen(searchContent);
 					                break;
 					            case "Số điện thoại":
-					            	dsKH = TimKhachHang.getInstance().searhSDT(searchContent);
+					            	dsKH = (ArrayList<KhachHang>) TimKhachHang.getInstance().searchSDT(searchContent);
 					                break;
 					        }
 					        

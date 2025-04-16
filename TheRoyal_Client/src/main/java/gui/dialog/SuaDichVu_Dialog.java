@@ -19,15 +19,17 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import UI.QLKhachHang_GUI;
-import UI.QLNhanVien_GUI;
-import UI.QLDichVu_GUI;
+import gui.ui.QLKhachHang_GUI;
+import gui.ui.QLNhanVien_GUI;
+import gui.ui.QLDichVu_GUI;
 import dao.KhachHangDAO;
 import dao.DichVuDAO;
 import entity.KhachHang;
 import gui.component.ButtonCustom;
 import gui.component.HeaderTitle;
 import entity.DichVu;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
 
 public class SuaDichVu_Dialog extends JDialog {
 
@@ -40,14 +42,16 @@ public class SuaDichVu_Dialog extends JDialog {
     private ButtonCustom btnThem, btnDong;
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private QLDichVu_GUI home;
-    HeaderTitle title; 
+    HeaderTitle title;
+
+
 
     public SuaDichVu_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLDichVu_GUI) parent;
-        dsDV = DichVuDAO.getInstance().getDanhSachDichVu();
+        dsDV = (ArrayList<DichVu>) RMIClient.getInstance().getDichVuService();
         DichVu sp = home.getSanPhanSelect();
         txtMa.setText(sp.getMaDV());
         txtTen.setText(sp.getTenDV());
@@ -152,10 +156,11 @@ public class SuaDichVu_Dialog extends JDialog {
         staffInfoPanel.add(btnThem);
 
     }
+    @SneakyThrows
     private void themNV() {
     if(validData(UPDATE)) {
         DichVu nv = dataDichVu();
-        DichVuDAO.getInstance().suaDichVu(nv);
+        RMIClient.getInstance().getDichVuService().update(nv);
         this.dispose();
         home.huytim();
         home.thongBao(0, "Cập nhật thành công");
@@ -242,7 +247,7 @@ public class SuaDichVu_Dialog extends JDialog {
             }
         }
 
-        DichVu dv = new DichVu(maDV, tenDV, moTaDV, giaTri, soLuong);
+        DichVu dv = new DichVu(maDV, tenDV, moTaDV, giaTri, soLuong , null ,null);
         return dv;
     }
 

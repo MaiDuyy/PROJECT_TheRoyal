@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -22,13 +23,13 @@ public class DonDatPhong implements Serializable {
     private String maDDP;
 
     @Column(columnDefinition = "DATETIME")
-    private LocalDateTime thoiGianDatPhong;
+    private Date thoiGianDatPhong;
 
     @Column(columnDefinition = "DATETIME")
-    private LocalDateTime thoiGianNhanPhong;
+    private Date thoiGianNhanPhong;
 
     @Column(columnDefinition = "DATETIME")
-    private LocalDateTime thoiGianTraPhong;
+    private Date thoiGianTraPhong;
 
     // Mối quan hệ n - 1 với KhachHang
     @ManyToOne

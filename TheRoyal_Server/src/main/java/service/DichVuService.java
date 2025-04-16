@@ -35,4 +35,5 @@ public interface DichVuService extends Remote, GenericService<DichVu, String> {
 
     //Lấy tổng tiền năm
     Double getTongTienNam(int nam) throws RemoteException;
+    public String getLatestID() throws RemoteException;
 }

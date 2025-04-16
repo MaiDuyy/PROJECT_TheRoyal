@@ -59,4 +59,9 @@ public class DichVuServiceImpl extends GenericServiceImpl<DichVu, String> implem
     public Double getTongTienNam(int nam)throws RemoteException{
         return dichVuDAO.getTongTienNam(nam);
     }
+
+    @Override
+    public String getLatestID() throws RemoteException {
+        return dichVuDAO.getLatestID();
+    }
 }

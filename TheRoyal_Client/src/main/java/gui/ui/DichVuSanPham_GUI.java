@@ -13,13 +13,16 @@ import javax.swing.table.DefaultTableModel;
 
 import com.jgoodies.common.base.Objects;
 
-import Format_UI.TableActionCellRender;
-import connectDB.ConnectDB;
+import gui.format_ui.TableActionCellRender;
+
 import dao.*;
 import entity.*;
 import gui.dialog.ThongTinPhong_Dialog;
 import gui.event.TableActionCellEditor;
 import gui.event.TableActionEvent;
+import lombok.SneakyThrows;
+import rmi.RMIClient;
+import service.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -31,56 +34,55 @@ public class DichVuSanPham_GUI extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTable tbl_DichVu, tbl_SanPham, tbl_SPDV;
 	private DefaultTableModel tableModelDV, tableModelSP, tableModelSPDV;
-	private HoaDonDAO hoadondao;
-	private PhongDAO phongdao;
-	private DonDatPhongDAO dondatphongdao;
-	private CTDonDatPhongDAO ctdondatphongdao;
-	private SanPhamDAO sanphamdao;
-	private DichVuDAO dichvudao;
-	private CTHoaDonDAO cthoadondao;
+
+	private HoaDonService hoaDonService;
+	private PhongService phongService;
+	private DonDatPhongService donDatPhongService;
+	private CTHoaDonService ctHoaDonService;
+	private SanPhamService sanPhamService;
+	private DichVuService dichVuService;
+
+
+
 	private int currentSL;
-	private double gia;
 	private ArrayList<SanPham> dsSP;
 	private ArrayList<DichVu> dsDV;
 	private ArrayList<DonDatPhong> dsDDP;
 	private ArrayList<HoaDon> dsHD;
 	private ArrayList<Phong> dsPhong;
-	private ArrayList<CTDonDatPhong> dsCTDDP;
-	private ArrayList<CTHoaDon> dsCTHD;
-	private  DonDatPhong ddp;
-	private  DanhSachPhong_GUI danhSachPhong;
+	private Phong phong;
+	private DonDatPhong ddp;
+	private DanhSachPhong_GUI danhSachPhong;
 	private JButton btnXong;
-	private   Phong phong;
 	private JLabel tieuDeLabel;
 	private ThongTinPhong_Dialog thongtinphong;
 
-//	public static void main(String[] args) {
-//		new DichVuSanPham_GUI(phong, danhSachPhong).setVisible(true);
-//
-//	}
-
-	public DichVuSanPham_GUI(Phong phong, DonDatPhong ddp,DanhSachPhong_GUI danhSachPhong , JDialog owner , boolean modal) {
+	public DichVuSanPham_GUI(Phong phong, DonDatPhong ddp, DanhSachPhong_GUI danhSachPhong, JDialog owner, boolean modal) {
 		super(owner, modal);
 		getContentPane().setBackground(new Color(255, 255, 255));
 		getContentPane().setLayout(null);
-		 tieuDeLabel = new JLabel("Sản phẩm / Dịch vụ");
-		 tieuDeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	        tieuDeLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-	        tieuDeLabel.setForeground(new Color(246, 167, 193));
-	        tieuDeLabel.setBounds(-10, 10, 1149, 30);
-	        getContentPane().add(tieuDeLabel);
+		tieuDeLabel = new JLabel("Sản phẩm / Dịch vụ");
+		tieuDeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		tieuDeLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+		tieuDeLabel.setForeground(new Color(246, 167, 193));
+		tieuDeLabel.setBounds(-10, 10, 1149, 30);
+		getContentPane().add(tieuDeLabel);
 		this.phong = phong;
 		this.danhSachPhong = danhSachPhong;
 		this.ddp = ddp;
 		thongtinphong = (ThongTinPhong_Dialog) owner;
 		setTitle("Thêm sản phẩm, dịch vụ");
-		hoadondao = new HoaDonDAO();
-		phongdao = new PhongDAO();
-		dondatphongdao = new DonDatPhongDAO();
-		dichvudao = new DichVuDAO();
-		sanphamdao = new SanPhamDAO();
-		ctdondatphongdao = new CTDonDatPhongDAO();
-		cthoadondao = new CTHoaDonDAO();
+
+		// Initialize services from RMI client
+		hoaDonService = RMIClient.getInstance().getHoaDonService();
+		phongService = RMIClient.getInstance().getPhongService();
+		donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
+		dichVuService = RMIClient.getInstance().getDichVuService();
+		sanPhamService = RMIClient.getInstance().getSanPhamService();
+		ctHoaDonService = RMIClient.getInstance().getCtHoaDonService();
+
+		// Initialize DAOs
+
 
 		setBounds(100, 100, 1163, 661);
 		initComponents();
@@ -112,9 +114,7 @@ public class DichVuSanPham_GUI extends JDialog {
 				int selectedRow = tbl_DichVu.getSelectedRow();
 				if (selectedRow != -1) {
 					DichVu chondichvu = getSelectedDichVu(selectedRow);
-					cthoadondao = new CTHoaDonDAO();
 					addToDVThemTable(chondichvu);
-
 				}
 			}
 		});
@@ -138,9 +138,7 @@ public class DichVuSanPham_GUI extends JDialog {
 				int selectedRow = tbl_SanPham.getSelectedRow();
 				if (selectedRow != -1) {
 					SanPham chonsanpham = getSelectedSanPham(selectedRow);
-					cthoadondao = new CTHoaDonDAO();
 					addToSPThemTable(chonsanpham);
-
 				}
 			}
 		});
@@ -172,28 +170,28 @@ public class DichVuSanPham_GUI extends JDialog {
 
 		tabelPanelInfo.add(scrollPaneSPDV);
 		TableActionEvent event = new TableActionEvent() {
+			@SneakyThrows
 			@Override
 			public void tangSoLuong(int row) {
 				currentSL = (int) tableModelSPDV.getValueAt(row, 2);
 				String itemIdOrName = (String) tableModelSPDV.getValueAt(row, 0);
 				double gia;
-				 HoaDon maHD = hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
-				double[] tongTien = hoadondao.getTongTienSanPhamDichVu(maHD.getMaHD());
-                double tongTienSP = tongTien[0];
-                double tongTienDV = tongTien[1];
+				HoaDon maHD = hoaDonService.getHoaDonTheoPhong(phong.getMaPhong());
+				double[] tongTien = hoaDonService.getTongTienSanPhamDichVu(maHD.getMaHD());
+				double tongTienSP = tongTien[0];
+				double tongTienDV = tongTien[1];
 				if (isSanPham(itemIdOrName)) {
-					sanphamdao = new SanPhamDAO();
-					SanPham mh = sanphamdao.getSanPhamTheoMaHoacTen(itemIdOrName);
+					SanPham mh = sanPhamService.getSanPhamTheoMaHoacTen(itemIdOrName);
 					gia = mh.getGiaSP();
 					if (mh.getSoLuongSP() <= 0) {
 						JOptionPane.showMessageDialog(null, "Sản phẩm " + mh.getTenSP() + " đã hết hàng!", "Thông báo",
 								JOptionPane.WARNING_MESSAGE);
 						return;
 					}
-					CTHoaDon ctHoaDon = cthoadondao.getCTHoaDonByMaSP(mh.getMaSP(),maHD.getMaHD());
-					if (mh.getSoLuongSP() > 0  && ctHoaDon !=null) {
+					CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaSP(mh.getMaSP(), maHD.getMaHD());
+					if (mh.getSoLuongSP() > 0  && ctHoaDon != null) {
 						mh.setSoLuongSP(mh.getSoLuongSP() - 1);
-						sanphamdao.updateSLSP(mh, mh.getSoLuongSP());
+						sanPhamService.updateSLSP(mh, mh.getSoLuongSP());
 
 						for (int i = 0; i < tableModelSP.getRowCount(); i++) {
 							if (tableModelSP.getValueAt(i, 0).equals(mh.getMaSP())) {
@@ -201,23 +199,15 @@ public class DichVuSanPham_GUI extends JDialog {
 								break;
 							}
 						}
-						
-						
-						
-	                    ctHoaDon.setSoLuongSP(currentSL + 1);
-	                    ctHoaDon.setTongTienSP((currentSL + 1) * gia);
-	                    cthoadondao.updateSLSP(ctHoaDon);
 
-	                    
-	                    tongTienSP += gia;
-	                    
-	                    
+						ctHoaDon.setSoLuongSP(currentSL + 1);
+						ctHoaDon.setTongTienSP((currentSL + 1) * gia);
+						ctHoaDonService.updateSLSP(ctHoaDon);
+
+						tongTienSP += gia;
 					}
-					
-						
 				} else {
-					dichvudao = new DichVuDAO();
-					DichVu dv = dichvudao.timDichVuTheoMaHoacTheoTen(itemIdOrName);
+					DichVu dv = (DichVu) dichVuService.getDichVuByMaHoacTen(itemIdOrName);
 
 					if (dv.getSoLuongDV() <= 0) {
 						JOptionPane.showMessageDialog(null, "Dịch vụ " + dv.getTenDV() + " đã hết hàng!", "Thông báo",
@@ -225,10 +215,10 @@ public class DichVuSanPham_GUI extends JDialog {
 						return;
 					}
 					gia = dv.getGiaDV();
-					CTHoaDon ctHoaDon = cthoadondao.getCTHoaDonByMaDV(dv.getMaDV(), maHD.getMaHD());
+					CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaDV(dv.getMaDV(), maHD.getMaHD());
 					if (dv.getSoLuongDV() > 0 && ctHoaDon != null) {
 						dv.setSoLuongDV(dv.getSoLuongDV() - 1);
-						dichvudao.updateSLDV(dv, dv.getSoLuongDV());
+						dichVuService.updateSLDV(dv, dv.getSoLuongDV());
 
 						for (int i = 0; i < tableModelDV.getRowCount(); i++) {
 							if (tableModelDV.getValueAt(i, 0).equals(dv.getMaDV())) {
@@ -236,105 +226,99 @@ public class DichVuSanPham_GUI extends JDialog {
 								break;
 							}
 						}
-						
-					
-		                ctHoaDon.setSoLuongDV(currentSL + 1);
-		                ctHoaDon.setTongTienDV((currentSL + 1) * gia);
-		                cthoadondao.updateSLDV(ctHoaDon);
 
-		                tongTienDV += gia;
+
+						ctHoaDon.setSoLuongDV(currentSL + 1);
+						ctHoaDon.setTongTienDV((currentSL + 1) * gia);
+						ctHoaDonService.updateSLDV(ctHoaDon);
+
+						tongTienDV += gia;
 					}
-					
-					
-			
-	                
 				}
-		
-                hoadondao.updateTongTienHoaDon(maHD, tongTienSP, tongTienDV);
+
+				hoaDonService.updateTongTienHoaDon(maHD, tongTienSP, tongTienDV);
 				tableModelSPDV.setValueAt(currentSL + 1, row, 2);
 				double newTotalPrice = (currentSL + 1) * gia;
 				DecimalFormat df = new DecimalFormat("#,###.##");
 				String donGia = df.format(newTotalPrice);
-//				tableModelSPDV.setValueAt(donGia, row, 3);
+				// tableModelSPDV.setValueAt(donGia, row, 3);
 			}
 
+			@SneakyThrows
 			@Override
 			public void giamSoLuong(int row) {
-			    currentSL = (int) tableModelSPDV.getValueAt(row, 2);
-			    String itemIdOrName = (String) tableModelSPDV.getValueAt(row, 0);
-			    HoaDon maHD = hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
-			    double gia;
+				currentSL = (int) tableModelSPDV.getValueAt(row, 2);
+				String itemIdOrName = (String) tableModelSPDV.getValueAt(row, 0);
+				HoaDon maHD = hoaDonService.getHoaDonTheoPhong(phong.getMaPhong());
+				double gia;
 
-			    double[] tongTien = hoadondao.getTongTienSanPhamDichVu(maHD.getMaHD());
-			    double tongTienSP = tongTien[0];
-			    double tongTienDV = tongTien[1];
-			    
-			    if (isSanPham(itemIdOrName)) {
-			        sanphamdao = new SanPhamDAO();
-			        SanPham mh = sanphamdao.getSanPhamTheoMaHoacTen(itemIdOrName);
-			        gia = mh.getGiaSP();
+				double[] tongTien = hoaDonService.getTongTienSanPhamDichVu(maHD.getMaHD());
+				double tongTienSP = tongTien[0];
+				double tongTienDV = tongTien[1];
 
-			        mh.setSoLuongSP(mh.getSoLuongSP() + 1);
-			        sanphamdao.updateSLSP(mh, mh.getSoLuongSP());
+				if (isSanPham(itemIdOrName)) {
+					SanPham mh = sanPhamService.getSanPhamTheoMaHoacTen(itemIdOrName);
+					gia = mh.getGiaSP();
 
-			        for (int i = 0; i < tableModelSP.getRowCount(); i++) {
-			            if (tableModelSP.getValueAt(i, 0).equals(mh.getMaSP())) {
-			                tableModelSP.setValueAt(mh.getSoLuongSP(), i, 3);
-			                break;
-			            }
-			        }
+					mh.setSoLuongSP(mh.getSoLuongSP() + 1);
+					sanPhamService.updateSLSP(mh, mh.getSoLuongSP());
 
-			        CTHoaDon ctHoaDon = cthoadondao.getCTHoaDonByMaSP(mh.getMaSP(),maHD.getMaHD());
-			        if (ctHoaDon != null && currentSL > 1) { 
-			            ctHoaDon.setSoLuongSP(currentSL - 1);
-			            ctHoaDon.setTongTienSP((currentSL - 1) * gia);
-			            cthoadondao.updateSLSP(ctHoaDon);
+					for (int i = 0; i < tableModelSP.getRowCount(); i++) {
+						if (tableModelSP.getValueAt(i, 0).equals(mh.getMaSP())) {
+							tableModelSP.setValueAt(mh.getSoLuongSP(), i, 3);
+							break;
+						}
+					}
 
-			            tongTienSP -= gia;
-			        }
+					CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaSP(mh.getMaSP(), maHD.getMaHD());
+					if (ctHoaDon != null && currentSL > 1) {
+						ctHoaDon.setSoLuongSP(currentSL - 1);
+						ctHoaDon.setTongTienSP((currentSL - 1) * gia);
+						ctHoaDonService.updateSLSP(ctHoaDon);
 
-			    } else {
-			        dichvudao = new DichVuDAO();
-			        DichVu dv = dichvudao.timDichVuTheoMaHoacTheoTen(itemIdOrName);
-			        gia = dv.getGiaDV();
+						tongTienSP -= gia;
+					}
 
-			        dv.setSoLuongDV(dv.getSoLuongDV() + 1);
-			        dichvudao.updateSLDV(dv, dv.getSoLuongDV());
+				} else {
+					DichVu dv = (DichVu) dichVuService.getDichVuByMaHoacTen(itemIdOrName);
+					gia = dv.getGiaDV();
 
-			        for (int i = 0; i < tableModelDV.getRowCount(); i++) {
-			            if (tableModelDV.getValueAt(i, 0).equals(dv.getMaDV())) {
-			                tableModelDV.setValueAt(dv.getSoLuongDV(), i, 3);
-			                break;
-			            }
-			        }
+					dv.setSoLuongDV(dv.getSoLuongDV() + 1);
+					dichVuService.updateSLDV(dv, dv.getSoLuongDV());
 
-			        CTHoaDon ctHoaDon = cthoadondao.getCTHoaDonByMaDV(dv.getMaDV(),maHD.getMaHD());
-			        if (ctHoaDon != null && currentSL > 1) { 
-			            ctHoaDon.setSoLuongDV(currentSL - 1);
-			            ctHoaDon.setTongTienDV((currentSL - 1) * gia);
-			            cthoadondao.updateSLDV(ctHoaDon);
+					for (int i = 0; i < tableModelDV.getRowCount(); i++) {
+						if (tableModelDV.getValueAt(i, 0).equals(dv.getMaDV())) {
+							tableModelDV.setValueAt(dv.getSoLuongDV(), i, 3);
+							break;
+						}
+					}
 
-			            tongTienDV -= gia;
-			        }
-			    }
+					CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaDV(dv.getMaDV(), maHD.getMaHD());
+					if (ctHoaDon != null && currentSL > 1) {
+						ctHoaDon.setSoLuongDV(currentSL - 1);
+						ctHoaDon.setTongTienDV((currentSL - 1) * gia);
+						ctHoaDonService.updateSLDV(ctHoaDon);
 
-			    hoadondao.updateTongTienHoaDon(maHD, tongTienSP, tongTienDV);
+						tongTienDV -= gia;
+					}
+				}
 
-			    if (currentSL > 1) {
-			        tableModelSPDV.setValueAt(currentSL - 1, row, 2);
-			        double newTotalPrice = (currentSL - 1) * gia;
-			        DecimalFormat df = new DecimalFormat("#,###.##");
-			        String donGia = df.format(newTotalPrice);
-//			        tableModelSPDV.setValueAt(donGia, row, 3);
-			    } else {
-			        tableModelSPDV.removeRow(row);
-			    }
+				hoaDonService.updateTongTienHoaDon(maHD, tongTienSP, tongTienDV);
+
+				if (currentSL > 1) {
+					tableModelSPDV.setValueAt(currentSL - 1, row, 2);
+					double newTotalPrice = (currentSL - 1) * gia;
+					DecimalFormat df = new DecimalFormat("#,###.##");
+					String donGia = df.format(newTotalPrice);
+					// tableModelSPDV.setValueAt(donGia, row, 3);
+				} else {
+					tableModelSPDV.removeRow(row);
+				}
 			}
 
-
+			@SneakyThrows
 			private boolean isSanPham(String itemIdOrName) {
-				sanphamdao = new SanPhamDAO();
-				return sanphamdao.getSanPhamTheoMaHoacTen(itemIdOrName) != null;
+				return sanPhamService.getSanPhamTheoMaHoacTen(itemIdOrName) != null;
 			}
 		};
 
@@ -350,31 +334,29 @@ public class DichVuSanPham_GUI extends JDialog {
 		btnXong.setIcon(new ImageIcon(DichVuSanPham_GUI.class.getResource("/src/ICON/icon/check2_16.png")));
 		btnXong.setBounds(939, 573, 130, 21);
 		btnXong.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				xong(phong);
-
 			}
 		});
 		getContentPane().add(btnXong);
 	}
 
+	@SneakyThrows
 	private void loadData() {
-		dsHD = hoadondao.getListHoaDon();
-		dsPhong = phongdao.getListPhong();
-		dsDDP = dondatphongdao.getListDonDatPhong();
-		dsDV = dichvudao.getDanhSachDichVu();
-		dsSP = sanphamdao.getDanhSachSanPham();
+		dsHD = new ArrayList<>(hoaDonService.getAll());
+		dsPhong = new ArrayList<>(phongService.getAll());
+		dsDDP = new ArrayList<>(donDatPhongService.getAll());
+		dsDV = new ArrayList<>(dichVuService.getAll());
+		dsSP = new ArrayList<>(sanPhamService.getAll());
 
 		loadDichVuTable();
 		loadSanPhamTable();
-	 
 		loadCTHoaDonToTable(phong);
-
 	}
 
 	private void loadDichVuTable() {
+		tableModelDV.setRowCount(0); // Clear existing rows
 		if (dsDV == null || dsDV.isEmpty())
 			return;
 		for (DichVu dv : dsDV) {
@@ -386,6 +368,7 @@ public class DichVuSanPham_GUI extends JDialog {
 	}
 
 	private void loadSanPhamTable() {
+		tableModelSP.setRowCount(0); // Clear existing rows
 		if (dsSP == null || dsSP.isEmpty())
 			return;
 		for (SanPham sp : dsSP) {
@@ -401,14 +384,16 @@ public class DichVuSanPham_GUI extends JDialog {
 		return sdf.format(date);
 	}
 
+	@SneakyThrows
 	private DichVu getSelectedDichVu(int row) {
 		String maDV = (String) tbl_DichVu.getValueAt(row, 0);
-		return dichvudao.timDichVuTheoMaHoacTheoTen(maDV);
+		return (DichVu) dichVuService.getDichVuByMaHoacTen(maDV);
 	}
 
+	@SneakyThrows
 	private SanPham getSelectedSanPham(int row) {
 		String maSP = (String) tableModelSP.getValueAt(row, 0);
-		return sanphamdao.getSanPhamTheoMaHoacTen(maSP);
+		return sanPhamService.getSanPhamTheoMaHoacTen(maSP);
 	}
 
 	private int findRowIndexByCode(String code) {
@@ -421,6 +406,7 @@ public class DichVuSanPham_GUI extends JDialog {
 		return -1;
 	}
 
+	@SneakyThrows
 	private void addToDVThemTable(DichVu dv) {
 		String selectedCode = dv.getMaDV();
 		int rowIndex = findRowIndexByCode(selectedCode);
@@ -437,14 +423,14 @@ public class DichVuSanPham_GUI extends JDialog {
 
 			tableModelSPDV.setValueAt(currentSL + 1, rowIndex, 2);
 			double newTotalPrice = (currentSL + 1) * gia;
-			tableModelSPDV.setValueAt(newTotalPrice, rowIndex, 3);
+			tableModelSPDV.setValueAt(df.format(newTotalPrice), rowIndex, 3);
 
 		} else {
 			tableModelSPDV.addRow(new Object[] { dv.getMaDV(), dv.getTenDV(), 1, donGia });
 		}
 
 		dv.setSoLuongDV(dv.getSoLuongDV() - 1);
-		dichvudao.updateSLDV(dv, dv.getSoLuongDV());
+		dichVuService.updateSLDV(dv, dv.getSoLuongDV());
 
 		for (int i = 0; i < tableModelDV.getRowCount(); i++) {
 			if (tableModelDV.getValueAt(i, 0).equals(dv.getMaDV())) {
@@ -456,8 +442,29 @@ public class DichVuSanPham_GUI extends JDialog {
 				break;
 			}
 		}
+
+		// Update HoaDon if necessary
+		HoaDon hoaDon = hoaDonService.getHoaDonTheoPhong(phong.getMaPhong());
+		if (hoaDon != null) {
+			CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaDV(dv.getMaDV(), hoaDon.getMaHD());
+			if (ctHoaDon == null) {
+				// Create new CTHoaDon for this DichVu
+				String maCTD = ctHoaDonService.getLatestID();
+				ctHoaDon = new CTHoaDon(maCTD, hoaDon, null, dv, 0, 1, 0, gia);
+				ctHoaDonService.save(ctHoaDon);
+			} else {
+				// Update existing CTHoaDon
+				ctHoaDon.setSoLuongDV(ctHoaDon.getSoLuongDV() + 1);
+				ctHoaDon.setTongTienDV(ctHoaDon.getSoLuongDV() * gia);
+				ctHoaDonService.updateSLDV(ctHoaDon);
+			}
+
+			double[] tongTien = hoaDonService.getTongTienSanPhamDichVu(hoaDon.getMaHD());
+			hoaDonService.updateTongTienHoaDon(hoaDon, tongTien[0], tongTien[1] + gia);
+		}
 	}
 
+	@SneakyThrows
 	private void addToSPThemTable(SanPham sp) {
 		String selectedCode = sp.getMaSP();
 		int rowIndex = findRowIndexByCode(selectedCode);
@@ -472,17 +479,15 @@ public class DichVuSanPham_GUI extends JDialog {
 
 		if (rowIndex != -1) {
 			currentSL = (int) tableModelSPDV.getValueAt(rowIndex, 2);
-
 			tableModelSPDV.setValueAt(currentSL + 1, rowIndex, 2);
 			double newTotalPrice = (currentSL + 1) * gia;
-			tableModelSPDV.setValueAt(newTotalPrice, rowIndex, 3);
-
+			tableModelSPDV.setValueAt(df.format(newTotalPrice), rowIndex, 3);
 		} else {
 			tableModelSPDV.addRow(new Object[] { sp.getMaSP(), sp.getTenSP(), 1, donGia });
 		}
 
 		sp.setSoLuongSP(sp.getSoLuongSP() - 1);
-		sanphamdao.updateSLSP(sp, sp.getSoLuongSP());
+		sanPhamService.updateSLSP(sp, sp.getSoLuongSP());
 
 		for (int i = 0; i < tableModelSP.getRowCount(); i++) {
 			if (tableModelSP.getValueAt(i, 0).equals(sp.getMaSP())) {
@@ -494,114 +499,133 @@ public class DichVuSanPham_GUI extends JDialog {
 				break;
 			}
 		}
+
+		// Update HoaDon if necessary
+		HoaDon hoaDon = hoaDonService.getHoaDonTheoPhong(phong.getMaPhong());
+		if (hoaDon != null) {
+			CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaSP(sp.getMaSP(), hoaDon.getMaHD());
+			if (ctHoaDon == null) {
+				// Create new CTHoaDon for this SanPham
+				String maCTD = ctHoaDonService.getLatestID();
+				ctHoaDon = new CTHoaDon(maCTD, hoaDon, sp, null, 1, 0, gia, 0);
+				ctHoaDonService.save(ctHoaDon);
+			} else {
+				// Update existing CTHoaDon
+				ctHoaDon.setSoLuongSP(ctHoaDon.getSoLuongSP() + 1);
+				ctHoaDon.setTongTienSP(ctHoaDon.getSoLuongSP() * gia);
+				ctHoaDonService.updateSLSP(ctHoaDon);
+			}
+
+			double[] tongTien = hoaDonService.getTongTienSanPhamDichVu(hoaDon.getMaHD());
+			hoaDonService.updateTongTienHoaDon(hoaDon, tongTien[0] + gia, tongTien[1]);
+		}
 	}
 
+	@SneakyThrows
 	public ArrayList<CTHoaDon> createCTHoaDonFromTable(HoaDon maHD) {
-	    ArrayList<CTHoaDon> listCTHoaDon = new ArrayList<>();
+		ArrayList<CTHoaDon> listCTHoaDon = new ArrayList<>();
 
-	    for (int i = 0; i < tableModelSPDV.getRowCount(); i++) {
-	        String maSP = (String) tableModelSPDV.getValueAt(i, 0);
-	        String tenSP = (String) tableModelSPDV.getValueAt(i, 1);
-	        int soLuong = (int) tableModelSPDV.getValueAt(i, 2);
-	        String valueAt = tableModelSPDV.getValueAt(i, 3).toString().replace(",", "");
-	        double tongTien = Double.parseDouble(valueAt);
+		for (int i = 0; i < tableModelSPDV.getRowCount(); i++) {
+			String maSP = (String) tableModelSPDV.getValueAt(i, 0);
+			String tenSP = (String) tableModelSPDV.getValueAt(i, 1);
+			int soLuong = (int) tableModelSPDV.getValueAt(i, 2);
 
-	        SanPham sp = sanphamdao.getSanPhamTheoMaHoacTen(maSP);
-	        DichVu dv = dichvudao.timDichVuTheoMaHoacTheoTen(maSP);
-	        String maCTD = cthoadondao.getLatestID();
+			// Handle potential format issues with price values
+			String valueAtStr = tableModelSPDV.getValueAt(i, 3).toString();
+			// Remove commas and other non-numeric characters except decimal point
+			String cleanValue = valueAtStr.replaceAll("[^0-9.]", "");
+			double tongTien = Double.parseDouble(cleanValue);
 
-	        if (sp != null || dv != null) {
-	            CTHoaDon cthd = new CTHoaDon(
-	                maCTD,                
-	                maHD,                 
-	                sp,                   
-	                dv,                 
-	                sp != null ? soLuong : 0,  
-	                dv != null ? soLuong : 0,  
-	                sp != null ? tongTien : 0, 
-	                dv != null ? tongTien : 0  
-	            );
-	            listCTHoaDon.add(cthd);
-	        }
-	    }
-	    return listCTHoaDon;
+			SanPham sp = sanPhamService.getSanPhamTheoMaHoacTen(maSP);
+			DichVu dv = dichVuService.getDichVuByMaHoacTen(maSP).stream().findFirst().orElse(null);
+			String maCTD = ctHoaDonService.getLatestID();
+
+			if (sp != null || dv != null) {
+				CTHoaDon cthd = new CTHoaDon(
+						maCTD,
+						maHD,
+						sp,
+						dv,
+						sp != null ? soLuong : 0,
+						dv != null ? soLuong : 0,
+						sp != null ? tongTien : 0,
+						dv != null ? tongTien : 0
+				);
+				listCTHoaDon.add(cthd);
+			}
+		}
+		return listCTHoaDon;
 	}
-	 public void loadCTHoaDonToTable(Phong phong) {
-	        HoaDonDAO hdDAO = new HoaDonDAO();
-	        HoaDon hoaDon = hdDAO.getHoaDonTheoPhong(phong.getMaPhong());
 
-	        tableModelSPDV.setRowCount(0);
+	public void loadCTHoaDonToTable(Phong phong) {
+		try {
+			HoaDon hoaDon = hoaDonService.getHoaDonTheoPhong(phong.getMaPhong());
+			tableModelSPDV.setRowCount(0);
+			List<CTHoaDon> listCTHD = ctHoaDonService.getListCTHoaDonByMaHD(hoaDon.getMaHD());
+			DecimalFormat df = new DecimalFormat("#,###.##");
 
-	        CTHoaDonDAO ctHoaDonDao = new CTHoaDonDAO();
-	        List<CTHoaDon> listCTHD = ctHoaDonDao.getCTHoaDonByMaHoaDon(hoaDon.getMaHD());
+			for (CTHoaDon ctHoaDon : listCTHD) {
+				Object[] row = new Object[6];
+				row[0] = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getSanPham().getMaSP()
+						: (ctHoaDon.getDichVu() != null ? ctHoaDon.getDichVu().getMaDV() : "");
+				row[1] = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getSanPham().getTenSP()
+						: (ctHoaDon.getDichVu() != null ? ctHoaDon.getDichVu().getTenDV() : "");
+				row[2] = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getSoLuongSP() : ctHoaDon.getSoLuongDV();
 
-	        DecimalFormat df = new DecimalFormat("#,###.##");
+				double unitPrice = (ctHoaDon.getSanPham() != null)
+						? ctHoaDon.getTongTienSP() / ctHoaDon.getSoLuongSP()
+						: (ctHoaDon.getDichVu() != null ? ctHoaDon.getTongTienDV() / ctHoaDon.getSoLuongDV() : 0);
+				row[3] = df.format(unitPrice);
 
-	        for (CTHoaDon ctHoaDon : listCTHD) {
-	            Object[] row = new Object[6];
-
-	            row[0] = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getSanPham().getMaSP() :
-	                    (ctHoaDon.getDichVu() != null ? ctHoaDon.getDichVu().getMaDV() : "");
-	            row[1] = (ctHoaDon.getSanPham() != null) ? 
-	                     ctHoaDon.getSanPham().getTenSP() : 
-	                     (ctHoaDon.getDichVu() != null ? ctHoaDon.getDichVu().getTenDV() : "");
-	            row[2] = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getSoLuongSP() : ctHoaDon.getSoLuongDV();
-
-	            double unitPrice = (ctHoaDon.getSanPham() != null) ? 
-	                    ctHoaDon.getTongTienSP() / ctHoaDon.getSoLuongSP() : 
-	                    (ctHoaDon.getDichVu() != null ? ctHoaDon.getTongTienDV() / ctHoaDon.getSoLuongDV() : 0);
-	            row[3] = df.format(unitPrice);
-
-	            double totalPrice = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getTongTienSP() : ctHoaDon.getTongTienDV();
-	            row[4] = df.format(totalPrice);
-
-	            row[5] = ""; 
-
-	            tableModelSPDV.addRow(row);
-	        }
-	    }
-
+				double totalPrice = (ctHoaDon.getSanPham() != null) ? ctHoaDon.getTongTienSP()
+						: ctHoaDon.getTongTienDV();
+				row[4] = df.format(totalPrice);
+				row[5] = "";
+				tableModelSPDV.addRow(row);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void xong(Phong phong) {
-	    HoaDon hoaDon = hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
+		try {
+			HoaDon hoaDon = hoaDonService.getHoaDonTheoPhong(phong.getMaPhong());
+			if (hoaDon == null) {
+				JOptionPane.showMessageDialog(null,
+						"Không tìm thấy hóa đơn cho phòng: " + phong.getMaPhong(), "Thông báo",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			ArrayList<CTHoaDon> listCTHoaDon = createCTHoaDonFromTable(hoaDon);
+			for (CTHoaDon cthd : listCTHoaDon) {
+				boolean exists = ctHoaDonService.checkIfCTHoaDonExists(cthd);
+				if (!exists) {
+					boolean kq = ctHoaDonService.save(cthd);
+					if (!kq) {
+						JOptionPane.showMessageDialog(null,
+								"Không thể thêm chi tiết hóa đơn cho sản phẩm/dịch vụ: "
+										+ (cthd.getSanPham() != null ? cthd.getSanPham().getTenSP()
+										: "Dịch vụ không xác định"),
+								"Thông báo", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
 
-	    if (hoaDon == null) {
-	        JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn cho phòng: " + phong.getMaPhong(), "Thông báo", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
+			double[] tongTien = hoaDonService.getTongTienSanPhamDichVu(hoaDon.getMaHD());
+			boolean updateSuccess = hoaDonService.updateTongTienHoaDon(hoaDon, tongTien[0], tongTien[1]);
+			if (!updateSuccess) {
+				JOptionPane.showMessageDialog(null, "Không thể cập nhật tổng tiền vào hóa đơn!", "Thông báo",
+						JOptionPane.ERROR_MESSAGE);
+			}
 
-	    ArrayList<CTHoaDon> listCTHoaDon = createCTHoaDonFromTable(hoaDon);
-	    for (CTHoaDon cthd : listCTHoaDon) {
-	        boolean exists = cthoadondao.checkIfCTHoaDonExists(cthd);
-	        if (!exists) {
-	            boolean kq = cthoadondao.insertCTHoaDon(cthd);
-	            if (!kq) {
-	                JOptionPane.showMessageDialog(null, "Không thể thêm chi tiết hóa đơn cho sản phẩm/dịch vụ: " +
-	                        (cthd.getSanPham() != null ? cthd.getSanPham().getTenSP() : "Dịch vụ không xác định"),
-	                        "Thông báo", JOptionPane.ERROR_MESSAGE);
-	            }
-	        }
-	    }
-
-	    double[] tongTien = hoadondao.getTongTienSanPhamDichVu(hoaDon.getMaHD());
-	    double tongTienSP = tongTien[0];
-	    double tongTienDV = tongTien[1];
-
-	    boolean updateSuccess = hoadondao.updateTongTienHoaDon(hoaDon, tongTienSP, tongTienDV);
-	    if (updateSuccess) {
-//	        JOptionPane.showMessageDialog(null, "Tổng tiền hóa đơn đã được cập nhật!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-	    } else {
-	        JOptionPane.showMessageDialog(null, "Không thể cập nhật tổng tiền vào hóa đơn!", "Thông báo", JOptionPane.ERROR_MESSAGE);
-	    }
-
-	    JOptionPane.showMessageDialog(null, "Đã thêm vào chi tiết hóa đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-	    thongtinphong.dis();
-	    dispose();
-	    
+			JOptionPane.showMessageDialog(null, "Đã thêm vào chi tiết hóa đơn thành công!", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+			thongtinphong.dis();
+			dispose();
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi xử lý hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		}
 	}
-
-
-
-	
-
 }

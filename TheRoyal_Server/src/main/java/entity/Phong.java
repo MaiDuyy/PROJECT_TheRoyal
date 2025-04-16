@@ -50,4 +50,8 @@ public class Phong implements Serializable {
 
     @OneToMany(mappedBy = "phong")
     private Set<DonDatPhong> dsDonDatPhong;
+
+    public Phong(String maPhong) {
+        this.maPhong = maPhong;
+    }
 }

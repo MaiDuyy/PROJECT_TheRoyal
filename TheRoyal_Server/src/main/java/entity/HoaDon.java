@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -47,7 +48,7 @@ public class HoaDon implements Serializable  {
     private KhuyenMai khuyenMai;
 
     @Column(name = "thoiGianLapHD", columnDefinition = "DATETIME")
-    private LocalDateTime thoiGianLapHD;
+    private Date thoiGianLapHD;
 
     @Column(name = "tienPhong", columnDefinition = "DECIMAL(18, 2) CHECK (tienPhong >= 0)")
     private double tienPhong;

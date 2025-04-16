@@ -56,4 +56,8 @@ public class NhanVien implements Serializable {
 
     @OneToMany(mappedBy = "nhanVien")
     private Set<HoaDon> dsHoaDon;
+
+    public NhanVien(String maNV) {
+        this.maNV = maNV;
+    }
 }

@@ -4,6 +4,7 @@ package dao.impl;
 import dao.DichVuDAO;
 import entity.DichVu;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -155,15 +156,7 @@ public class DichVuDAOImpl extends GenericDAOImpl<DichVu, String> implements Dic
     public Double getTongTienNam(int nam) {
         try {
             TypedQuery<Double> query = em.createQuery(
-                    "SELECT SUM(tongTien) " +
-                            "FROM ( " +
-                            "   SELECT SUM(od.soLuongDV * dv.giaDV) as tongTien " +
-                            "   FROM CTHoaDon od " +
-                            "   JOIN od.hoaDon o " +
-                            "   JOIN od.dichVu dv " +
-                            "   WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam " +
-                            "   GROUP BY dv.maDV, dv.tenDV " +
-                            ")",
+                    "SELECT SUM(tongTien) FROM (SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV * dv.giaDV) as tongTien FROM CTHoaDon od JOIN HoaDon o ON od.hoaDon = o JOIN DichVu dv ON od.dichVu = dv WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam GROUP BY dv.maDV, dv.tenDV) as subquery",
                     Double.class
             );
             query.setParameter("nam", nam);
@@ -173,5 +166,24 @@ public class DichVuDAOImpl extends GenericDAOImpl<DichVu, String> implements Dic
             return 0.0;
         }
     }
+
+    @Override
+    public String getLatestID() {
+
+        String id = null;
+        try {
+            String jpql = "SELECT d.maDV FROM DichVu d ORDER BY d.maDV DESC";
+
+            id = em.createQuery(jpql, String.class)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            id = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
 
 }

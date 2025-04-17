@@ -231,7 +231,7 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 		    JOptionPane.showMessageDialog(this, "Chỉ được nhận phòng từ 12 giờ trưa trở đi");
 		    dispose();
 		} else {
-		      NhanVien nhanVienDangNhap = LoginFrame.getNhanVienDangNhap();
+		      NhanVien nhanVienDangNhap = Login.getNhanVienDangNhap();
 		      
 		        HoaDon hd = null;
 				try {
@@ -243,7 +243,7 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
                     }
                     hd = new HoaDon(mahd,new KhachHang(ddp.getKhachHang().getMaKH()), new Phong(ddp.getPhong().getMaPhong()),
 					                   new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, new KhuyenMai(), new Date(System.currentTimeMillis()),
-					                    phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán");
+					                    phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán",null);
                     boolean hdInserted = false;
                     try {
                         hdInserted = hoaDonService.save(hd);
@@ -269,7 +269,7 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 				            JOptionPane.showMessageDialog(this, "Nhận phòng thành công");
 				        } 
 					
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -59,12 +59,13 @@ public class SuaNhanVien_Dialog extends JDialog {
 	private ArrayList<TaiKhoan> dsTk;
 	private QLNhanVien_GUI home ; 
 	private JTextField txtMaTK;
+	@SneakyThrows
 	public SuaNhanVien_Dialog(javax.swing.JInternalFrame parent, JFrame owner, boolean modal) {
         super(owner, modal);
         GuiNhanVien();
         setLocationRelativeTo(null);
         home = (QLNhanVien_GUI) parent;
-        dsNV = (ArrayList<NhanVien>) home.nhanviendao.getAll();
+        dsNV = (ArrayList<NhanVien>) home.nhanVienService.getAll();
         NhanVien nv = home.getNhanVienSelect();
         txtMaNV.setText(nv.getMaNV());
         txtTenNV.setText(nv.getTenNV());

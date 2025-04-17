@@ -123,7 +123,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		
 		modelTKChiTiet = new DefaultComboBoxModel<String>();
 		cmbTKChiTiet = new JComboBox<String>(modelTKChiTiet);
-		 hoaDonService.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
+//		 hoaDonService.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
 
 		cmbTKChiTiet.setBounds(708, 62, 143, 24);
 		cmbTKChiTiet.addActionListener(evt -> updateYearData());
@@ -289,11 +289,11 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			return;
 		}
 		populateTable(dsHoaDon);
-        try {
-            updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonThang(thang, nam), hoaDonService.getDoanhThuThang(thang, nam));
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonThang(thang, nam), hoaDonService.getDoanhThuThang(thang, nam));
+//        } catch (RemoteException e) {
+//            throw new RuntimeException(e);
+//        }
 //		updateChart(new ArrayList<>(),nam);
 
 	}
@@ -318,7 +318,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			clearTable();
 		}
 		populateTable(dsHoaDon);
-		updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonNam(nam), hoaDonService.getTongTienNam(nam));
+//		updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonNam(nam), hoaDonService.getTongTienNam(nam));
 		updateChart(new ArrayList<>(),nam);
 	}
 
@@ -416,11 +416,11 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
             throw new RuntimeException(e);
         }
         lblTongHD.setText(String.valueOf(tongHD));
-	    double tongTien = hoaDonService.getTongTienNgay(sqlDate);
+//	    double tongTien = hoaDonService.getTongTienNgay(sqlDate);
 		 String COUNTRY = "VN";
 		 String LANGUAGE = "vi";
-		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(tongTien);
-	    lblTongTien.setText(String.valueOf(str));
+//		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(tongTien);
+//	    lblTongTien.setText(String.valueOf(str));
 	}
      
 
@@ -448,7 +448,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	        pnlChart.removeAll();
 
-	        list = hoaDonService.getDoanhThuTungThangNam(nam);
+//	        list = hoaDonService.getDoanhThuTungThangNam(nam);
 	        chart.addLegend("Tổng tiền", new Color(12, 84, 175), new Color(0, 108, 247));
 	        for (String[] arr : list) {
 	            String month = arr[0];

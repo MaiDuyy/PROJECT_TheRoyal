@@ -234,7 +234,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		date_DSPhong.getCalendarButton().setBackground(new Color(204, 255, 204));
 		date_DSPhong.setToolTipText("");
 		date_DSPhong.getCalendarButton()
-				.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/date.png")));
+				.setIcon(new ImageIcon("icon/date.png"));
 		date_DSPhong.setDateFormatString("dd/MM/yyyy");
 		date_DSPhong.setBounds(10, 56, 165, 42);
 		Calendar calendar = Calendar.getInstance();
@@ -385,7 +385,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		        jpanel_DSPhong_header_right.add(txtTim);
 		               btn_Tim = new ButtonCustom("Tìm Kiếm" , "success", 12);
 		               btn_Tim.setBounds(491, 33, 107, 29);
-		               btn_Tim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/search_16.png")));
+		               btn_Tim.setIcon(new ImageIcon("icon/search_16.png"));
 		               btn_Tim.addActionListener(this);
 		        jpanel_DSPhong_header_right.add(btn_Tim);
 		
@@ -459,19 +459,19 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		jpanel_DSPhong_header_right.add(soPhongTrong);
 
 		JLabel lblNewLabel_1 = new JLabel("Có khách");
-		lblNewLabel_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/khachdango24.png")));
+		lblNewLabel_1.setIcon(new ImageIcon("icon/khachdango24.png"));
 		lblNewLabel_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_1.setBounds(10, 0, 100, 41);
 		jpanel_DSPhong_header_right.add(lblNewLabel_1);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Phòng trống");
-		lblNewLabel_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong16.png")));
+		lblNewLabel_1_1.setIcon(new ImageIcon("icon/phongtrong16.png"));
 		lblNewLabel_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_1_1.setBounds(120, 0, 111, 41);
 		jpanel_DSPhong_header_right.add(lblNewLabel_1_1);
 
 		JLabel lblNewLabel_1_1_1 = new JLabel("Đang dọn");
-		lblNewLabel_1_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongdangdon24.png")));
+		lblNewLabel_1_1_1.setIcon(new ImageIcon("icon/phongdangdon24.png"));
 		lblNewLabel_1_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_1_1_1.setBounds(241, 1, 100, 41);
 		jpanel_DSPhong_header_right.add(lblNewLabel_1_1_1);
@@ -501,7 +501,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		btnMore.setBounds(1227, 11, 68, 48);
 		jpanel_DSPhong_header.add(btnMore);
 
-		btnMore.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/square-plus.png")));
+		btnMore.setIcon(new ImageIcon("icon/square-plus.png"));
 
 		btnMore.setBorder(null);
 
@@ -623,17 +623,17 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 	
         String trangThaiDDP = donDatPhongService.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(),sqlDate);
 	
-        if((!th.isEmpty() && th.equals("Đặt trước")) || trangThaiDDP.equals("Đặt trước")) {
+        if((!th.isEmpty() && th.equals("Đặt trước")) || (trangThaiDDP != null && trangThaiDDP.equals("Đặt trước"))) {
         	hienThiPhongDatTruoc2(phong);
 //        	hienThiPhongDatTruoc(phong);
 
-        }else if((!th.isEmpty() && th.equals("Đang ở")) || trangThaiDDP.equals("Đang ở")) {
+        }else if((!th.isEmpty() && th.equals("Đang ở")) || (trangThaiDDP != null && trangThaiDDP.equals("Đang ở"))) {
         	hienThiPhongDangO(phong);
 
-        }else if((!th.isEmpty() && th.equals("Phòng trống")) || trangThaiDDP.equals("Phòng trống")){
+        }else if((!th.isEmpty() && th.equals("Phòng trống")) || (trangThaiDDP != null && trangThaiDDP.equals("Phòng trống"))){
         	hienThiPhongTrong(phong);
 
-        }else if((!th.isEmpty() && th.equals("Đang dọn dẹp")) || trangThaiDDP.equals("Đang dọn dẹp")){
+        }else if((!th.isEmpty() && th.equals("Đang dọn dẹp")) || (trangThaiDDP != null && trangThaiDDP.equals("Đang dọn dẹp"))){
         	hienThiPhongDangDon(phong);
         }
 		danhSachPhong.revalidate();
@@ -671,7 +671,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon("icon/phongtrong24.png"));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Phòng trống");
@@ -812,7 +812,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon("icon/phongtrong24.png"));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Đặt trước");
@@ -877,7 +877,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_5 = new JLabel("");
 			lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
+			lblNewLabel_5.setIcon(new ImageIcon("icon/oclock.png"));
 			lblNewLabel_5.setBounds(0, 0, 90, 41);
 			panel_4.add(lblNewLabel_5);
 
@@ -906,7 +906,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_4_1);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon("icon/oclock.png"));
 			lblNewLabel_5_1.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabel_5_1.setBounds(0, 0, 90, 41);
 			panel_4_1.add(lblNewLabel_5_1);
@@ -1053,7 +1053,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/phongtrong24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon("icon/phongtrong24.png"));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Đặt trước");
@@ -1118,7 +1118,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_5 = new JLabel("");
 			lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
+			lblNewLabel_5.setIcon(new ImageIcon("icon/oclock.png"));
 			lblNewLabel_5.setBounds(0, 0, 90, 41);
 			panel_4.add(lblNewLabel_5);
 
@@ -1147,7 +1147,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_4_1);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/oclock.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon("icon/oclock.png"));
 			lblNewLabel_5_1.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabel_5_1.setBounds(0, 0, 90, 41);
 			panel_4_1.add(lblNewLabel_5_1);
@@ -1291,7 +1291,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/khachdango24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon("icon/khachdango24.png"));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Có khách");
@@ -1356,7 +1356,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_5 = new JLabel("");
 			lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/oclock.png")));
+			lblNewLabel_5.setIcon(new ImageIcon("iconicon/oclock.png"));
 			lblNewLabel_5.setBounds(0, 0, 90, 41);
 			panel_4.add(lblNewLabel_5);
 
@@ -1392,7 +1392,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_4_1);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/oclock.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon("iconicon/oclock.png"));
 			lblNewLabel_5_1.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabel_5_1.setBounds(0, 0, 90, 41);
 			panel_4_1.add(lblNewLabel_5_1);
@@ -1527,7 +1527,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/ICON/icon/phongdangdon24.png")));
+			lblNewLabel_2.setIcon(new ImageIcon("iconicon/phongdangdon24.png"));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Đang dọn");
@@ -1590,15 +1590,15 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			panelPhong.add(panel_2);
 
 			JLabel lblNewLabel_5 = new JLabel("");
-			lblNewLabel_5.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/broom.png")));
+			lblNewLabel_5.setIcon(new ImageIcon("icon/broom.png"));
 			panel_2.add(lblNewLabel_5);
 
 			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/broom.png")));
+			lblNewLabel_5_1.setIcon(new ImageIcon("icon/broom.png"));
 			panel_2.add(lblNewLabel_5_1);
 
 			JLabel lblNewLabel_5_1_1 = new JLabel("");
-			lblNewLabel_5_1_1.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/icon/broom.png")));
+			lblNewLabel_5_1_1.setIcon(new ImageIcon("icon/broom.png"));
 			panel_2.add(lblNewLabel_5_1_1);
 			danhSachPhong.add(panelPhong);
 //		}
@@ -1652,7 +1652,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			RoundedBorder panelPhong = new RoundedBorder(20);
 			panelPhong.setPreferredSize(new Dimension(300, 250));
 			String trangThaiDDP = donDatPhongService.getTrangThaiPhongOThoiDiemChon(phong.getMaPhong(), sqlSelectedDate);
-			if ("Đang ở".equals(trangThaiDDP)) {
+			if (trangThaiDDP != null && "Đang ở".equals(trangThaiDDP)) {
 				hienThiPhongDangO(phong);
 			}
 		}
@@ -1840,8 +1840,8 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btn_NhanPhong)) {
-			NhanPhong_GUI np = new NhanPhong_GUI(phong, DanhSachPhong_GUI.this);
-			np.setVisible(true);
+//			NhanPhong_GUI np = new NhanPhong_GUI(phong, DanhSachPhong_GUI.this);
+//			np.setVisible(true);
 
 		}
 		

@@ -63,7 +63,7 @@ public class TrangChu extends JInternalFrame {
 
         JLabel slogan = new JLabel();
         slogan.setBounds(60, 10, 1081, 161);
-        slogan.setIcon(new ImageIcon(getClass().getResource("/ICON/icon/sologan.png")));
+        slogan.setIcon(new ImageIcon("icon/sologan.png"));
         top.add(slogan);
 
         getContentPane().add(top, BorderLayout.NORTH);
@@ -117,7 +117,7 @@ public class TrangChu extends JInternalFrame {
 
         JLabel lblNewLabel_2 = new JLabel();
         lblNewLabel_2.setBounds(40, 11, 24, 24);
-        lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/src/icon/phongtrong24.png")));
+        lblNewLabel_2.setIcon(new ImageIcon("icon/phongtrong24.png"));
         panel_1.add(lblNewLabel_2);
 
         JLabel lblNewLabel_1_1 = new JLabel("Phòng trống");
@@ -157,7 +157,7 @@ public class TrangChu extends JInternalFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setBounds(40, 11, 24, 24);
-		lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/src/icon/khachdango24.png")));
+		lblNewLabel_2.setIcon(new ImageIcon("icon/khachdango24.png"));
 		panel_1.add(lblNewLabel_2);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Đang ở");
@@ -176,7 +176,7 @@ public class TrangChu extends JInternalFrame {
 		panel_3.setLayout(new BorderLayout(0, 0));
 
 		JLabel lblNewLabel_4 = new JLabel();
-		java.sql.Date ngayhientai = new java.sql.Date(System.currentTimeMillis());
+        java.sql.Date ngayhientai = new java.sql.Date(System.currentTimeMillis());
         int phongTrong = donDatPhongService.countSLDonDangO(ngayhientai);
 		lblNewLabel_4.setText(String.valueOf(phongTrong));
 		lblNewLabel_4.setForeground(new Color(255, 153, 51));
@@ -201,7 +201,7 @@ public class TrangChu extends JInternalFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setBounds(40, 11, 24, 24);
-		lblNewLabel_2.setIcon(new ImageIcon(DanhSachPhong_GUI.class.getResource("/src/icon/khachdango24.png")));
+		lblNewLabel_2.setIcon(new ImageIcon("icon/khachdango24.png"));
 		panel_1.add(lblNewLabel_2);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Đã đặt");

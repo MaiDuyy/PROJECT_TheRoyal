@@ -112,8 +112,8 @@ public class Dasboard_UI extends JFrame {
 		JPanel Jpanel_MenuDSPhong = new JPanel();
 		Jpanel_MenuDSPhong.setBackground(new Color(255, 192, 203));
 
-		ImageIcon icon = new ImageIcon("src\\icon\\phong_bar.png");
-		JLabel label = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/phong_bar.png")));
+		ImageIcon icon = new ImageIcon("icon/phong_bar.png");
+		JLabel label = new JLabel(new ImageIcon("icon/phong_bar.png"));
 		label.setBounds(10, 0, 33, 83);
 
 		JLabel textLabel = new JLabel("Danh sách phòng");
@@ -129,7 +129,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuQlyKH.setLayout(null);
 		menu.add(Jpanel_MenuQlyKH);
 
-		JLabel label_1 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/khachhang_bar.png")));
+		JLabel label_1 = new JLabel(new ImageIcon("icon/khachhang_bar.png"));
 		label_1.setBounds(10, 0, 33, 83);
 		Jpanel_MenuQlyKH.add(label_1);
 
@@ -143,7 +143,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_QLNV.setLayout(null);
 		menu.add(Jpanel_QLNV);
 
-		JLabel label_2 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/nhanvien_bar.png")));
+		JLabel label_2 = new JLabel(new ImageIcon("icon/nhanvien_bar.png"));
 		label_2.setBounds(10, 0, 33, 83);
 		Jpanel_QLNV.add(label_2);
 
@@ -157,7 +157,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuQLSP.setLayout(null);
 		menu.add(Jpanel_MenuQLSP);
 
-		JLabel label_3 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/sanpham_bar.png")));
+		JLabel label_3 = new JLabel(new ImageIcon("icon/sanpham_bar.png"));
 		label_3.setBounds(10, 0, 33, 83);
 		Jpanel_MenuQLSP.add(label_3);
 
@@ -171,7 +171,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuQLDV.setLayout(null);
 		menu.add(Jpanel_MenuQLDV);
 
-		JLabel label_4 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/dichvu_bar.png")));
+		JLabel label_4 = new JLabel(new ImageIcon("icon/dichvu_bar.png"));
 		label_4.setBounds(10, 0, 33, 83);
 		Jpanel_MenuQLDV.add(label_4);
 
@@ -185,7 +185,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuQLHD.setLayout(null);
 		menu.add(Jpanel_MenuQLHD);
 
-		JLabel label_5 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/hoadon_bar.png")));
+		JLabel label_5 = new JLabel(new ImageIcon("icon/hoadon_bar.png"));
 		label_5.setBounds(10, 0, 33, 83);
 		Jpanel_MenuQLHD.add(label_5);
 
@@ -199,7 +199,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuQLUD.setLayout(null);
 		menu.add(Jpanel_MenuQLUD);
 
-		JLabel label_6 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/voucher_bar.png")));
+		JLabel label_6 = new JLabel(new ImageIcon("icon/voucher_bar.png"));
 		label_6.setBounds(10, 0, 33, 83);
 		Jpanel_MenuQLUD.add(label_6);
 
@@ -213,7 +213,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuQLP.setLayout(null);
 		menu.add(Jpanel_MenuQLP);
 
-		JLabel label_8 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/phong_bar (2).png")));
+		JLabel label_8 = new JLabel(new ImageIcon("icon/phong_bar (2).png"));
 		label_8.setBounds(10, 0, 33, 83);
 		Jpanel_MenuQLP.add(label_8);
 
@@ -227,7 +227,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuTK.setLayout(null);
 		menu.add(Jpanel_MenuTK);
 
-		JLabel label_9 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/thongke_bar.png")));
+		JLabel label_9 = new JLabel(new ImageIcon("icon/thongke_bar.png"));
 		label_9.setBounds(10, 0, 33, 83);
 		Jpanel_MenuTK.add(label_9);
 
@@ -243,7 +243,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuTKSP.setLayout(null);
 		menu.add(Jpanel_MenuTKSP);
 
-		JLabel label_10 = new JLabel(new ImageIcon(Dasboard_UI.class.getResource("/src/icon/thongke_bar.png")));
+		JLabel label_10 = new JLabel(new ImageIcon("icon/thongke_bar.png"));
 		label_10.setBounds(10, 0, 33, 83);
 		Jpanel_MenuTK.add(label_10);
 
@@ -539,7 +539,7 @@ public class Dasboard_UI extends JFrame {
 
 
 
-		Label_Profile.setIcon(new ImageIcon(Dasboard_UI.class.getResource("/ICON/icon/businessman.png")));
+		Label_Profile.setIcon(new ImageIcon("icon/businessman.png"));
 		Label_Profile.setBounds(10, 0, 97, 83);
 		jpanel_profile.add(Label_Profile);
 		
@@ -683,12 +683,12 @@ public class Dasboard_UI extends JFrame {
 	
 	private void openThongKeSanPham_GUI() {
 		desktopPaneDashBoard.removeAll();
-		ThongKeSanPham_GUI ThongKe_GUI = new ThongKeSanPham_GUI();
-		desktopPaneDashBoard.add(ThongKe_GUI);
-		Dimension desktopSize = desktopPaneDashBoard.getSize();
-		ThongKe_GUI.setSize(desktopSize.width, desktopSize.height);
-		ThongKe_GUI.setLocation(0, 0);
-		ThongKe_GUI.setVisible(true);
+//		ThongKeSanPham_GUI ThongKe_GUI = new ThongKeSanPham_GUI();
+//		desktopPaneDashBoard.add(ThongKe_GUI);
+//		Dimension desktopSize = desktopPaneDashBoard.getSize();
+//		ThongKe_GUI.setSize(desktopSize.width, desktopSize.height);
+//		ThongKe_GUI.setLocation(0, 0);
+//		ThongKe_GUI.setVisible(true);
 	}
 	  public void resetChange(){
 //	       this.nhanVienDangNhap =  NhanVienDAO.getInstance().getNhanVienTheoMaNV(String.valueOf(nhanVienDangNhap.getMaNV()));

@@ -24,7 +24,7 @@ import gui.ui.DanhSachPhong_GUI;
 import gui.ui.DatPhong;
 import gui.ui.DatPhongTruoc_GUI;
 import gui.ui.DichVuSanPham_GUI;
-import gui.ui.NhanPhong_GUI;
+//import gui.ui.NhanPhong_GUI;
 import gui.ui.QLKhachHang_GUI;
 import gui.ui.ThanhToan_GUI;
 import gui.ui.ThongTinDatPhongTruoc_DL;

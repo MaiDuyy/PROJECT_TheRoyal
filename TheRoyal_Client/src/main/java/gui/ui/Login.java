@@ -54,6 +54,8 @@ public class Login extends JFrame {
     private RMIClient rmiClient;
     private NhanVienService nhanVienService;
 
+    private TaiKhoanService taiKhoanService;
+
     public static NhanVien getNhanVienDangNhap() {
         return nhanVienDangNhap;
     }
@@ -66,6 +68,7 @@ public class Login extends JFrame {
 
         rmiClient = RMIClient.getInstance();
         nhanVienService = rmiClient.getNhanVienService();
+        taiKhoanService = rmiClient.getTaiKhoanService();
 
         initComponents();
     }
@@ -85,7 +88,8 @@ public class Login extends JFrame {
         leftPanel.setLayout(null);
         getContentPane().add(leftPanel);
 
-        ImageIcon originalIcon = new ImageIcon(Login.class.getResource("/src/icon/logo.png"));
+        ImageIcon originalIcon = new ImageIcon("icon/logo.png");
+
         Image scaledImage = originalIcon.getImage().getScaledInstance(281, 354, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         JLabel imgBottom = new JLabel(scaledIcon);
@@ -206,7 +210,7 @@ public class Login extends JFrame {
         dsNV = (ArrayList<NhanVien>) nhanVienService.getNhanVienTheoMa(userName);
 
         // Sử dụng TaiKhoanDAO trực tiếp - có thể cần sửa đổi sau này để sử dụng TaiKhoanService từ RMIClient
-        TaiKhoan tk = TaiKhoanDAO.getInstance().getTaiKhoanTheoMaTk(userName);
+        TaiKhoan tk = taiKhoanService.getTaiKhoanTheoMaTk(userName);
 
         if(Validation.isEmpty(userName)) {
             JOptionPane.showMessageDialog(this, "Tên đăng nhập trống. Phải nhập đủ thông tin");

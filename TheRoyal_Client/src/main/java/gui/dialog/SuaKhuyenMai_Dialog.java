@@ -61,7 +61,7 @@ public class SuaKhuyenMai_Dialog extends JDialog {
         setLocationRelativeTo(null);
         home = (QLUuDai_GUI) parent;
         dsKM = (ArrayList<KhuyenMai>) khuyenMaiService.getAll();
-        KhuyenMai km = home.getSanPhanSelect();
+        KhuyenMai km = home.getKhuyenMaiSelect();
         txtMa.setText(km.getMaKM());
         txtTen.setText(km.getTenKM()); 
         

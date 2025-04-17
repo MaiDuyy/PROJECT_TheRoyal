@@ -215,8 +215,8 @@ public class ThemNhanVien_Dialog extends JDialog {
 
 				try {
 
-					boolean result = home.nhanviendao.save(nv);
-					String maNV = home.nhanviendao.getLatestID();
+					boolean result = home.nhanVienService.save(nv);
+					String maNV = home.nhanVienService.getLatestID();
 					txtMaNV.setText(String.valueOf(maNV));
 					if (result == true) {
 						String ngaysinh = formatDate(nv.getNgaySinh());

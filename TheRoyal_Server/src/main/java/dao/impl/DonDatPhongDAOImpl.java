@@ -6,8 +6,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
-import java.sql.Date;
+
 import java.time.LocalDateTime;
+import java.sql.Date;
 import java.util.List;
 
 public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> implements DonDatPhongDAO {
@@ -218,17 +219,28 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
 
     @Override
     public String getTrangThaiPhongOThoiDiemChon(String maPhong, Date selectedDate){
+
+        String trangThai = "Phòng trống";
+
         try {
-            TypedQuery<String> query = em.createQuery("SELECT ddp.trangThai " +
-                    "FROM DonDatPhong ddp " +
-                    "WHERE ddp.phong.id = :maPhong AND :selectedDate BETWEEN ddp.thoiGianNhanPhong AND ddp.thoiGianTraPhong", String.class);
-            query.setParameter("maPhong", maPhong).getSingleResult();
-            query.setParameter("selectedDate", selectedDate).getSingleResult();
-            return query.getSingleResult();
-        }catch (Exception e){
+            String jpql = "SELECT d.trangThai FROM DonDatPhong d JOIN d.phong p " +
+                    "WHERE p.maPhong = :maPhong " +
+                    "AND :selectedDate BETWEEN d.thoiGianNhanPhong AND d.thoiGianTraPhong";
+
+            trangThai = em.createQuery(jpql, String.class)
+                    .setParameter("maPhong", maPhong)
+                    .setParameter("selectedDate", selectedDate)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse("Phòng trống");
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            em.close();
         }
+
+        return trangThai;
     }
 
     @Override

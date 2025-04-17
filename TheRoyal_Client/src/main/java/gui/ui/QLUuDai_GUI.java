@@ -513,7 +513,7 @@ public class QLUuDai_GUI extends JInternalFrame implements ActionListener {
         }
 
 
-        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri, ngayBD, ngayKT, moTa, soluong);
+        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri, ngayBD, ngayKT, moTa, soluong, null,null);
         return ud;
     }
 

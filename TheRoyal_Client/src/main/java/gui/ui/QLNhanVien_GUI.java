@@ -161,10 +161,10 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 
 		btnTim = new JButton("Tìm Kiếm");
 		btnTim.setBounds(376, 34, 107, 29);
-		btnTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/search_16.png")));
+		btnTim.setIcon(new ImageIcon("icon/search_16.png"));
 		btnHuyTim = new ButtonCustom("Xem tất cả","rest", 12);
 		btnHuyTim.setBounds(493, 34, 112, 29);
-		btnHuyTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/refresh.png")));
+		btnHuyTim.setIcon(new ImageIcon("icon/refresh.png"));
 		searchPanel.setLayout(null);
 		searchPanel.add(txtTim);
 //		searchPanel.add(btnTim);
@@ -181,7 +181,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 								new Font("Segoe UI", Font.PLAIN, 12), new Color(246, 167, 193)));
 
 				btnThem = new JButton("Thêm",
-						new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/blueAdd_16.png")));
+						new ImageIcon("/icon/blueAdd_16.png"));
 				btnThem.setBackground(new Color(255, 255, 255));
 				btnThem.setBounds(37, 25, 67, 63);
 				btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -193,7 +193,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 				btnCapNhat = new JButton("Sửa");
 				btnCapNhat.setBackground(new Color(255, 255, 255));
 				btnCapNhat.setBounds(191, 25, 67, 63);
-				btnCapNhat.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/updated.png")));
+				btnCapNhat.setIcon(new ImageIcon("icon/updated.png"));
 				btnCapNhat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 				btnCapNhat.setFocusable(false);
 				btnCapNhat.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -202,7 +202,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 				btnLamLai = new JButton("Đặt lại");
 				btnLamLai.setBackground(new Color(255, 255, 255));
 				btnLamLai.setBounds(268, 25, 87, 63);
-				btnLamLai.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/ICON/icon/reset.png")));
+				btnLamLai.setIcon(new ImageIcon("icon/reset.png"));
 				btnLamLai.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 				btnLamLai.setFocusable(false);
 				btnLamLai.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -211,7 +211,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 				btnThemTaiKhoanNV = new JButton("Thêm tài khoản");
 				btnThemTaiKhoanNV.setBackground(new Color(255, 255, 255));
 				btnThemTaiKhoanNV.setBounds(365, 25, 129, 63);
-				btnThemTaiKhoanNV.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/ICON/icon/add-friend.png")));
+				btnThemTaiKhoanNV.setIcon(new ImageIcon("icon/add-friend.png"));
 				
 				btnThemTaiKhoanNV.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 				btnThemTaiKhoanNV.setFocusable(false);
@@ -224,7 +224,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 				btnXoa = new JButton("Xóa");
 				btnXoa.setBackground(new Color(255, 255, 255));
 				btnXoa.setBounds(114, 25, 67, 63);
-				btnXoa.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/trash2_16.png")));
+				btnXoa.setIcon(new ImageIcon("icon/trash2_16.png"));
 				btnXoa.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 				btnXoa.setFocusable(false);
 				btnXoa.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

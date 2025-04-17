@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -35,6 +36,11 @@ import entity.KhuyenMai;
 import entity.NhanVien;
 import entity.Phong;
 import formatdate.FormatDate;
+import rmi.RMIClient;
+import service.DonDatPhongService;
+import service.HoaDonService;
+import service.KhachHangService;
+import service.PhongService;
 
 public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener {
 
@@ -43,21 +49,23 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 	public JButton btn_NhanPhong;
 	public JButton btn_HuyDP;
 	private JPanel pn_p_bottom;
-	private DonDatPhongDAO dondatphongdao;
-	private PhongDAO phongdao;
+	private DonDatPhongService donDatPhongService;
+	private PhongService phongService;
+	private HoaDonService hoaDonService;
+	private KhachHangService khachHangService;
 	private DonDatPhong ddp;
 	private Phong phong;
 	private ArrayList<DonDatPhong> dsDDP;
 	private KhachHang khachhang;
-	private KhachHangDAO khachhangdao;
 	private DanhSachPhong_GUI danhSachPhong;
 
 
 	public ThongTinDatPhongTruoc_DL( Phong phong , DanhSachPhong_GUI danhSachPhong  , Frame owner , boolean modal ) {
 		super(owner , modal);
-		dondatphongdao = new DonDatPhongDAO();
-		phongdao = new PhongDAO();
-		khachhangdao = new KhachHangDAO();
+		donDatPhongService = RMIClient.getInstance().getDonDatPhongService();
+		phongService = RMIClient.getInstance().getPhongService();
+		khachHangService = RMIClient.getInstance().getKhachHangService();
+		hoaDonService = RMIClient.getInstance().getHoaDonService();
 		this.phong = phong;
 		this.danhSachPhong = danhSachPhong;
 		// Setting up the dialog
@@ -73,9 +81,13 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 
 	private void showPhongDatTruoc(Phong phong) {
 	    String maPhongFromList = phong.getMaPhong();
-	    	ddp = dondatphongdao.getDonDatPhongTheoMaTraPhong(maPhongFromList);
+        try {
+            ddp = donDatPhongService.getDonDatPhongByMaTraPhong(maPhongFromList);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
 
-	    if (ddp == null) {
+        if (ddp == null) {
 	        JOptionPane.showMessageDialog(null, "Không tìm thấy đơn đặt phòng cho phòng này!", "Thông báo", JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
@@ -88,9 +100,13 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 	        return;
 	    }
 
-	    dsDDP = dondatphongdao.timDonDatPhong(maDDP, maKH, maPhongFromList);
+        try {
+            dsDDP = (ArrayList<DonDatPhong>) donDatPhongService.timDonDatPhong(maDDP, maKH, maPhongFromList);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
 
-	    ddp.setPhong(phong);
+        ddp.setPhong(phong);
 
 	    JPanel panel = new JPanel();
 	    panel.setBorder(BorderFactory.createTitledBorder(
@@ -112,13 +128,23 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 	    lblRoomInfo_1.setBounds(84, 7, 161, 38);
 	    panel.add(lblRoomInfo_1);
 
-	    JLabel lblRoomInfo_1_1 = new JLabel("Tên khách hàng: " + khachhangdao.getKhachHangTheoMa(maKH).getTenKH());
-	    lblRoomInfo_1_1.setFont(new Font("Arial", Font.BOLD, 13));
+            JLabel lblRoomInfo_1_1 = null;
+            try {
+                lblRoomInfo_1_1 = new JLabel("Tên khách hàng: " + khachHangService.getKhachHangTheoMa(maKH).getTenKH());
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            lblRoomInfo_1_1.setFont(new Font("Arial", Font.BOLD, 13));
 	    lblRoomInfo_1_1.setBounds(84, 52, 190, 38);
 	    panel.add(lblRoomInfo_1_1);
 
-	    JLabel lblRoomInfo_1_2 = new JLabel("Số điện thoại: " + khachhangdao.getKhachHangTheoMa(maKH).getsDT());
-	    lblRoomInfo_1_2.setFont(new Font("Arial", Font.BOLD, 13));
+            JLabel lblRoomInfo_1_2 = null;
+            try {
+                lblRoomInfo_1_2 = new JLabel("Số điện thoại: " + khachHangService.getKhachHangTheoMa(maKH).getSDT());
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            lblRoomInfo_1_2.setFont(new Font("Arial", Font.BOLD, 13));
 	    lblRoomInfo_1_2.setBounds(84, 97, 190, 38);
 	    panel.add(lblRoomInfo_1_2);
 
@@ -160,9 +186,14 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 	    pn_p_bottom.setBackground(Color.white);
 	    pn_p_c.add(pn_p_bottom);
 	    pn_p_bottom.setLayout(null);
-	    DonDatPhong ddp = dondatphongdao.getDonDatPhongTheoPhongVaTrangThai(phong.getMaPhong(),"Đặt trước");
+        DonDatPhong ddp = null;
+        try {
+            ddp = donDatPhongService.getDonDatTruocTheoPhongVaTrangThai(phong.getMaPhong(),"Đặt trước");
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
 
-	    if (ddp != null) {
+        if (ddp != null) {
 	        pn_p_bottom.add(btn_HuyDP);
 	        pn_p_bottom.add(btn_NhanPhong);
 	    }
@@ -173,9 +204,14 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 
 	public void nhanPhong (Phong phong) {
 		String maPhong = phong.getMaPhong();
-		DonDatPhong ddp = dondatphongdao.getDonDatPhongTheoMaPhong(maPhong);
+        DonDatPhong ddp = null;
+        try {
+            ddp = donDatPhongService.getDonDatPhongByRoomId(maPhong);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
 
-		Date ngayhientai = new Date(System.currentTimeMillis());
+        Date ngayhientai = new Date(System.currentTimeMillis());
 		String dateNhan = FormatDate.formatDate(ddp.getThoiGianNhanPhong());
 		String dateht = FormatDate.formatDate(ngayhientai);
 
@@ -199,17 +235,32 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 		      
 		        HoaDon hd = null;
 				try {
-					hd = new HoaDon(HoaDonDAO.getInstance().taoMaHoaDonTheoNgay(),new KhachHang(ddp.getKhachHang().getMaKH()), new Phong(ddp.getPhong().getMaPhong()),
+                    String mahd = null;
+                    try {
+                        mahd = hoaDonService.taoMaHoaDonTheoNgay();
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                    hd = new HoaDon(mahd,new KhachHang(ddp.getKhachHang().getMaKH()), new Phong(ddp.getPhong().getMaPhong()),
 					                   new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, new KhuyenMai(), new Date(System.currentTimeMillis()),
 					                    phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán");
-				       boolean hdInserted = HoaDonDAO.getInstance().insert(hd);
+                    boolean hdInserted = false;
+                    try {
+                        hdInserted = hoaDonService.save(hd);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
 
-				        if (hdInserted) {
-				            dondatphongdao.updateTinhTrang(ddp.getMaDDP(), "Đang ở");
+                    if (hdInserted) {
+                        try {
+                            donDatPhongService.updateTinhTrang(ddp.getMaDDP(), "Đang ở");
+							phongService.updateTinhTrang(String.valueOf(phong), phong.getTrangThai());
+							ArrayList<Phong>   dsPhong = (ArrayList<Phong>) phongService.getAll();
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
 //				            phong.setTrangThai("Đang ở");
-				            phongdao.updateTinhTrang(phong, phong.getTrangThai());
 
-				            ArrayList<Phong>   dsPhong = phongdao.getListPhong();
 				            danhSachPhong.capNhatLaiDanhSachPhong();
 				            dispose();
 				          
@@ -238,14 +289,24 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 		if (e.getSource().equals(btn_HuyDP)) {
 			String maPhong = phong.getMaPhong();
 
-			DonDatPhong ddp = dondatphongdao.getDonDatPhongTheoMaPhong(maPhong);
+            DonDatPhong ddp = null;
+            try {
+                ddp = donDatPhongService.getDonDatPhongByRoomId(maPhong);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
 
-			if (ddp != null) {
+            if (ddp != null) {
 				String maKH = ddp.getKhachHang().getMaKH();
 				String maDDP = ddp.getMaDDP();
 
-				KhachHang kh = khachhangdao.getKhachHangTheoMa(maKH);
-				String tenKH = kh.getTenKH();
+                KhachHang kh = null;
+                try {
+                    kh = khachHangService.getKhachHangTheoMa(maKH);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+                String tenKH = kh.getTenKH();
 				int select = JOptionPane.showConfirmDialog(this,
 						"<html>" + "<p style='text-align: center; font-size: 18px; color:red'>Cảnh báo</p>"
 								+ "<p style='text-align: center;'>Hủy đơn đặt phòng của khách hàng "
@@ -256,14 +317,17 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 						"Cảnh báo", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 
 				if (select == JOptionPane.YES_OPTION) {
-					dondatphongdao.deleteDonDatPhong(maDDP, maPhong);
-//					dsKH = khachhangdao.getListKhachHang();
-
-					JOptionPane.showMessageDialog(this, "Đơn đặt phòng của khách hàng " + tenKH + " đã được xóa.",
-							"Thông báo", JOptionPane.INFORMATION_MESSAGE);
-					phongdao.updateTinhTrang(phong, "Phòng trống");
-					dispose();
-					danhSachPhong.capNhatLaiDanhSachPhong();
+                    try {
+                        donDatPhongService.delete(maDDP);
+						JOptionPane.showMessageDialog(this, "Đơn đặt phòng của khách hàng " + tenKH + " đã được xóa.",
+								"Thông báo", JOptionPane.INFORMATION_MESSAGE);
+						phongService.updateTinhTrang(maPhong, "Phòng trống");
+						dispose();
+						danhSachPhong.capNhatLaiDanhSachPhong();
+                    } catch (RemoteException ex) {
+                        throw new RuntimeException(ex);
+                    }
+//					dsKH = khachhangdao.getListKhachHang;();
 				}
 			} else {
 				JOptionPane.showMessageDialog(this, "Không tìm thấy đơn đặt phòng cho phòng này.", "Lỗi",

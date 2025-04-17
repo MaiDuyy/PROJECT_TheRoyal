@@ -19,11 +19,14 @@ import entity.HoaDon;
 import gui.chart.Chart;
 import gui.chart.ModelChart;
 import gui.chart.blankchart.BlankPlotChart;
+import rmi.RMIClient;
+import service.HoaDonService;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -50,7 +53,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	private Table tblTKHD;
 	private JScrollPane scr;
 	private DefaultTableModel tableModelHoaDon;
-	private HoaDonDAO hd_dao = new HoaDonDAO();
+	private HoaDonService hoaDonService = RMIClient.getInstance().getHoaDonService();
 	private Chart chart = new Chart();
 	private JPanel panelCenter;
 	private JLabel lblBang;
@@ -120,7 +123,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		
 		modelTKChiTiet = new DefaultComboBoxModel<String>();
 		cmbTKChiTiet = new JComboBox<String>(modelTKChiTiet);
-		 hd_dao.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
+		 hoaDonService.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
 
 		cmbTKChiTiet.setBounds(708, 62, 143, 24);
 		cmbTKChiTiet.addActionListener(evt -> updateYearData());
@@ -270,8 +273,13 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			return;
 		}
 
-		List<HoaDon> dsHoaDon = hd_dao.getDoanhThuThang(thang, nam);
-		if (dsHoaDon == null || dsHoaDon.isEmpty()) {
+        List<HoaDon> dsHoaDon = null;
+        try {
+            dsHoaDon = hoaDonService.getDoanhThuThang(thang, nam);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        if (dsHoaDon == null || dsHoaDon.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Không có hóa đơn trong tháng của năm "+nam +".");
 			lblTongTien.setText("");
 			lblTongHD.setText("");
@@ -281,7 +289,11 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			return;
 		}
 		populateTable(dsHoaDon);
-		updateTotalCountAndAmount(hd_dao.getSoLuongHoaDonThang(thang, nam), hd_dao.getTongTienThang(thang, nam));
+        try {
+            updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonThang(thang, nam), hoaDonService.getDoanhThuThang(thang, nam));
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
 //		updateChart(new ArrayList<>(),nam);
 
 	}
@@ -293,15 +305,20 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			return;
 		}
 
-		List<HoaDon> dsHoaDon = hd_dao.getDoanhThuNam(nam);
-		if (dsHoaDon == null || dsHoaDon.isEmpty()) {
+        List<HoaDon> dsHoaDon = null;
+        try {
+            dsHoaDon = hoaDonService.getDoanhThuNam(nam);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        if (dsHoaDon == null || dsHoaDon.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Không có hóa đơn trong năm.");
 			chart.clear();
 			removeData();
 			clearTable();
 		}
 		populateTable(dsHoaDon);
-		updateTotalCountAndAmount(hd_dao.getSoLuongHoaDonNam(nam), hd_dao.getTongTienNam(nam));
+		updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonNam(nam), hoaDonService.getTongTienNam(nam));
 		updateChart(new ArrayList<>(),nam);
 	}
 
@@ -321,8 +338,13 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	public void DocDuLieu() {
 //        removeData();
-		List<HoaDon> dsHoaDon = hd_dao.getListHoaDon();
-		int stt = 1;
+        List<HoaDon> dsHoaDon = null;
+        try {
+            dsHoaDon = hoaDonService.getAll();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        int stt = 1;
 		for (HoaDon hd : dsHoaDon) {
 			  DecimalFormat df = new DecimalFormat("#,###.##");
   	        String tongTien = df.format(hd.getTongTien() );
@@ -358,9 +380,14 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	    java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
 
-	    List<HoaDon> dsHoaDon = hd_dao.getDoanhThuNgay(sqlDate);
+        List<HoaDon> dsHoaDon = null;
+        try {
+            dsHoaDon = hoaDonService.getDoanhThuNgay(sqlDate.toLocalDate());
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
 
-	    removeData();
+        removeData();
 
 	    if (dsHoaDon == null || dsHoaDon.isEmpty()) {
 	        JOptionPane.showMessageDialog(null, "Không có hóa đơn trong ngày");
@@ -382,10 +409,14 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	        }
 	    }
 
-	    HoaDonDAO HD = new HoaDonDAO();
-	    int tongHD = HD.getSoLuongHoaDonNgay(sqlDate);
-	    lblTongHD.setText(String.valueOf(tongHD));
-	    double tongTien = HD.getTongTienNgay(sqlDate);
+        int tongHD = 0;
+        try {
+            tongHD = hoaDonService.getSoLuongHoaDonNgay(sqlDate.toLocalDate());
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        lblTongHD.setText(String.valueOf(tongHD));
+	    double tongTien = hoaDonService.getTongTienNgay(sqlDate);
 		 String COUNTRY = "VN";
 		 String LANGUAGE = "vi";
 		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(tongTien);
@@ -417,7 +448,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	        pnlChart.removeAll();
 
-	        list = hd_dao.getDoanhThuTungThangNam(nam);
+	        list = hoaDonService.getDoanhThuTungThangNam(nam);
 	        chart.addLegend("Tổng tiền", new Color(12, 84, 175), new Color(0, 108, 247));
 	        for (String[] arr : list) {
 	            String month = arr[0];

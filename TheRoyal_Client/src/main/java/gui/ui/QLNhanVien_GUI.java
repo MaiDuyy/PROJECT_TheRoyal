@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -40,8 +41,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 
-import com.toedter.calendar.JDateChooser;
-
 import gui.format_ui.RadiusButton;
 import gui.format_ui.Table;
 
@@ -58,6 +57,9 @@ import gui.dialog.ThemNhanVien_Dialog;
 import gui.dialog.ThemTaiKhoan_Dialog;
 import gui.swing.notification.Notification;
 import gui.validata.BCrypt;
+import rmi.RMIClient;
+import service.NhanVienService;
+import service.TaiKhoanService;
 
 public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, MouseListener, KeyListener {
 
@@ -66,8 +68,10 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 	private Table tblNhanVien, tblTaiKhoan;
 	public static DefaultTableModel tableModelNV;
 	public DefaultTableModel tableModelTK;
-	public NhanVienDAO nhanviendao;
-	public TaiKhoanDAO taikhoandao;
+
+	public NhanVienService nhanVienService;
+	public TaiKhoanService taiKhoanService;
+
 	private JButton btnThem, btnTim, btnXoa, btnCapNhat, btnLamLai, btnThemTaiKhoanNV;
 	private JTextField  txtTim;
 	private ButtonCustom btnHuyTim;
@@ -87,8 +91,8 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 
 	public QLNhanVien_GUI() {
 		getContentPane().setBackground(new Color(255, 255, 255));
-		nhanviendao = new NhanVienDAO();
-		taikhoandao = new TaiKhoanDAO();
+		nhanVienService = RMIClient.getInstance().getNhanVienService();
+		taiKhoanService = RMIClient.getInstance().getTaiKhoanService();
 		nhanviendialog = new ThemNhanVien_Dialog(this, (JFrame) SwingUtilities.getWindowAncestor(this), rootPaneCheckingEnabled);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		// Nhãn tiêu đề
@@ -329,16 +333,16 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 			tableModelNV.fireTableDataChanged();
 	        switch (luachon) {
 	            case "Tất cả":
-	                dsNV = TimNhanVien.getInstance().searchTatCaNhanVien(searchContent);
+	                dsNV = (ArrayList<NhanVien>) TimNhanVien.getInstance().searchTatCaNhanVien(searchContent);
 	                break;
 	            case "Căn cước công dân":
-		                dsNV = TimNhanVien.getInstance().searchCCCD(searchContent);
+		                dsNV = (ArrayList<NhanVien>) TimNhanVien.getInstance().searchCCCD(searchContent);
 	                break;
 	            case "Tên đăng nhập":
-	                dsNV = TimNhanVien.getInstance().searchTenDangNhapNhanVien(searchContent);
+	                dsNV = (ArrayList<NhanVien>) TimNhanVien.getInstance().searchTenDangNhapNhanVien(searchContent);
 	                break;
 	            case "Chức vụ":
-	                dsNV = TimNhanVien.getInstance().searchChucVuNhanVien(searchContent);
+	                dsNV = (ArrayList<NhanVien>) TimNhanVien.getInstance().searchChucVuNhanVien(searchContent);
 	                break;
 	        }
 	        if (dsNV == null || dsNV.isEmpty()) {
@@ -359,7 +363,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 			
 
 
-			dsTk = TaiKhoanDAO.getInstance().getTaiKhoanTheoMaTKNhanVien(maHD);
+			dsTk = (ArrayList<TaiKhoan>) TaiKhoanDAO.getInstance().getTaiKhoanTheoMaTKNhanVien(maHD);
 			
 			DocDuLieuTKVaoTable();
 			
@@ -470,8 +474,8 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 		                "Cảnh báo", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 
 		        if (confirm == JOptionPane.YES_OPTION) {
-		            NhanVienDAO.getInstance().delete(nv);
-		            taikhoandao.delete(nv.getTaiKhoan().getMaTK());
+		            nhanVienService.delete(nv.getMaNV());
+		            taiKhoanService.delete(nv.getTaiKhoan().getMaTK());
 		            ((DefaultTableModel) tblNhanVien.getModel()).removeRow(row);
 		            ((DefaultTableModel) tblTaiKhoan.getModel()).removeRow(row);
 		            loadListNhanVien();
@@ -534,15 +538,19 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 			String ngaysinh = FormatDate.formatDate(item.getNgaySinh());
 			String ngayvaolam = FormatDate.formatDate(item.getNgayVaoLam());
 			String gioiTinh = item.isGioiTinh() ? "Nữ" : "Nam";
-			tableModelNV.addRow(new Object[] { item.getMaNV(), item.getTenNV(), gioiTinh, item.getcCCD(), ngaysinh,
-					item.getsDT(),item.getEmail(), ngayvaolam, item.getTaiKhoan().getMaTK(), item.getChucVu(), item.getTrangThai() });
+			tableModelNV.addRow(new Object[] { item.getMaNV(), item.getTenNV(), gioiTinh, item.getCCCD(), ngaysinh,
+					item.getSDT(),item.getEmail(), ngayvaolam, item.getTaiKhoan().getMaTK(), item.getChucVu(), item.getTrangThai() });
 
 		}
 	}
 
 	public void loadListNhanVien() {
-		dsNV = nhanviendao.getListNhanVien();
-	}
+        try {
+            dsNV = (ArrayList<NhanVien>) nhanVienService.getListNhanVien();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	private void DocDuLieuTKVaoTable() {
 		tableModelTK.setRowCount(0);
@@ -554,8 +562,12 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 	}
 
 	public void loadListTaiKhoan() {
-		dsTk = taikhoandao.getAllTaiKhoan();
-	}
+        try {
+            dsTk = (ArrayList<TaiKhoan>) taiKhoanService.getAll();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	public void showMessage(String message, JTextField txt) {
 		showMessage(message, ERROR);
@@ -631,6 +643,10 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 	        throw new IllegalArgumentException("Không chọn được dòng nào");
 	    }
 	    String maNV = tblNhanVien.getValueAt(i_row, 0).toString();
-	    return NhanVienDAO.getInstance().getNhanVienTheoMaNV(maNV);
-	}
+        try {
+            return nhanVienService.getNhanVienTheoMaNV(maNV);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -21,7 +21,6 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 
 import gui.format_ui.Table;
-import dao.*;
 
 import entity.*;
 import gui.component.ButtonCustom;
@@ -32,6 +31,8 @@ import gui.dialog.ThemSanPham_Dialog;
 import gui.swing.notification.Notification;
 
 import controller.TimSanPham;
+import rmi.RMIClient;
+import service.SanPhamService;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -55,6 +56,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -78,7 +80,7 @@ public class QLSanPham_GUI extends JInternalFrame implements ActionListener {
     private JComboBox < String > cbxLuachon;
     private DefaultComboBoxModel < String > modelLuaChon;
     private JButton btnThem, btnTim, btnXoa, btnXoaTrang;
-    private SanPhamDAO sanphamdao;
+    private SanPhamService sanPhamService;
     private JLabel lbShowMessages;
     private final int SUCCESS = 1, ERROR = 0, ADD = 1, UPDATE = 2;
     private JButton btnCapNhat;
@@ -86,6 +88,7 @@ public class QLSanPham_GUI extends JInternalFrame implements ActionListener {
     private ThemSanPham_Dialog themsanphamdialog;
 
     public QLSanPham_GUI() {
+        sanPhamService = RMIClient.getInstance().getSanPhamService();
     	getContentPane().setBackground(new Color(255, 255, 255));
         themsanphamdialog = new ThemSanPham_Dialog(this, (JFrame) SwingUtilities.getWindowAncestor(this), rootPaneCheckingEnabled);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -265,13 +268,13 @@ public class QLSanPham_GUI extends JInternalFrame implements ActionListener {
                 switch (luachon) {
                 case "Tất cả":
                   
-                    dsSP = TimSanPham.getInstance().searchTatCa(searchContent);
+                    dsSP = (ArrayList<SanPham>) TimSanPham.getInstance().searchTatCa(searchContent);
                     break;
                 case "Tên":
-                    dsSP = TimSanPham.getInstance().searchTen(searchContent);
+                    dsSP = (ArrayList<SanPham>) TimSanPham.getInstance().searchTen(searchContent);
                     break;
                 case "Mã sản phẩm":
-                    dsSP = TimSanPham.getInstance().searhMa(searchContent);
+                    dsSP = (ArrayList<SanPham>) TimSanPham.getInstance().searhMa(searchContent);
                     break;
                 }
                 
@@ -316,7 +319,7 @@ public class QLSanPham_GUI extends JInternalFrame implements ActionListener {
                     "Cảnh báo", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    SanPhamDAO.getInstance().xoaSanPham(sp);
+                    sanPhamService.delete(sp.getMaSP());
                     ((DefaultTableModel) tblSanPham.getModel()).removeRow(row);
                     loadListDichVu();
                     thongBao(0, "Xóa Thành công");
@@ -366,7 +369,11 @@ public class QLSanPham_GUI extends JInternalFrame implements ActionListener {
     }
 
     public void loadListDichVu() {
-        dsSP = SanPhamDAO.getInstance().getDanhSachSanPham();
+        try {
+            dsSP = (ArrayList<SanPham>) sanPhamService.getAll();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean validDataTim() {
@@ -433,8 +440,12 @@ public class QLSanPham_GUI extends JInternalFrame implements ActionListener {
         if (i_row == -1) {
             throw new IllegalArgumentException("Không chọn được dòng nào");
         }
-        String maNV = tblSanPham.getValueAt(i_row, 0).toString();
-        return SanPhamDAO.getInstance().getSanPhamTheoMaHoacTen(maNV);
+        String maSP = tblSanPham.getValueAt(i_row, 0).toString();
+        try {
+            return sanPhamService.getSanPhamTheoMaHoacTen(maSP);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

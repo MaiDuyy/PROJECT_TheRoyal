@@ -1,6 +1,9 @@
+import dao.HoaDonDAO;
 import dao.PhongDAO;
 import dao.TaiKhoanDAO;
+import dao.impl.HoaDonDAOImpl;
 import dao.impl.PhongDAOImpl;
+import entity.HoaDon;
 import entity.Phong;
 import entity.TaiKhoan;
 import jakarta.persistence.EntityManager;
@@ -14,10 +17,12 @@ public class main {
         EntityManager em = Persistence.createEntityManagerFactory("theroyal")
                 .createEntityManager();
 
-//        PhongDAO phongDAO = new PhongDAOImpl(em, Phong.class);
-//        List<Phong> list = phongDAO.getPhongTheoMaPhong("P101");
-//        System.out.println(list);
-        List<TaiKhoan> list = TaiKhoanDAO.getInstance().getAll();
+        HoaDonDAO hoaDonDAO = new HoaDonDAOImpl(HoaDon.class);
+
+          HoaDon hoaDon = hoaDonDAO.getHoaDonTheoPhong("P204");
+
+        System.out.println(hoaDon.getMaHD());
+
 
 
     }

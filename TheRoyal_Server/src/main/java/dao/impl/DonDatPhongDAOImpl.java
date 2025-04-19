@@ -5,6 +5,7 @@ import entity.DonDatPhong;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
+import util.JPAUtil;
 
 
 import java.time.LocalDateTime;
@@ -42,7 +43,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
             TypedQuery<DonDatPhong> query = em.createQuery("SELECT ddp " +
                     "FROM DonDatPhong ddp " +
                     "WHERE ddp.trangThai = :trangThai AND ddp.khachHang.sDT = :sdt", DonDatPhong.class);
-            query.setParameter("trangThai", trangThai);
+            query.setParameter("N'trangThai'", trangThai);
             query.setParameter("sdt", sdt);
             return query.getResultList();
         }catch (Exception e){
@@ -119,7 +120,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
             TypedQuery<DonDatPhong> query = em.createQuery(
                     "UPDATE DonDatPhong ddp SET ddp.trangThai = :tinhTrang WHERE ddp.id = :maDDP"
             , DonDatPhong.class);
-            query.setParameter("tinhTrang", tinhTrang);
+            query.setParameter("N'tinhTrang'", tinhTrang);
             query.setParameter("maDDP", maDDP);
 
             int updated = query.executeUpdate();
@@ -236,10 +237,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse("Phòng trống");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return trangThai;
     }
 
@@ -249,7 +247,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
             TypedQuery<DonDatPhong> query = em.createQuery("SELECT ddp FROM DonDatPhong ddp " +
                     "WHERE ddp.phong.id = :maPhong AND ddp.trangThai = :status", DonDatPhong.class);
             query.setParameter("maPhong", maPhong).getSingleResult();
-            query.setParameter("status", trangThai).getSingleResult();
+            query.setParameter("N'status'", trangThai).getSingleResult();
             return query.getSingleResult();
         }catch (Exception e){
             e.printStackTrace();
@@ -273,18 +271,23 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
     }
 
     @Override
-    public int countSLDonDangO(Date ngayDuocChon){
+    public int countSLDonDangO(Date thoiGianChon){
+        EntityManager em = JPAUtil.getEntityManager();
+        int count = 0;
         try {
-            TypedQuery<Long> query = em.createQuery("SELECT COUNT(ddp) FROM DonDatPhong ddp " +
-                    "WHERE ddp.trangThai = :status AND :ngayDuocChon BETWEEN ddp.thoiGianNhanPhong AND ddp.thoiGianTraPhong", Long.class);
-            query.setParameter("status", "Đang ở");
-            query.setParameter("ngayDuocChon", ngayDuocChon);
-            Long count = query.getSingleResult();
-            return count.intValue();
-        }catch (Exception e){
+            String jpql = "SELECT COUNT(d) FROM DonDatPhong d " +
+                    "WHERE d.trangThai = :trangThai " +
+                    "AND :thoiGianChon BETWEEN d.thoiGianNhanPhong AND d.thoiGianTraPhong";
+
+            count = ((Long) em.createQuery(jpql)
+                    .setParameter("trangThai", "Đang ở")
+                    .setParameter("thoiGianChon", thoiGianChon)
+                    .getSingleResult())
+                    .intValue();
+        } catch (Exception e) {
             e.printStackTrace();
-            return 0;
         }
+        return count;
     }
 
     @Override
@@ -292,7 +295,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
         try {
             TypedQuery<Long> query = em.createQuery("SELECT COUNT(ddp) FROM DonDatPhong ddp " +
                     "WHERE ddp.trangThai = :status AND :ngayDuocChon BETWEEN ddp.thoiGianNhanPhong AND ddp.thoiGianTraPhong", Long.class);
-            query.setParameter("status", "Phòng trống");
+            query.setParameter("status", "N'Phòng trống'");
             query.setParameter("ngayDuocChon", thoiGianChon);
             Long count = query.getSingleResult();
             return count.intValue();
@@ -320,7 +323,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
         try {
             TypedQuery<Long> query = em.createQuery("SELECT COUNT(ddp) FROM DonDatPhong ddp " +
                     "WHERE ddp.trangThai = :status AND :ngayDuocChon BETWEEN ddp.thoiGianNhanPhong AND ddp.thoiGianTraPhong", Long.class);
-            query.setParameter("status", "Đang dọn dẹp");
+            query.setParameter("status", "N'Đang dọn dẹp'");
             query.setParameter("ngayDuocChon", ngayDuocChon);
             Long count = query.getSingleResult();
             return count.intValue();
@@ -341,16 +344,40 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
 
             result = em.createQuery(jpql, DonDatPhong.class)
                     .setParameter("maPhong", maPhong)
-                    .setParameter("trangThai", "Đặt trước")
+                    .setParameter("trangThai", "N'Đặt trước'")
                     .setParameter("thoiGianChon", thoiGianChon)
                     .getResultStream()
                     .findFirst()
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
         return result;
+    }
+
+    @Override
+    public boolean insert(DonDatPhong ddp) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean success = false;
+
+        try {
+            tx.begin();
+
+
+            em.persist(ddp);
+
+            tx.commit();
+            success = true;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
+        }
+
+        return success;
     }
 }

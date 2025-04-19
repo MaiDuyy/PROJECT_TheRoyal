@@ -43,4 +43,8 @@ public interface HoaDonDAO extends GenericDAO<HoaDon, String> {
     List<HoaDon> getDoanhThuNam(String nam);
 
     public String taoMaHoaDonTheoNgay();
+
+    public boolean insert(HoaDon hd) ;
+
+    public String getLatestID() ;
 }

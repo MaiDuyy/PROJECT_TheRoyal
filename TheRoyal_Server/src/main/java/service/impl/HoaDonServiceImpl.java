@@ -82,4 +82,14 @@ public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> imple
     public String taoMaHoaDonTheoNgay() throws RemoteException {
         return hoaDonDAO.taoMaHoaDonTheoNgay();
     }
+
+    @Override
+    public boolean insert(HoaDon hd) throws RemoteException {
+        return hoaDonDAO.insert(hd);
+    }
+
+    @Override
+    public String getLatestID() throws RemoteException {
+        return hoaDonDAO.getLatestID();
+    }
 }

@@ -12,13 +12,13 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class SanPham  implements Serializable {
 
     @Id
     @Column(name = "maSP", nullable = false, columnDefinition = "varchar(50)")
-    @EqualsAndHashCode.Include
+//    @EqualsAndHashCode.Include
     private String maSP;
 
     @Column(name = "tenSP", columnDefinition = "nvarchar(255)")

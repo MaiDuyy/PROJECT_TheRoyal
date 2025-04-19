@@ -74,4 +74,9 @@ public class SanPhamServiceImpl extends  GenericServiceImpl<SanPham, String>  im
     @Override public int getTongTienSPNam(String nam) throws RemoteException {
         return sanPhamDAO.getTongTienSPNam(nam);
     }
+
+    @Override
+    public SanPham timSanPhamTheoMaHoacTheoTen(String maOrTen) throws RemoteException {
+        return sanPhamDAO.timSanPhamTheoMaHoacTheoTen(maOrTen);
+    }
 }

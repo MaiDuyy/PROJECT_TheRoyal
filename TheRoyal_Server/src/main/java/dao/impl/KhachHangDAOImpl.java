@@ -3,6 +3,7 @@ package dao.impl;
 import dao.KhachHangDAO;
 import entity.KhachHang;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import util.JPAUtil;
 
@@ -57,5 +58,52 @@ public class KhachHangDAOImpl extends GenericDAOImpl<KhachHang, String> implemen
             return result.get(0);
         }
         return "KH00";
+    }
+
+    @Override
+    public boolean insert(KhachHang kh) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean success = false;
+
+        try {
+            tx.begin();
+
+            // Bước 1: Lấy mã khách hàng lớn nhất hiện tại
+            String jpql = "SELECT k.maKH FROM KhachHang k ORDER BY k.maKH DESC";
+            String latestMaKH = em.createQuery(jpql, String.class)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+
+            // Bước 2: Tạo mã khách hàng mới
+            int nextNumber = 1;
+            if (latestMaKH != null && latestMaKH.length() >= 4) {
+                String numberPart = latestMaKH.substring(2); // Bỏ "KH"
+                try {
+                    nextNumber = Integer.parseInt(numberPart) + 1;
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            String newMaKH = String.format("KH%02d", nextNumber);
+            kh.setMaKH(newMaKH);
+
+            // Bước 3: Persist đối tượng
+            em.persist(kh);
+
+            tx.commit();
+            success = true;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
+        }
+
+        return success;
     }
 }

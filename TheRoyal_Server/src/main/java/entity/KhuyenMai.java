@@ -44,6 +44,6 @@ public class KhuyenMai implements Serializable {
     @Column(columnDefinition = "NVARCHAR(50)")
     private String trangThai;
 
-    @OneToMany(mappedBy = "khuyenMai")
+    @OneToMany(mappedBy = "khuyenMai" ,cascade = CascadeType.ALL)
     private Set<HoaDon> dsHoaDon;
 }

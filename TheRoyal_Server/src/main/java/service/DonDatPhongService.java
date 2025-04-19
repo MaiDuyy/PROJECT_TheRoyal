@@ -1,6 +1,7 @@
 package service;
 
 import entity.DonDatPhong;
+import entity.KhachHang;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -50,6 +51,7 @@ public interface DonDatPhongService extends Remote, GenericService<DonDatPhong, 
 
     int countSLDonDangDon(Date ngayDuocChon) throws RemoteException;
 
+    public boolean insert(DonDatPhong ddp)  throws RemoteException;
 
 
     public  DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon)   throws RemoteException;

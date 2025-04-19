@@ -68,4 +68,9 @@ public class CTHoaDonServiceImpl extends  GenericServiceImpl<CTHoaDon, String>  
         return cthoaDonDAO.getTongDVTienNgay(ngay);
     }
 
+    @Override
+    public boolean insert(CTHoaDon ctHoaDon) throws RemoteException {
+        return cthoaDonDAO.insert(ctHoaDon);
+    }
+
 }

@@ -4,8 +4,10 @@ package dao.impl;
 import dao.DichVuDAO;
 import entity.DichVu;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import util.JPAUtil;
 
 import java.util.List;
 
@@ -69,17 +71,30 @@ public class DichVuDAOImpl extends GenericDAOImpl<DichVu, String> implements Dic
 
     @Override
     public boolean updateSLDV(DichVu mh, int sl){
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            TypedQuery<DichVu> query = em.createQuery("UPDATE DichVu dv SET dv.soLuongDV = :sl WHERE dv.id = :id", DichVu.class);
-            query.setParameter("id", mh.getMaDV());
-            query.setParameter("sl", sl);
-            int update = query.executeUpdate();
-            return update == 1;
-        }
-        catch (Exception e){
+            tx.begin();
+
+            String jpql = "UPDATE DichVu d SET d.soLuongDV = :soLuongDV WHERE d.maDV = :maDV";
+
+            int n = em.createQuery(jpql)
+                    .setParameter("soLuongDV", sl)
+                    .setParameter("maDV", mh.getMaDV())
+                    .executeUpdate();
+
+            tx.commit();
+            updated = n > 0;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
         }
+
+        return updated;
     }
 
     @Override
@@ -156,7 +171,7 @@ public class DichVuDAOImpl extends GenericDAOImpl<DichVu, String> implements Dic
     public Double getTongTienNam(int nam) {
         try {
             TypedQuery<Double> query = em.createQuery(
-                    "SELECT SUM(tongTien) FROM (SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV * dv.giaDV) as tongTien FROM CTHoaDon od JOIN HoaDon o ON od.hoaDon = o JOIN DichVu dv ON od.dichVu = dv WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam GROUP BY dv.maDV, dv.tenDV) as subquery",
+                    "SELECT SUM(tongTien) FROM (SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV * dv.giaDV) as tongTien FROM CTHoaDon od JOIN HoaDon o ON od.hoaDon = o JOIN DichVu dv ON od.dichVu = dv WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam GROUP BY dv.maDV, dv.tenDV as subquery",
                     Double.class
             );
             query.setParameter("nam", nam);
@@ -183,6 +198,26 @@ public class DichVuDAOImpl extends GenericDAOImpl<DichVu, String> implements Dic
             e.printStackTrace();
         }
         return id;
+    }
+    @Override
+    public DichVu timDichVuTheoMaHoacTheoTen(String maOrTen) {
+        EntityManager em = JPAUtil.getEntityManager();
+        DichVu dv = null;
+        try {
+            String jpql = "SELECT d FROM DichVu d " +
+                    "WHERE LOWER(d.maDV) = LOWER(:maOrTen) " +
+                    "OR LOWER(d.tenDV) = LOWER(:maOrTen)";
+
+            dv = em.createQuery(jpql, DichVu.class)
+                    .setParameter("maOrTen", maOrTen)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dv;
     }
 
 

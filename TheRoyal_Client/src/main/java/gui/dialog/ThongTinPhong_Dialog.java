@@ -364,7 +364,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 	public void getddp(Phong maPhong ,DonDatPhong ddp) {
 
 //		String maPhongFromList = phong.getMaPhong();
-//		DonDatPhong ddp = DonDatPhongDAO.getInstance().getDonDatPhongTheoMaTraPhong(maPhongFromList);
+//		DonDatPhong ddp = DonDatphongService.getDonDatPhongTheoMaTraPhong(maPhongFromList);
 //		ddp.setPhong(phong);
 
 		if (ddp != null) {
@@ -385,10 +385,11 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		}
 	}
 
+	@SneakyThrows
 	public void datphongnhan(String maPhong) {
 
 		String maPhongFromList = phong.getMaPhong();
-		Phong phong = PhongDAO.getInstance().getPhongByMaPhong(maPhongFromList);
+		Phong phong = phongService.getPhongByMaPhong(maPhongFromList);
 
 		if (maPhongFromList != null) {
 			DatPhong	datphong = new DatPhong(phong, this.home, this ,rootPaneCheckingEnabled);
@@ -397,9 +398,10 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			return;
 		}
 	}
+	@SneakyThrows
 	public void datphongtruoc(String maPhong) {
 		String maPhongFromList = phong.getMaPhong();
-		Phong phong = PhongDAO.getInstance().getPhongByMaPhong(maPhongFromList);
+		Phong phong = phongService.getPhongByMaPhong(maPhongFromList);
 
 		if (maPhongFromList != null) {
 			open_DLDatPhongTruoc(phong);
@@ -424,7 +426,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		}
 
 //		if (e.getSource().equals(btn_ThanhToan)) {
-//			List<Phong> dsPhong = PhongDAO.getInstance().getListPhong();
+//			List<Phong> dsPhong = phongService.getListPhong();
 //			DonDatPhongDAO donDatPhongDAO = new DonDatPhongDAO();
 //			for (Phong phong : dsPhong) {
 //				String maPhong = phong.getMaPhong();
@@ -442,7 +444,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 		
 		//
 //		if (e.getSource().equals(btn_SuDungDV)) {
-//			List<Phong> dsPhong = PhongDAO.getInstance().getListPhong();
+//			List<Phong> dsPhong = phongService.getListPhong();
 //			HoaDonDAO hoadondao = new HoaDonDAO();
 //			for (Phong phong : dsPhong) {
 //				String maPhong = phong.getMaPhong();
@@ -461,7 +463,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			List<Phong> dsPhong = phongService.getAll();
 			for (Phong phong : dsPhong) {
 				String maPhong = phong.getMaPhong();
-				Phong p = PhongDAO.getInstance().getPhongByMaPhong(maPhong);
+				Phong p = phongService.getPhongByMaPhong(maPhong);
 				if (p != null) {
 					datphongnhan(maPhong);
 					dispose();
@@ -475,7 +477,7 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 			List<Phong> dsPhong = phongService.getAll();
 			for (Phong phong : dsPhong) {
 				String maPhong = phong.getMaPhong();
-				Phong p = PhongDAO.getInstance().getPhongByMaPhong(maPhong);
+				Phong p = phongService.getPhongByMaPhong(maPhong);
 				if (p != null) {
 					datphongtruoc(maPhong);
 					dispose();

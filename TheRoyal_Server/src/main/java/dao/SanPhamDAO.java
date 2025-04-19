@@ -1,6 +1,7 @@
 package dao;
 
 import dao.impl.SanPhamDAOImpl;
+import entity.DichVu;
 import entity.SanPham;
 import jakarta.persistence.TypedQuery;
 import util.JPAUtil;
@@ -66,4 +67,6 @@ public interface SanPhamDAO extends GenericDAO<SanPham, String> , Remote {
     List<String[]> getMHNam(String nam);
 
     int getTongTienSPNam(String nam);
+
+    public SanPham timSanPhamTheoMaHoacTheoTen(String maOrTen);
 }

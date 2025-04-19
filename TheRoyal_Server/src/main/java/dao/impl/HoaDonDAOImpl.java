@@ -10,6 +10,7 @@ import util.JPAUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements HoaDonDAO {
@@ -36,18 +37,50 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
 
     // Lấy hóa đơn theo mã phòng
     @Override public HoaDon getHoaDonTheoPhong(String maPhong) {
-        TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery(
-                "SELECT h FROM HoaDon h JOIN h.phong p WHERE p.maPhong = :maPhong AND p.trangThai = 'Đang ở' ORDER BY h.maHD DESC", HoaDon.class);
-        query.setParameter("maPhong", maPhong);
-        return query.getResultStream().findFirst().orElse(null);
+        EntityManager em = JPAUtil.getEntityManager();
+        HoaDon hoaDon = null;
+
+        try {
+            String jpql = "SELECT h FROM HoaDon h " +
+                    "JOIN h.donDatPhong d " +
+                    "WHERE d.phong.maPhong = :maPhong " +
+                    "AND d.trangThai = :trangThai " +
+                    "ORDER BY h.maHD DESC";
+
+            hoaDon = em.createQuery(jpql, HoaDon.class)
+                    .setParameter("maPhong", maPhong)
+                    .setParameter("trangThai", "Đang ở")
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return hoaDon;
     }
 
     // Lấy hóa đơn theo mã đặt phòng
     @Override public HoaDon getHoaDonTheoDonDatPhong(String maDDP) {
-        TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery(
-                "SELECT h FROM HoaDon h JOIN h.donDatPhong d WHERE d.maDDP = :maDDP", HoaDon.class);
-        query.setParameter("maDDP", maDDP);
-        return query.getResultStream().findFirst().orElse(null);
+        EntityManager em = JPAUtil.getEntityManager();
+        HoaDon hoaDon = null;
+
+        try {
+            String jpql = "SELECT h FROM HoaDon h " +
+                    "JOIN h.donDatPhong d " +
+                    "WHERE d.maDDP = :maDDP";
+
+            hoaDon = em.createQuery(jpql, HoaDon.class)
+                    .setParameter("maDDP", maDDP)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return hoaDon;
     }
 
       
@@ -56,29 +89,63 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
 
     // Lấy tổng tiền sản phẩm và dịch vụ của hóa đơn
     @Override public double[] getTongTienSanPhamDichVu(String maHD) {
-        TypedQuery<Object[]> query = JPAUtil.getEntityManager().createQuery(
-                "SELECT SUM(CT.tongTienSP), SUM(CT.tongTienDV) FROM HoaDon h JOIN h.ctHoaDon CT WHERE h.maHD = :maHD", Object[].class);
-        query.setParameter("maHD", maHD);
-        Object[] result = query.getResultStream().findFirst().orElse(new Object[]{0.0, 0.0});
-        return new double[]{(double) result[0], (double) result[1]};
+        EntityManager em = JPAUtil.getEntityManager();
+        double tongTienSP = 0;
+        double tongTienDV = 0;
+
+        try {
+            String jpql = "SELECT SUM(c.tongTienSP), SUM(c.tongTienDV) " +
+                    "FROM CTHoaDon c " +
+                    "WHERE c.hoaDon.maHD = :maHD";
+
+            Object[] result = (Object[]) em.createQuery(jpql)
+                    .setParameter("maHD", maHD)
+                    .getSingleResult();
+
+            if (result != null) {
+                if (result[0] != null) {
+                    tongTienSP = ((Number) result[0]).doubleValue();
+                }
+                if (result[1] != null) {
+                    tongTienDV = ((Number) result[1]).doubleValue();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new double[]{tongTienSP, tongTienDV};
     }
 
     // Cập nhật tổng tiền sản phẩm và dịch vụ
     @Override public boolean updateTongTienHoaDon(HoaDon hoaDon, double tongTienSP, double tongTienDV) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            EntityTransaction transaction = JPAUtil.getEntityManager().getTransaction();
-            transaction.begin();
-            TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery("UPDATE HoaDon h SET h.tienSanPham = :tienSanPham, h.tienDichVu = :tienDichVu WHERE h.maHD = :maHD", HoaDon.class);
-            query.setParameter("tienSanPham", tongTienSP);
-            query.setParameter("tienDichVu", tongTienDV);
-            query.setParameter("maHD", hoaDon.getMaHD());
-            int rowsUpdated = query.executeUpdate();
-            transaction.commit();
-            return rowsUpdated > 0;
+            tx.begin();
+
+            String jpql = "UPDATE HoaDon h SET h.tienSanPham = :tongTienSP, h.tienDichVu = :tongTienDV " +
+                    "WHERE h.maHD = :maHD";
+
+            int n = em.createQuery(jpql)
+                    .setParameter("tongTienSP", tongTienSP)
+                    .setParameter("tongTienDV", tongTienDV)
+                    .setParameter("maHD", hoaDon.getMaHD())
+                    .executeUpdate();
+
+            tx.commit();
+            updated = n > 0;
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
         }
+
+        return updated;
     }
 
     // Cập nhật trạng thái của hóa đơn
@@ -150,9 +217,12 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
         EntityManager em = JPAUtil.getEntityManager();
         int count = 0;
         try {
-            LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-            LocalDateTime endOfDay = startOfDay.plusDays(1);
+            // Bước 1: Lấy thời gian đầu ngày và cuối ngày bằng Date
+            LocalDate today = LocalDate.now();
+            Date startOfDay = java.sql.Timestamp.valueOf(today.atStartOfDay());
+            Date endOfDay = java.sql.Timestamp.valueOf(today.plusDays(1).atStartOfDay());
 
+            // Bước 2: Viết JPQL như cũ
             String jpql = "SELECT COUNT(h) FROM HoaDon h " +
                     "WHERE h.thoiGianLapHD >= :startOfDay AND h.thoiGianLapHD < :endOfDay";
 
@@ -162,11 +232,10 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                     .getSingleResult()).intValue();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
         return count;
     }
+
 
     public String taoMaHoaDonTheoNgay()  {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMMyyyy");
@@ -176,5 +245,47 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
 
         int soLuongHoaDon = soLuongHoaDonTrongNgay();
         return dateString + String.format("%05d", soLuongHoaDon + 1);
+    }
+
+    @Override
+    public boolean insert(HoaDon hd) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean success = false;
+
+        try {
+            tx.begin();
+            // Persist the new HoaDon
+            em.persist(hd);
+            tx.commit();
+            success = true;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
+        }
+
+        return success;
+    }
+
+    @Override
+    public String getLatestID() {
+        EntityManager em = JPAUtil.getEntityManager();
+        String id = null;
+        try {
+            String jpql = "SELECT h.maHD FROM HoaDon h ORDER BY h.maHD DESC";
+
+            id = em.createQuery(jpql, String.class)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
     }
 }

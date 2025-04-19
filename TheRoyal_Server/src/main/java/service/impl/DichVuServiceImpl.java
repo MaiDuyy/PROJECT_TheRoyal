@@ -64,4 +64,9 @@ public class DichVuServiceImpl extends GenericServiceImpl<DichVu, String> implem
     public String getLatestID() throws RemoteException {
         return dichVuDAO.getLatestID();
     }
+
+    @Override
+    public DichVu timDichVuTheoMaHoacTheoTen(String maOrTen) throws RemoteException {
+        return dichVuDAO.timDichVuTheoMaHoacTheoTen(maOrTen);
+    }
 }

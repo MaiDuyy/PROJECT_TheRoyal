@@ -204,7 +204,7 @@ public class ThemKhachHang_Dialog extends JDialog {
 		kh = dataKhachHang();
 		if (validData(ADD)) {
 			try {
-				boolean result = khachHangService.save(kh);
+				boolean result = khachHangService.insert(kh);
 				String maKH = khachHangService.getLatestID();
 				txtMaKH.setText(String.valueOf(maKH));
 				if (result == true) {

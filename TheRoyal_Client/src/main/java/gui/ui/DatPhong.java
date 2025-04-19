@@ -184,14 +184,14 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		lblSoTreEm_1.setBounds(363, 60, 121, 38);
 		staffInfoPanel.add(lblSoTreEm_1);
 
-		btnThem = new JButton("Đặt phòng", new ImageIcon(DatPhong.class.getResource("/src/ICON/icon/blueAdd_16.png")));
+		btnThem = new JButton("Đặt phòng", new ImageIcon("icon/blueAdd_16.png"));
 		btnThem.setBounds(406, 332, 132, 21);
 		staffInfoPanel.add(btnThem);
 
 		btnLamLai = new JButton("Làm Lại");
 		btnLamLai.setBounds(569, 332, 145, 21);
 		staffInfoPanel.add(btnLamLai);
-		btnLamLai.setIcon(new ImageIcon(DatPhong.class.getResource("/src/ICON/icon/refresh_16.png")));
+		btnLamLai.setIcon(new ImageIcon("icon/refresh_16.png"));
 
 		txtCCCD = new JTextField(15);
 		txtCCCD.setEnabled(false);
@@ -278,7 +278,7 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		panelTimKiemKH.add(txtTimKiemKH);
 		
 		JLabel btnTimKiemKH = new JLabel("");
-		btnTimKiemKH.setIcon(new ImageIcon(DatPhong.class.getResource("/ICON/icon/search.png")));
+		btnTimKiemKH.setIcon(new ImageIcon("icon/search.png"));
 		btnTimKiemKH.setBounds(621, 12, 24, 32);
 		staffInfoPanel.add(btnTimKiemKH);
 		
@@ -405,16 +405,16 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		            return;
 		        }
 
-		        boolean result1 = dondatphongdao.save(ddp);
-		        String maDDP = dondatphongdao.getLatestId();
+		        boolean result1 = dondatphongdao.insert(ddp);
+//		        String maDDP = dondatphongdao.getLatestId();
 
 		        if (result1) {
 		            Date ngaydat = convertFromJAVADateToSQLDate(ddp.getThoiGianDatPhong());
 		            Date ngaytra = convertFromJAVADateToSQLDate(ddp.getThoiGianTraPhong());
 
-		            ddp = new DonDatPhong(maDDP, ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra, kh,
-		                                  new Phong(ddp.getPhong().getMaPhong()), "Đang ở", ddp.getSoTreEm(),
-		                                  ddp.getSoNguoiLon(), null );
+		            ddp = new DonDatPhong(ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra, kh,
+		                                  new Phong(ddp.getPhong().getMaPhong()), "Đang ở", ddp.getSoNguoiLon(),
+		                                  ddp.getSoTreEm() );
 		        } else {
 		            showMessage("Lỗi: Thêm đơn đặt phòng thất bại", ERROR);
 		            return;
@@ -423,16 +423,16 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 
 
 
-		            hd = new HoaDon(hoadondao.taoMaHoaDonTheoNgay(), kh, new Phong(ddp.getPhong().getMaPhong()),
-		                           new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, new KhuyenMai(), new Date(System.currentTimeMillis()),
-		                            phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán" , null);
-//					hd = new HoaDon(hoadondao.taoMaHoaDonTheoNgay(), );
+		            hd = new HoaDon( kh, new Phong(ddp.getPhong().getMaPhong()),
+		                           new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, null, new Date(System.currentTimeMillis()),
+		                            phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán" );
 
 
-		        boolean hdInserted = hoadondao.save(hd);
+
+		        boolean hdInserted = hoadondao.insert(hd);
 
 		        if (hdInserted) {
-		            dondatphongdao.updateTinhTrang(maDDP, ddp.getTrangThai());
+		            dondatphongdao.updateTinhTrang(ddp.getMaDDP(), ddp.getTrangThai());
 //		            phong.setTrangThai("Đang ở");
 		            phongdao.updateTinhTrang(String.valueOf(phong), phong.getTrangThai());
 
@@ -558,8 +558,8 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		int nglon = txtNglon.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtNglon.getText().trim());
 		int treem = txtTreEm.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtTreEm.getText().trim());
 
-		DonDatPhong ddp = new DonDatPhong("", ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra,
-				new KhachHang(ma), new Phong(maphong), "", nglon, treem , null );
+		DonDatPhong ddp = new DonDatPhong( ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra,
+				new KhachHang(ma), new Phong(maphong), "", nglon, treem  );
 		return ddp;
 	}
 
@@ -721,18 +721,18 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 
 		if(lp.getMaLoai().equals("LP01")) {
 			if(phong.getSoGiuong()==1) {
-				hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/phongThuongDon.png")));
+				hinhAnh.setIcon(new ImageIcon("icon/phongThuongDon.png"));
 			}else {
-				hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/phongThuongDoi.png")));
+				hinhAnh.setIcon(new ImageIcon("icon/phongThuongDoi.png"));
 			}
 		}else if(lp.getMaLoai().equals("LP02")) {
 			if(phong.getSoGiuong()==1) {
-				hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/hinhPhongVipDon.png")));
+				hinhAnh.setIcon(new ImageIcon("icon/hinhPhongVipDon.png"));
 			}else {
-				hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/hinhAnhPhongVipDoi.png")));
+				hinhAnh.setIcon(new ImageIcon("icon/hinhAnhPhongVipDoi.png"));
 			}
 		}else {
-			hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/ICON/icon/hinhAnhPenthouse.png")));
+			hinhAnh.setIcon(new ImageIcon("icon/hinhAnhPenthouse.png"));
 		}
 	}
 }

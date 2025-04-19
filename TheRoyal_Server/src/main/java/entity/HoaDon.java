@@ -2,6 +2,7 @@ package entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -16,8 +17,11 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Inheritance(strategy = InheritanceType.JOINED)
+
 public class HoaDon implements Serializable  {
     @Id
+    @GenericGenerator(name = "sequence_hoadon_id", strategy = "geneid.HoaDonIdGenerator")
+    @GeneratedValue(generator = "sequence_hoadon_id")
     @Column(name = "maHD", columnDefinition = "VARCHAR(50)")
     @EqualsAndHashCode.Include
     private String maHD;
@@ -38,12 +42,12 @@ public class HoaDon implements Serializable  {
     private NhanVien nhanVien;
 
     // Mối quan hệ n - 1 với DonDatPhong
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "maDDP")
     private DonDatPhong donDatPhong;
 
     // Mối quan hệ n - 1 với KhuyenMai
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "maKM")
     private KhuyenMai khuyenMai;
 
@@ -73,4 +77,22 @@ public class HoaDon implements Serializable  {
 
     @OneToMany(mappedBy = "hoaDon")
     private Set<CTHoaDon> ctHoaDon;
+
+    public HoaDon(KhachHang khachHang, Phong phong, NhanVien nhanVien, DonDatPhong donDatPhong, KhuyenMai khuyenMai, Date thoiGianLapHD, double tienPhong, double tienPhat, double tienKhuyenMai, double tienDichVu, double tienSanPham, double tongTien, String trangThai) {
+        this.khachHang = khachHang;
+        this.phong = phong;
+        this.nhanVien = nhanVien;
+        this.donDatPhong = donDatPhong;
+        this.khuyenMai = khuyenMai;
+        this.thoiGianLapHD = thoiGianLapHD;
+        this.tienPhong = tienPhong;
+        this.tienPhat = tienPhat;
+        this.tienKhuyenMai = tienKhuyenMai;
+        this.tienDichVu = tienDichVu;
+        this.tienSanPham = tienSanPham;
+        this.tongTien = tongTien;
+        this.trangThai = trangThai;
+    }
+
+
 }

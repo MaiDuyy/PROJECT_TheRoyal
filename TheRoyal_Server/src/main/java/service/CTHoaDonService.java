@@ -27,4 +27,6 @@ public interface CTHoaDonService extends GenericService<CTHoaDon, String> , Remo
     double getTongTienThang(int thang, int nam) throws RemoteException;
 
     double getTongDVTienNgay(Date ngay) throws RemoteException;
+
+    public boolean insert(CTHoaDon ctHoaDon) throws RemoteException;
 }

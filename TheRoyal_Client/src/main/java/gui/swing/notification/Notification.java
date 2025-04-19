@@ -244,7 +244,7 @@ public class Notification extends javax.swing.JComponent {
         cmdClose = new javax.swing.JButton();
 
         lbIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ICON/icon/sucess.png"))); // NOI18N
+        lbIcon.setIcon(new javax.swing.ImageIcon("icon/sucess.png")); // NOI18N
 
         panel.setOpaque(false);
 

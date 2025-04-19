@@ -21,4 +21,6 @@ public interface KhachHangService extends GenericService<KhachHang, String>  , R
 
     // Lấy mã Khách Hàng mới nhất (thực hiện theo cách tự sinh mã)
     String getLatestID() throws RemoteException;
+
+    public boolean insert(KhachHang kh)  throws RemoteException;
 }

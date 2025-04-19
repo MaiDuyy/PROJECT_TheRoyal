@@ -1,6 +1,7 @@
 package dao;
 
 import entity.CTHoaDon;
+import entity.HoaDon;
 
 import java.sql.Date;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface CTHoaDonDAO extends GenericDAO<CTHoaDon, String> {
     double getTongTienThang(int thang, int nam);
 
     double getTongDVTienNgay(Date ngay);
+
+    public boolean insert(CTHoaDon ctHoaDon);
 }

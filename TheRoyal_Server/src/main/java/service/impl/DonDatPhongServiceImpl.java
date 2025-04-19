@@ -2,6 +2,7 @@ package service.impl;
 
 import dao.DonDatPhongDAO;
 import entity.DonDatPhong;
+import entity.KhachHang;
 import service.DonDatPhongService;
 
 import java.rmi.RemoteException;
@@ -116,6 +117,11 @@ public class DonDatPhongServiceImpl extends GenericServiceImpl<DonDatPhong, Stri
     @Override
     public int countSLDonDangDon(Date ngayDuocChon) throws RemoteException{
         return donDatPhongDAO.countSLDonDangDon(ngayDuocChon);
+    }
+
+    @Override
+    public boolean insert(DonDatPhong ddp) throws  RemoteException {
+        return donDatPhongDAO.insert(ddp);
     }
 
     @Override

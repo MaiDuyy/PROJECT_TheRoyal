@@ -45,4 +45,8 @@ public interface HoaDonService extends GenericService<HoaDon, String> , Remote {
     List<HoaDon> getDoanhThuNam(String nam) throws RemoteException;
 
     public String taoMaHoaDonTheoNgay() throws  RemoteException;
+
+    public boolean insert(HoaDon hd) throws  RemoteException;
+
+    public String getLatestID() throws  RemoteException;
 }

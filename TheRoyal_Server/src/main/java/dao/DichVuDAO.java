@@ -25,5 +25,7 @@ public interface DichVuDAO extends GenericDAO<DichVu, String> {
 
     public String getLatestID();
 
+    public DichVu timDichVuTheoMaHoacTheoTen(String maOrTen);
+
 
 }

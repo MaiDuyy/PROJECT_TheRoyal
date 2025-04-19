@@ -34,4 +34,5 @@ public interface SanPhamService extends GenericService<SanPham, String> {
     List<String[]> getMHNam(String nam) throws RemoteException;
 
     int getTongTienSPNam(String nam) throws RemoteException;
+    public SanPham timSanPhamTheoMaHoacTheoTen(String maOrTen) throws  RemoteException;
 }

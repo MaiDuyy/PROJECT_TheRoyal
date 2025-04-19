@@ -44,4 +44,9 @@ public class KhachHangServiceImpl extends GenericServiceImpl<KhachHang, String> 
     public String getLatestID() throws RemoteException {
         return khachHangDAO.getLatestID();
     }
+
+    @Override
+    public boolean insert(KhachHang kh) throws RemoteException {
+        return khachHangDAO.insert(kh);
+    }
 }

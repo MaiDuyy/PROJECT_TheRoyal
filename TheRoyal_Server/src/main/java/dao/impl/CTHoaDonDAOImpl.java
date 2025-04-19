@@ -3,10 +3,13 @@ package dao.impl;
 import dao.CTHoaDonDAO;
 import entity.CTHoaDon;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import util.JPAUtil;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements CTHoaDonDAO {
@@ -20,15 +23,19 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public List<CTHoaDon> getListCTHoaDonByMaHD(String maHD){
+    public List<CTHoaDon> getListCTHoaDonByMaHD(String maHDon){
+        EntityManager em = JPAUtil.getEntityManager();
+        List<CTHoaDon> dataList = new ArrayList<>();
         try {
-            TypedQuery<CTHoaDon> query = em.createQuery("SELECT cthd FROM CTHoaDon cthd WHERE cthd.id = :maHD", CTHoaDon.class);
-            query.setParameter("maHD", maHD);
-            return query.getResultList();
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return null;
+            String jpql = "SELECT c FROM CTHoaDon c WHERE c.hoaDon.maHD = :maHDon";
+
+            dataList = em.createQuery(jpql, CTHoaDon.class)
+                    .setParameter("maHDon", maHDon)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return dataList;
     }
 
     @Override
@@ -50,24 +57,28 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
 
     @Override
     public boolean checkIfCTHoaDonExists(CTHoaDon cthd) {
+        EntityManager em = JPAUtil.getEntityManager();
+        boolean exists = false;
+
         try {
-            Long count = em.createQuery("""
-            SELECT COUNT(cthd) 
-            FROM CTHoaDon cthd 
-            WHERE cthd.hoaDon.id = :maHD 
-              AND (cthd.sanPham.id = :maSP OR cthd.dichVu.id = :maDV)
-        """, Long.class)
+            String jpql = "SELECT COUNT(c) FROM CTHoaDon c " +
+                    "WHERE c.hoaDon.maHD = :maHD " +
+                    "AND ( (c.sanPham IS NOT NULL AND c.sanPham.maSP = :maSP) " +
+                    "   OR (c.dichVu IS NOT NULL AND c.dichVu.maDV = :maDV) )";
+
+            Long count = em.createQuery(jpql, Long.class)
                     .setParameter("maHD", cthd.getHoaDon().getMaHD())
                     .setParameter("maSP", cthd.getSanPham() != null ? cthd.getSanPham().getMaSP() : null)
                     .setParameter("maDV", cthd.getDichVu() != null ? cthd.getDichVu().getMaDV() : null)
                     .getSingleResult();
 
-            return count > 0;
+            exists = count > 0;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+        return exists;
     }
+
 
     @Override
     public boolean updateSLSP(CTHoaDon ctHoaDon) {
@@ -234,6 +245,30 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
             e.printStackTrace();
             return 0;
         }
+    }
+
+    @Override
+    public boolean insert(CTHoaDon ctHoaDon) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean success = false;
+
+        try {
+            tx.begin();
+            // Persist the new HoaDon
+            em.persist(ctHoaDon);
+            tx.commit();
+            success = true;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
+        }
+
+        return success;
     }
 
 }

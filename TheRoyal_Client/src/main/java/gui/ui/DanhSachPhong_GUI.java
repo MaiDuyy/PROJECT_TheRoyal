@@ -253,18 +253,21 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		        selectedDate = (Date) evt.getNewValue();
 		        danhSachPhong.removeAll();
 		        List<Phong> dsPhong = null;
-		        List<DonDatPhong> dsDDP = null;
+				List<DonDatPhong> dsDDP = null;
 				try {
 					dsPhong = phongService.getAll();
 				} catch (RemoteException e) {
 					throw new RuntimeException(e);
 				}
 				;
+
+
 				try {
 					dsDDP = donDatPhongService.getAll();
 				} catch (RemoteException e) {
 					throw new RuntimeException(e);
 				}
+
 
 				java.sql.Date sqlSelectedDate = new java.sql.Date(selectedDate.getTime());
 

@@ -1,11 +1,13 @@
 package dao.impl;
 
 import dao.SanPhamDAO;
+import entity.DichVu;
 import entity.SanPham;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.Query;
+import util.JPAUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -313,6 +315,27 @@ public class SanPhamDAOImpl  extends GenericDAOImpl<SanPham, String > implements
         }
         return 0;
     }
-    
+
+    @Override
+    public SanPham timSanPhamTheoMaHoacTheoTen(String maOrTen) {
+        EntityManager em = JPAUtil.getEntityManager();
+        SanPham sp = null;
+        try {
+            String jpql = "SELECT s FROM SanPham s " +
+                    "WHERE LOWER(s.maSP) = LOWER(:maOrTen) " +
+                    "OR LOWER(s.tenSP) = LOWER(:maOrTen)";
+
+            sp = em.createQuery(jpql, SanPham.class)
+                    .setParameter("maOrTen", maOrTen)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sp;
+    }
+
 
 } 

@@ -21,4 +21,6 @@ public interface KhachHangDAO extends GenericDAO<KhachHang, String> {
 
     // Lấy mã Khách Hàng mới nhất (thực hiện theo cách tự sinh mã)
     String getLatestID();
+
+    public boolean insert(KhachHang kh) ;
 }

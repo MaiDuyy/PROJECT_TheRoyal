@@ -181,7 +181,7 @@ public class DichVuSanPham_GUI extends JDialog {
 				double tongTienSP = tongTien[0];
 				double tongTienDV = tongTien[1];
 				if (isSanPham(itemIdOrName)) {
-					SanPham mh = sanPhamService.getSanPhamTheoMaHoacTen(itemIdOrName);
+					SanPham mh = sanPhamService.timSanPhamTheoMaHoacTheoTen(itemIdOrName);
 					gia = mh.getGiaSP();
 					if (mh.getSoLuongSP() <= 0) {
 						JOptionPane.showMessageDialog(null, "Sản phẩm " + mh.getTenSP() + " đã hết hàng!", "Thông báo",
@@ -207,7 +207,7 @@ public class DichVuSanPham_GUI extends JDialog {
 						tongTienSP += gia;
 					}
 				} else {
-					DichVu dv = (DichVu) dichVuService.getDichVuByMaHoacTen(itemIdOrName);
+					DichVu dv = (DichVu) dichVuService.timDichVuTheoMaHoacTheoTen(itemIdOrName);
 
 					if (dv.getSoLuongDV() <= 0) {
 						JOptionPane.showMessageDialog(null, "Dịch vụ " + dv.getTenDV() + " đã hết hàng!", "Thông báo",
@@ -257,7 +257,7 @@ public class DichVuSanPham_GUI extends JDialog {
 				double tongTienDV = tongTien[1];
 
 				if (isSanPham(itemIdOrName)) {
-					SanPham mh = sanPhamService.getSanPhamTheoMaHoacTen(itemIdOrName);
+					SanPham mh = sanPhamService.timSanPhamTheoMaHoacTheoTen(itemIdOrName);
 					gia = mh.getGiaSP();
 
 					mh.setSoLuongSP(mh.getSoLuongSP() + 1);
@@ -280,7 +280,7 @@ public class DichVuSanPham_GUI extends JDialog {
 					}
 
 				} else {
-					DichVu dv = (DichVu) dichVuService.getDichVuByMaHoacTen(itemIdOrName);
+					DichVu dv = (DichVu) dichVuService.timDichVuTheoMaHoacTheoTen(itemIdOrName);
 					gia = dv.getGiaDV();
 
 					dv.setSoLuongDV(dv.getSoLuongDV() + 1);
@@ -318,7 +318,7 @@ public class DichVuSanPham_GUI extends JDialog {
 
 			@SneakyThrows
 			private boolean isSanPham(String itemIdOrName) {
-				return sanPhamService.getSanPhamTheoMaHoacTen(itemIdOrName) != null;
+				return sanPhamService.timSanPhamTheoMaHoacTheoTen(itemIdOrName) != null;
 			}
 		};
 
@@ -331,7 +331,7 @@ public class DichVuSanPham_GUI extends JDialog {
 		getContentPane().add(tabelPanelInfo);
 
 		btnXong = new JButton("Hoàn thành");
-		btnXong.setIcon(new ImageIcon(DichVuSanPham_GUI.class.getResource("/src/ICON/icon/check2_16.png")));
+		btnXong.setIcon(new ImageIcon("icon/check2_16.png"));
 		btnXong.setBounds(939, 573, 130, 21);
 		btnXong.addActionListener(new ActionListener() {
 			@Override
@@ -387,13 +387,13 @@ public class DichVuSanPham_GUI extends JDialog {
 	@SneakyThrows
 	private DichVu getSelectedDichVu(int row) {
 		String maDV = (String) tbl_DichVu.getValueAt(row, 0);
-		return (DichVu) dichVuService.getDichVuByMaHoacTen(maDV);
+		return (DichVu) dichVuService.timDichVuTheoMaHoacTheoTen(maDV);
 	}
 
 	@SneakyThrows
 	private SanPham getSelectedSanPham(int row) {
 		String maSP = (String) tableModelSP.getValueAt(row, 0);
-		return sanPhamService.getSanPhamTheoMaHoacTen(maSP);
+		return sanPhamService.timSanPhamTheoMaHoacTheoTen(maSP);
 	}
 
 	private int findRowIndexByCode(String code) {
@@ -448,10 +448,9 @@ public class DichVuSanPham_GUI extends JDialog {
 		if (hoaDon != null) {
 			CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaDV(dv.getMaDV(), hoaDon.getMaHD());
 			if (ctHoaDon == null) {
-				// Create new CTHoaDon for this DichVu
-				String maCTD = ctHoaDonService.getLatestID();
-				ctHoaDon = new CTHoaDon(maCTD, hoaDon, null, dv, 0, 1, 0, gia);
-				ctHoaDonService.save(ctHoaDon);
+
+				ctHoaDon = new CTHoaDon( hoaDon, null, dv, 0, 1, 0, gia);
+				ctHoaDonService.insert(ctHoaDon);
 			} else {
 				// Update existing CTHoaDon
 				ctHoaDon.setSoLuongDV(ctHoaDon.getSoLuongDV() + 1);
@@ -506,8 +505,8 @@ public class DichVuSanPham_GUI extends JDialog {
 			CTHoaDon ctHoaDon = ctHoaDonService.getCTHoaDonByMaSP(sp.getMaSP(), hoaDon.getMaHD());
 			if (ctHoaDon == null) {
 				// Create new CTHoaDon for this SanPham
-				String maCTD = ctHoaDonService.getLatestID();
-				ctHoaDon = new CTHoaDon(maCTD, hoaDon, sp, null, 1, 0, gia, 0);
+
+				ctHoaDon = new CTHoaDon( hoaDon, sp, null, 1, 0, gia, 0);
 				ctHoaDonService.save(ctHoaDon);
 			} else {
 				// Update existing CTHoaDon
@@ -529,20 +528,16 @@ public class DichVuSanPham_GUI extends JDialog {
 			String maSP = (String) tableModelSPDV.getValueAt(i, 0);
 			String tenSP = (String) tableModelSPDV.getValueAt(i, 1);
 			int soLuong = (int) tableModelSPDV.getValueAt(i, 2);
+			String valueAt = tableModelSPDV.getValueAt(i, 3).toString().replace(",", "");
+			double tongTien = Double.parseDouble(valueAt);
 
-			// Handle potential format issues with price values
-			String valueAtStr = tableModelSPDV.getValueAt(i, 3).toString();
-			// Remove commas and other non-numeric characters except decimal point
-			String cleanValue = valueAtStr.replaceAll("[^0-9.]", "");
-			double tongTien = Double.parseDouble(cleanValue);
+			SanPham sp = sanPhamService.timSanPhamTheoMaHoacTheoTen(maSP);
+			DichVu dv = dichVuService.timDichVuTheoMaHoacTheoTen(maSP);
 
-			SanPham sp = sanPhamService.getSanPhamTheoMaHoacTen(maSP);
-			DichVu dv = dichVuService.getDichVuByMaHoacTen(maSP).stream().findFirst().orElse(null);
-			String maCTD = ctHoaDonService.getLatestID();
 
 			if (sp != null || dv != null) {
 				CTHoaDon cthd = new CTHoaDon(
-						maCTD,
+
 						maHD,
 						sp,
 						dv,
@@ -601,7 +596,7 @@ public class DichVuSanPham_GUI extends JDialog {
 			for (CTHoaDon cthd : listCTHoaDon) {
 				boolean exists = ctHoaDonService.checkIfCTHoaDonExists(cthd);
 				if (!exists) {
-					boolean kq = ctHoaDonService.save(cthd);
+					boolean kq = ctHoaDonService.insert(cthd);
 					if (!kq) {
 						JOptionPane.showMessageDialog(null,
 								"Không thể thêm chi tiết hóa đơn cho sản phẩm/dịch vụ: "

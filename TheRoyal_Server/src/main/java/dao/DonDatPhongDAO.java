@@ -50,4 +50,6 @@ public interface DonDatPhongDAO extends GenericDAO<DonDatPhong, String> {
     int countSLDonDangDon(Date ngayDuocChon);
 
     public  DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon) ;
+
+    public boolean insert(DonDatPhong ddp);
 }

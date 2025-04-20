@@ -67,4 +67,8 @@ public class DonDatPhong implements Serializable {
         this.soNguoiLon = soNguoiLon;
         this.soTreEm = soTreEm;
     }
+
+    public DonDatPhong(String maDDP) {
+        this.maDDP = maDDP;
+    }
 }

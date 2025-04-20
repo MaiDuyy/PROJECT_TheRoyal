@@ -82,22 +82,22 @@ public class InHoaDon_GUI implements Printable {
 
         dsCT = (ArrayList<CTHoaDon>) ctHoaDonService.getListCTHoaDonByMaHD(hoaDon.getMaHD());
         for (CTHoaDon chiTiet : dsCT) {
-            String tenMatHangDV = chiTiet.getDichVu().getTenDV();
-            double giaDV = chiTiet.getDichVu().getGiaDV();
-            int soLuongDV = chiTiet.getSoLuongDV();
-            double thanhTienDV = giaDV * soLuongDV;
-            
-            String tenMatHangSP = chiTiet.getSanPham().getTenSP();
-            double giaSP = chiTiet.getSanPham().getGiaSP();
-            int soLuongSP = chiTiet.getSoLuongSP();
-            double thanhTienSP = giaSP * soLuongSP;
+            if (chiTiet.getDichVu() != null) {
+                String tenMatHangDV = chiTiet.getDichVu().getTenDV();
+                double giaDV = chiTiet.getDichVu().getGiaDV();
+                int soLuongDV = chiTiet.getSoLuongDV();
+                double thanhTienDV = chiTiet.getTongTienDV(); // Dùng trường tongTienDV có sẵn trong CTHoaDon
 
-            if (tenMatHangDV != null && !tenMatHangDV.isEmpty()) {
                 g2.drawString(String.format("%-20s %-6d %-10s %12s", tenMatHangDV, soLuongDV, df.format(giaDV), df.format(thanhTienDV)), 12, y);
                 y += yShift;
             }
-            
-            if (tenMatHangSP != null && !tenMatHangSP.isEmpty()) {
+
+            if (chiTiet.getSanPham() != null) {
+                String tenMatHangSP = chiTiet.getSanPham().getTenSP();
+                double giaSP = chiTiet.getSanPham().getGiaSP();
+                int soLuongSP = chiTiet.getSoLuongSP();
+                double thanhTienSP = chiTiet.getTongTienSP(); // Dùng trường tongTienSP có sẵn trong CTHoaDon
+
                 g2.drawString(String.format("%-20s %-6d %-10s %12s", tenMatHangSP, soLuongSP, df.format(giaSP), df.format(thanhTienSP)), 12, y);
                 y += yShift;
             }

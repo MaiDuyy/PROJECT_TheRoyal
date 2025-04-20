@@ -128,4 +128,9 @@ public class DonDatPhongServiceImpl extends GenericServiceImpl<DonDatPhong, Stri
     public DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon) throws RemoteException {
         return donDatPhongDAO.getDonDatTruocTheoPhongVaNgay(maPhong, thoiGianChon);
     }
+
+    @Override
+    public List<DonDatPhong> getListDonDatPhongByMaPhong(String maPhong) throws RemoteException {
+        return donDatPhongDAO.getListDonDatPhongByMaPhong(maPhong);
+    }
 }

@@ -364,93 +364,82 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnThem)) {
-		    KhachHang kh = null;
-		    DonDatPhong ddp = null;
-		    HoaDon hd = null;
-		    
-		    if (chkKH.isSelected()) {
-		        kh = dataKhachHang();
-		        if (validData(ADD)) {
-		            boolean result = khachhangdao.save(kh);
-		            if (result) {
-		                String maKH = khachhangdao.getLatestID();
-		                kh = new KhachHang(maKH, kh.getTenKH(), kh.getSDT(), kh.getLoaiKH(), kh.getCCCD(), kh.isGioiTinh() , null , null);
-		                showMessage("Khách hàng mới được thêm thành công!", SUCCESS);
-		                loadListKhachHang();
-		            } else {
-		                showMessage("Lỗi: Thêm khách hàng mới thất bại", ERROR);
-		                return;
-		            }
-		        }
-		    } else {
-		        int indx = cboMaKH.getSelectedIndex() - 1;
-		        if (indx < 0) {
-		            showMessage("Vui lòng chọn khách hàng từ danh sách!", ERROR);
-		            return;
-		        }
-		        kh = dsKH.get(indx);
-		    }
+			KhachHang kh = null;
 
-		    ddp = dataDDP(kh.getMaKH());
-		    Phong phong = phongdao.getPhongByMaPhong(ddp.getPhong().getMaPhong());
+			// Nếu chọn thêm khách hàng mới
+			if (chkKH.isSelected()) {
+				kh = dataKhachHang();
+				if (!validData(ADD)) return;
+				if (!khachhangdao.save(kh)) {
+					showMessage("Thêm khách hàng thất bại!", ERROR);
+					return;
+				}
+				kh.setMaKH(khachhangdao.getLatestID());
+			} else {
+				int indx = cboMaKH.getSelectedIndex() - 1;
+				if (indx < 0) {
+					showMessage("Vui lòng chọn khách hàng!", ERROR);
+					return;
+				}
+				kh = dsKH.get(indx);
+			}
 
-		    if (validData2(ADD)) {
-		        try {
-		            if ("Đã đặt".equals(phong.getTrangThai())) {
-		                showMessage("Phòng " + txtMPhong.getText().toString() + " đã được đặt, vui lòng chọn phòng khác!", ERROR);
-		                return;
-		            }
-		        } catch (Exception e1) {
-		            e1.printStackTrace();
-		            return;
-		        }
+			if (!validData2(ADD)) return;
 
-		        boolean result1 = dondatphongdao.insert(ddp);
-//		        String maDDP = dondatphongdao.getLatestId();
+			// Kiểm tra trạng thái phòng
+			Phong phong = phongdao.getPhongByMaPhong(txtMPhong.getText().trim());
+			if ("Đã đặt".equals(phong.getTrangThai())) {
+				showMessage("Phòng " + phong.getMaPhong() + " đã được đặt!", ERROR);
+				return;
+			}
 
-		        if (result1) {
-		            Date ngaydat = convertFromJAVADateToSQLDate(ddp.getThoiGianDatPhong());
-		            Date ngaytra = convertFromJAVADateToSQLDate(ddp.getThoiGianTraPhong());
+			// Tạo và insert DonDatPhong
+			DonDatPhong ddp = dataDDP(kh.getMaKH());
+//			if (!dondatphongdao.insert(ddp)) {
+//				showMessage("Không thể thêm đơn đặt phòng!", ERROR);
+//				return;
+//			}
+//			System.out.println(ddp.getMaDDP() + "adfasdfas");
+//			// Lấy lại DonDatPhong để Hibernate quản lý
+//			ddp = dondatphongdao.findById(ddp.getMaDDP());
 
-		            ddp = new DonDatPhong(ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra, kh,
-		                                  new Phong(ddp.getPhong().getMaPhong()), "Đang ở", ddp.getSoNguoiLon(),
-		                                  ddp.getSoTreEm() );
-		        } else {
-		            showMessage("Lỗi: Thêm đơn đặt phòng thất bại", ERROR);
-		            return;
-		        }
-		        NhanVien nhanVienDangNhap = Login.getNhanVienDangNhap();
+			// Tạo HoaDon
+			NhanVien nvDangNhap = Login.getNhanVienDangNhap();
+			HoaDon hd = new HoaDon(
+					kh,
+					phong,
+					nvDangNhap,
+					ddp,
+					null,
+					new Date(System.currentTimeMillis()),
+					phong.getGiaTien(),
+					0, 0, 0, 0, 0,
+					"Chưa thanh toán"
+			);
 
+			// Insert HoaDon
+			if (!hoadondao.insert(hd)) {
+				dondatphongdao.delete(ddp.getMaDDP());
+				showMessage("Lỗi: Thêm hóa đơn thất bại! Đã rollback đơn đặt phòng!", ERROR);
+				return;
+			}
 
+			// Update trạng thái phòng
+			phongdao.updateTinhTrang(phong.getMaPhong(), "Đang ở");
 
-		            hd = new HoaDon( kh, new Phong(ddp.getPhong().getMaPhong()),
-		                           new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, null, new Date(System.currentTimeMillis()),
-		                            phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán" );
+			// Load lại giao diện
+			loadDataPhong();
+			danhSachPhong.capNhatLaiDanhSachPhong();
 
+			dispose();
+			thongtinphong.dis();
 
-
-		        boolean hdInserted = hoadondao.insert(hd);
-
-		        if (hdInserted) {
-		            dondatphongdao.updateTinhTrang(ddp.getMaDDP(), ddp.getTrangThai());
-//		            phong.setTrangThai("Đang ở");
-		            phongdao.updateTinhTrang(String.valueOf(phong), phong.getTrangThai());
-
-		            loadDataPhong();
-		            danhSachPhong.capNhatLaiDanhSachPhong();
-		            dispose();
-		            thongtinphong.dis();
-		            
-		            DichVuSanPham_GUI dvsp = new DichVuSanPham_GUI(phong1, ddp, danhSachPhong, this.thongtinphong, true);
-		            dvsp.setVisible(true);
-		          
-		        } else {
-		            showMessage("Lỗi: Thêm hóa đơn thất bại", ERROR);
-		        }
-		    }
+			// Mở giao diện dịch vụ sản phẩm
+			DichVuSanPham_GUI dvsp = new DichVuSanPham_GUI(phong1, ddp, danhSachPhong, this.thongtinphong, true);
+			dvsp.setVisible(true);
 		}
 
-		
+
 
 		if (e.getSource().equals(cboMaKH)) {
 			int indx = cboMaKH.getSelectedIndex();
@@ -474,13 +463,13 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 			if (chkKH.isSelected()) {
 				txtTenKH.setEnabled(true);
 				txtCCCD.setEnabled(true);
-				cboLoaiKH.setEnabled(true);
 				txtSDT.setEnabled(true);
-				txtTenKH.requestFocus();
+				cboLoaiKH.setEnabled(true);
 				cboGioiTinh.setEnabled(true);
 				cboMaKH.setEnabled(false);
 				txtNglon.setEnabled(true);
 				txtTreEm.setEnabled(true);
+				txtTenKH.requestFocus();
 			} else {
 				txtTenKH.setEnabled(false);
 				txtCCCD.setEnabled(false);
@@ -488,13 +477,13 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 				cboLoaiKH.setEnabled(false);
 				cboGioiTinh.setEnabled(false);
 				cboMaKH.setEnabled(true);
-				cboMaKH.requestFocus();
 				txtNglon.setEnabled(true);
 				txtTreEm.setEnabled(true);
+				cboMaKH.requestFocus();
 			}
 		}
-
 	}
+
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -559,7 +548,7 @@ public class DatPhong extends JDialog implements ActionListener, MouseListener {
 		int treem = txtTreEm.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtTreEm.getText().trim());
 
 		DonDatPhong ddp = new DonDatPhong( ngaydat, Date.valueOf(java.time.LocalDate.now()), ngaytra,
-				new KhachHang(ma), new Phong(maphong), "", nglon, treem  );
+				new KhachHang(ma), new Phong(maphong), "Đang ở", nglon, treem  );
 		return ddp;
 	}
 

@@ -68,8 +68,7 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
 
         try {
             String jpql = "SELECT h FROM HoaDon h " +
-                    "JOIN h.donDatPhong d " +
-                    "WHERE d.maDDP = :maDDP";
+                    "WHERE h.donDatPhong.maDDP = :maDDP";
 
             hoaDon = em.createQuery(jpql, HoaDon.class)
                     .setParameter("maDDP", maDDP)
@@ -79,7 +78,10 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            em.close();
         }
+
         return hoaDon;
     }
 
@@ -150,36 +152,62 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
 
     // Cập nhật trạng thái của hóa đơn
     @Override public boolean updateTinhTrang(String maHD, String trangThai) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            EntityTransaction transaction = JPAUtil.getEntityManager().getTransaction();
-            transaction.begin();
-            TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery("UPDATE HoaDon h SET h.trangThai = :trangThai WHERE h.maHD = :maHD", HoaDon.class);
-            query.setParameter("trangThai", trangThai);
-            query.setParameter("maHD", maHD);
-            int rowsUpdated = query.executeUpdate();
-            transaction.commit();
-            return rowsUpdated > 0;
+            tx.begin();
+
+            String jpql = "UPDATE HoaDon h SET h.trangThai = :trangThai WHERE h.maHD = :maHD";
+
+            int n = em.createQuery(jpql)
+                    .setParameter("trangThai", trangThai)
+                    .setParameter("maHD", maHD)
+                    .executeUpdate();
+
+            tx.commit();
+            updated = n > 0;
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
+        } finally {
+            em.close();
         }
+
+        return updated;
     }
 
     // Cập nhật mã khuyến mãi cho hóa đơn
     @Override public boolean updateKM(String maKM, String maHD) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            EntityTransaction transaction = JPAUtil.getEntityManager().getTransaction();
-            transaction.begin();
-            TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery("UPDATE HoaDon h SET h.khuyenMai.maKM = :maKM WHERE h.maHD = :maHD", HoaDon.class);
-            query.setParameter("maKM", maKM);
-            query.setParameter("maHD", maHD);
-            int rowsUpdated = query.executeUpdate();
-            transaction.commit();
-            return rowsUpdated > 0;
+            tx.begin();
+
+            String jpql = "UPDATE HoaDon h SET h.khuyenMai.maKM = :maKM WHERE h.maHD = :maHD";
+
+            int n = em.createQuery(jpql)
+                    .setParameter("maKM", maKM)
+                    .setParameter("maHD", maHD)
+                    .executeUpdate();
+
+            tx.commit();
+            updated = n > 0;
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
+        } finally {
+            em.close();
         }
+
+        return updated;
     }
 
     // Tính doanh thu theo ngày

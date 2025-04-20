@@ -53,7 +53,7 @@ public class QuickLinkQrPanel extends JDialog {
         getContentPane().add(pnlQR, BorderLayout.CENTER);
         pnlQR.setLayout(null);
         btnDong = new ButtonCustom("Hoàn tất", "success",12 ); 
-        btnDong.setIcon(new ImageIcon(QuickLinkQrPanel.class.getResource("/src/ICON/icon/check2_16.png")));
+        btnDong.setIcon(new ImageIcon("icon/check2_16.png"));
         btnDong.setLocation(373, 569);
         pnlQR.add(btnDong);
         btnDong.setSize(150, 33);

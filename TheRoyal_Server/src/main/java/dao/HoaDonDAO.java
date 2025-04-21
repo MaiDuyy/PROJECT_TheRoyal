@@ -47,4 +47,7 @@ public interface HoaDonDAO extends GenericDAO<HoaDon, String> {
     public boolean insert(HoaDon hd) ;
 
     public String getLatestID() ;
+
+    public List<HoaDon> getListHoaDon();
+
 }

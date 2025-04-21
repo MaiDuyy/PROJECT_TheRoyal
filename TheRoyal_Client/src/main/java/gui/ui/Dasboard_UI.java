@@ -71,7 +71,7 @@ public class Dasboard_UI extends JFrame {
 
 
 	public Dasboard_UI() {
-		setBackground(new Color(255, 192, 203));
+		setBackground(new Color(44, 110, 73));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 192, 203));
@@ -235,9 +235,9 @@ public class Dasboard_UI extends JFrame {
 		textLabel_9.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		textLabel_9.setBounds(53, 0, 175, 83);
 		Jpanel_MenuTK.add(textLabel_9);
-		
-		
-		
+
+
+
 		JPanel Jpanel_MenuTKSP = new JPanel();
 		Jpanel_MenuTKSP.setBackground(new Color(255, 192, 203));
 		Jpanel_MenuTKSP.setLayout(null);
@@ -261,13 +261,13 @@ public class Dasboard_UI extends JFrame {
 		itemTrangChu = new JMenuItem("Trang chủ");
 		menuTrangChu.add(itemTrangChu);
 		itemTrangChu.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				openTrangChu();
-				
+
 			}
-		}); 
+		});
 
 
 		menuGioiThieu = new JMenu("Giới thiệu");
@@ -275,20 +275,20 @@ public class Dasboard_UI extends JFrame {
 		itemGioiThieu = new JMenuItem("Giới thiệu");
 		menuGioiThieu.add(itemGioiThieu);
 		itemGioiThieu.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 //				AboutDialog a = new AboutDialog(owner);
 //				a.setVisible(true );
 			}
-		}); 
+		});
 
 		menuTroGiup = new JMenu("Trợ giúp");
 		menuBar.add(menuTroGiup);
 		itemTroGiup = new JMenuItem("Trợ giúp");
 		menuTroGiup.add(itemTroGiup);
 		itemTroGiup.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -297,11 +297,11 @@ public class Dasboard_UI extends JFrame {
 				} catch (IOException | URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}	
+				}
 			}
 		});
-		
-	
+
+
 
 		Jpanel_MenuDSPhong.addMouseListener(new MouseAdapter() {
 		    @Override
@@ -459,7 +459,7 @@ public class Dasboard_UI extends JFrame {
 		        openThongKe_GUI();
 		    }
 		});
-		
+
 		Jpanel_MenuTKSP.addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseEntered(MouseEvent e) {

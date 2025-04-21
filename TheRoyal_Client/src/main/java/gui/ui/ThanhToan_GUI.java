@@ -23,7 +23,9 @@ import java.awt.print.PrinterJob;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -57,7 +59,7 @@ public class ThanhToan_GUI extends JDialog {
     private ArrayList<SanPham> dsSP;
     private ArrayList<DichVu> dsDV;
     private ArrayList<DonDatPhong> dsDDP;
-    private ArrayList<HoaDon> dsHD;
+    private ArrayList<HoaDon>  dsHD ;
     private ArrayList<Phong> dsPhong;
     private ArrayList<CTHoaDon> dsCTHD;
     private ArrayList<KhuyenMai> dsKhuyenMai;
@@ -396,6 +398,8 @@ public class ThanhToan_GUI extends JDialog {
 		                break;
 		            case "Thanh thanh toán bằng chuyển khoảng":
 		            	String qrUrl =qr.createQRUrl();
+                        System.out.println("QR URL: " + qrUrl);
+
 
 				        QuickLinkQrPanel qrDialog = new QuickLinkQrPanel(ThanhToan_GUI.this, true, qrUrl);
 				        qrDialog.setVisible(true);
@@ -435,12 +439,12 @@ public class ThanhToan_GUI extends JDialog {
     }
 
     private void loadData() throws RemoteException {
-        dsHD = (ArrayList<HoaDon>) hoadondao.getAll();
+        dsHD = (ArrayList<HoaDon>) hoadondao.getListHoaDon();
         dsPhong = (ArrayList<Phong>) phongdao.getAll();
         dsDDP = (ArrayList<DonDatPhong>) dondatphongdao.getAll();
         dsDV = (ArrayList<DichVu>) dichvudao.getAll();
         dsSP = (ArrayList<SanPham>) sanphamdao.getAll();
-        loadRoomInfo(ddp);
+//        loadRoomInfo(ddp);
         loadReservationInfo(ddp);
         loadThongTinHoaDon(ddp);
 //        loadRoomInfo(ddp);
@@ -560,13 +564,14 @@ public class ThanhToan_GUI extends JDialog {
                 String tiensp = df.format(tienSanPham);
                 String tongtien = df.format(tongTien);
 
+                double total = tienDV + tienKM + tienPhat + tienPhong + tienSanPham;
                 txtMaPhong.setText(item.getPhong().getMaPhong());
                 txtMaHD.setText(item.getMaHD());
                 txtTienPhong.setText(tienphong);
                 txtTienSP.setText(tiensp);
                 txtTienDV.setText(tiendv);
                 txtPhuThu.setText(tienphat);
-                txtTongTien.setText(tongtien);
+                txtTongTien.setText(df.format(total));
                 found = true;
                 break;
             }
@@ -660,8 +665,9 @@ public class ThanhToan_GUI extends JDialog {
 		    }
 
          LocalDateTime ngayhientai = LocalDateTime.now();
-         LocalDateTime ngayketthuc = LocalDateTime.parse(FormatDate.formatDate( khuyenMai.getThoiGianKetThuc()));
-
+//         LocalDateTime ngayketthuc = LocalDateTime.parse(FormatDate.formatDate( khuyenMai.getThoiGianKetThuc()));
+         LocalDateTime ngayketthuc = LocalDate.parse(FormatDate.formatDate(khuyenMai.getThoiGianKetThuc()),
+                 DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
          if (ngayketthuc.isBefore(ngayhientai)) {
              JOptionPane.showMessageDialog(this, "Mã khuyến mãi đã hết hạn", "Error", JOptionPane.ERROR_MESSAGE);
              return;

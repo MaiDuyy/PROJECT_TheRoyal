@@ -10,6 +10,7 @@ import util.JPAUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -315,5 +316,40 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
             e.printStackTrace();
         }
         return id;
+    }
+
+    @Override
+    public List<HoaDon> getListHoaDon() {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<HoaDon> dataList = new ArrayList<>();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            // Bước 1: Lấy toàn bộ hóa đơn
+            String jpql = "SELECT h FROM HoaDon h ORDER BY h.maHD";
+
+            dataList = em.createQuery(jpql, HoaDon.class)
+                    .getResultList();
+
+            // Bước 2: Cập nhật tongTien nếu cần
+            for (HoaDon hd : dataList) {
+                double tongTien = hd.getTienPhong() + hd.getTienPhat() + hd.getTienDichVu() + hd.getTienSanPham() - hd.getTienKhuyenMai();
+                hd.setTongTien(tongTien);
+                em.merge(hd); // merge lại entity
+            }
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        return dataList;
     }
 }

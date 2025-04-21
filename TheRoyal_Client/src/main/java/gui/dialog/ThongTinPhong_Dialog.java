@@ -442,22 +442,22 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 //
 //		}
 		
-		//
-//		if (e.getSource().equals(btn_SuDungDV)) {
-//			List<Phong> dsPhong = phongService.getListPhong();
-//			HoaDonDAO hoadondao = new HoaDonDAO();
-//			for (Phong phong : dsPhong) {
-//				String maPhong = phong.getMaPhong();
-//				HoaDon hd = hoadondao.getHoaDonTheoPhong(maPhong);
-//
-//				if (hd != null) {
-//					getdichvusanpham(maPhong);
-//					this.dispose();
-//					break;
-//
-//				}
-//			}
-//		}
+
+		if (e.getSource().equals(btn_SuDungDV)) {
+			List<Phong> dsPhong = phongService.getAll();
+			HoaDonService hoadondao = RMIClient.getInstance().getHoaDonService();
+			for (Phong phong : dsPhong) {
+				String maPhong = phong.getMaPhong();
+				HoaDon hd = hoadondao.getHoaDonTheoPhong(maPhong);
+
+				if (hd != null) {
+					getdichvusanpham(phong , ddp);
+					this.dispose();
+					break;
+
+				}
+			}
+		}
 
 		if (e.getSource().equals(btn_VaoThue)) {
 			List<Phong> dsPhong = phongService.getAll();
@@ -491,8 +491,8 @@ public class ThongTinPhong_Dialog extends JDialog implements ActionListener {
 
 
 	}
-	
-	
+
+
 	public void dis() {
 	dispose();
 	}

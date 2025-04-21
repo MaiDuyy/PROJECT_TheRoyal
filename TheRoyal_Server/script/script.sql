@@ -10,7 +10,7 @@ ALTER TABLE KhuyenMai ALTER COLUMN trangThai NVARCHAR(50);
 
 UPDATE Phong
 SET trangThai = N'Phòng trống'
-    WHERE maPhong= 'P204';
+    WHERE maPhong= 'P201';
 
 
 

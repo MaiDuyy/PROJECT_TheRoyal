@@ -92,4 +92,9 @@ public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> imple
     public String getLatestID() throws RemoteException {
         return hoaDonDAO.getLatestID();
     }
+
+    @Override
+    public List<HoaDon> getListHoaDon() throws RemoteException {
+        return hoaDonDAO.getListHoaDon();
+    }
 }

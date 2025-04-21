@@ -33,7 +33,7 @@ public interface CTHoaDonDAO extends GenericDAO<CTHoaDon, String> {
 
     ArrayList<String[]> getTOPSPNam(String nam);
 
-    ArrayList<String[]>s getTopDichVuTheoNam(int nam);
+    ArrayList<String[]> getTopDichVuTheoNam(int nam);
 
     ArrayList<String[]> getTKSPNam(String nam);
 

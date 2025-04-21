@@ -157,6 +157,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
 
     @Override
     public CTHoaDon getCTHoaDonByMaDV(String maDV, String maHD) {
+        CTHoaDon cthd = null;
         try {
             String jpql = "SELECT c FROM CTHoaDon c " +
                     "WHERE c.dichVu.maDV = :maDV " +
@@ -180,7 +181,9 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
 
     @Override
     public CTHoaDon getCTHoaDonByMaSP(String maSP, String maHD) {
+        CTHoaDon cthd = null;
         try {
+
             String jpql = "SELECT c FROM CTHoaDon c " +
                     "WHERE c.sanPham.maSP = :maSP " +
                     "AND c.hoaDon.maHD = :maHD";

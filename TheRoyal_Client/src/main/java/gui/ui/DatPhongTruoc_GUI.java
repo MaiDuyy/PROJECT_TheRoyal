@@ -175,14 +175,14 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		
 		staffInfoPanel.add(lblSoTreEm_1);
 
-		btnThem = new JButton("Đặt phòng", new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/blueAdd_16.png")));
+		btnThem = new JButton("Đặt phòng", new ImageIcon("icon/blueAdd_16.png"));
 		btnThem.setBounds(303, 360, 132, 21);
 		staffInfoPanel.add(btnThem);
 
 		btnLamLai = new JButton("Làm Lại");
 		btnLamLai.setBounds(445, 360, 145, 21);
 		staffInfoPanel.add(btnLamLai);
-		btnLamLai.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/refresh_16.png")));
+		btnLamLai.setIcon(new ImageIcon("icon/refresh_16.png"));
 
 		txtCCCD = new JTextField(15);
 		txtCCCD.setEnabled(false);
@@ -234,6 +234,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		txtNglon = new JTextField(15);
 		txtNglon.setEnabled(false);
 		txtNglon.setBounds(98, 270, 152, 38);
+		txtNglon.setText(String.valueOf(phong.getSoNguoiLon()));
 		staffInfoPanel.add(txtNglon);
 
 		lblSTrEm = new JLabel("Số trẻ em:");
@@ -243,6 +244,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		txtTreEm = new JTextField(15);
 		txtTreEm.setEnabled(false);
 		txtTreEm.setBounds(391, 270, 152, 38);
+		txtTreEm.setText(String.valueOf(phong.getSoTreEm()));
 		staffInfoPanel.add(txtTreEm);
 		
 		JLabel lblNgayTra = new JLabel("Ngày trả phòng:");
@@ -267,7 +269,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		panelTimKiemKH.add(txtTimKiemKH);
 		
 		JLabel btnTimKiemKH = new JLabel("");
-		btnTimKiemKH.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/search.png")));
+		btnTimKiemKH.setIcon(new ImageIcon("icon/search.png"));
 		btnTimKiemKH.setBounds(564, 22, 24, 32);
 		staffInfoPanel.add(btnTimKiemKH);
 		txtTimKiemKH.setBackground(Color.WHITE);
@@ -403,18 +405,18 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 				
 				if(lp.getMaLoai().equals("LP01")) {
 					if(phong.getSoGiuong()==1) {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/phongThuongDon.png")));
+						hinhAnh.setIcon(new ImageIcon("icon/phongThuongDon.png"));
 					}else {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/phongThuongDoi.png")));
+						hinhAnh.setIcon(new ImageIcon("icon/phongThuongDoi.png"));
 					}
 				}else if(lp.getMaLoai().equals("LP02")) {
 					if(phong.getSoGiuong()==1) {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/hinhPhongVipDon.png")));
+						hinhAnh.setIcon(new ImageIcon("icon/hinhPhongVipDon.png"));
 					}else {
-						hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/hinhAnhPhongVipDoi.png")));
+						hinhAnh.setIcon(new ImageIcon("icon/hinhAnhPhongVipDoi.png"));
 					}
 				}else {
-					hinhAnh.setIcon(new ImageIcon(DatPhongTruoc_GUI.class.getResource("/src/icon/hinhAnhPenthouse.png")));
+					hinhAnh.setIcon(new ImageIcon("icon/hinhAnhPenthouse.png"));
 				}
 				
 				hinhAnh.setBounds(276, 29, 300, 200);
@@ -476,15 +478,15 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 					return;
 				}
 
-				boolean result1 = dondatphongdao.save(ddp);
+				boolean result1 = dondatphongdao.insert(ddp);
 				String maDDP = dondatphongdao.getLatestId();
 
 				if (result1) {
 					Date ngaynhan = convertFromJAVADateToSQLDate(ddp.getThoiGianNhanPhong());
 					Date ngaytra = convertFromJAVADateToSQLDate(ddp.getThoiGianTraPhong());
 
-					ddp = new DonDatPhong(maDDP, Date.valueOf(java.time.LocalDate.now()), ngaynhan, ngaytra, kh, new Phong(ddp.getPhong().getMaPhong()),
-							"Đặt trước", ddp.getSoNguoiLon(), ddp.getSoTreEm(), null);
+					ddp = new DonDatPhong( Date.valueOf(java.time.LocalDate.now()), ngaynhan, ngaytra, kh, new Phong(ddp.getPhong().getMaPhong()),
+							"Đặt trước", ddp.getSoNguoiLon(), ddp.getSoTreEm());
 //		        } else {
 //		            showMessage("Lỗi: Thêm đơn đặt phòng thất bại", ERROR);
 //		            return;
@@ -655,8 +657,8 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		int nglon = txtNglon.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtNglon.getText().trim());
 		int treem = txtTreEm.getText().trim().isEmpty() ? 0 : Integer.parseInt(txtTreEm.getText().trim());
 
-		DonDatPhong ddp = new DonDatPhong("", ngayDat, ngayNhan, ngayTra, new KhachHang(maKH), new Phong(maphong), "",
-				nglon, treem, null );
+		DonDatPhong ddp = new DonDatPhong( ngayDat, ngayNhan, ngayTra, new KhachHang(maKH), new Phong(maphong), "",
+				nglon, treem );
 		return ddp;
 	}
 
@@ -827,7 +829,7 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 	public void loadDonDatPhongToTable(String maPhong) {
 	    tableModelPhong.setRowCount(0);
 
-	    List<DonDatPhong> listDonDatPhong = (List<DonDatPhong>) dondatphongdao.getDonDatPhongByRoomId(maPhong);
+	    List<DonDatPhong> listDonDatPhong =dondatphongdao.getListDonDatPhongByMaPhong(maPhong);
 	    
 
 	    if (!listDonDatPhong.isEmpty()) {
@@ -841,8 +843,8 @@ public class DatPhongTruoc_GUI extends JDialog implements ActionListener, MouseL
 		                kh.getSDT(),
 		                ddp.getThoiGianNhanPhong(),
 		                ddp.getThoiGianTraPhong(),
-		                ddp.getSoNguoiLon(),
-		                ddp.getSoTreEm(),
+		                ddp.getPhong().getSoNguoiLon(),
+		                ddp.getPhong().getSoTreEm(),
 		                ddp.getTrangThai()
 		            };
 		            tableModelPhong.addRow(row);

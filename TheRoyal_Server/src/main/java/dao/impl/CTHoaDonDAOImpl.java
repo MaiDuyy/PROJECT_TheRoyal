@@ -83,86 +83,122 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
 
     @Override
     public boolean updateSLSP(CTHoaDon ctHoaDon) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            int updatedCount = em.createQuery("""
-                                UPDATE CTHoaDon c
-                                SET c.soLuongSP = :soLuongSP,
-                                    c.tongTienSP = :tongTienSP
-                                WHERE c.id = :maCTHD AND c.sanPham.id = :maSP
-                            """)
+
+            tx.begin();
+
+            String jpql = "UPDATE CTHoaDon c " +
+                    "SET c.soLuongSP = :soLuongSP, " +
+                    "    c.tongTienSP = :tongTienSP " +
+                    "WHERE c.maCTHD = :maCTHD " +
+                    "AND c.sanPham.maSP = :maSP";
+
+            int n = em.createQuery(jpql)
                     .setParameter("soLuongSP", ctHoaDon.getSoLuongSP())
                     .setParameter("tongTienSP", ctHoaDon.getTongTienSP())
                     .setParameter("maCTHD", ctHoaDon.getMaCTHD())
                     .setParameter("maSP", ctHoaDon.getSanPham().getMaSP())
                     .executeUpdate();
 
-            return updatedCount > 0;
+            tx.commit();
+            updated = n > 0;
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
+        } finally {
+            em.close();
         }
+
+        return updated;
     }
 
     @Override
     public boolean updateSLDV(CTHoaDon ctHoaDon) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            int updatedCount = em.createQuery("""
-                                UPDATE CTHoaDon c
-                                SET c.soLuongDV = :soLuongDV,
-                                    c.tongTienDV = :tongTienDV
-                                WHERE c.id = :maCTHD AND c.dichVu.id = :maDV
-                            """)
+
+            tx.begin();
+
+            String jpql = "UPDATE CTHoaDon c " +
+                    "SET c.soLuongDV = :soLuongDV, " +
+                    "    c.tongTienDV = :tongTienDV " +
+                    "WHERE c.maCTHD = :maCTHD " +
+                    "AND c.dichVu.maDV = :maDV";
+
+            int n = em.createQuery(jpql)
                     .setParameter("soLuongDV", ctHoaDon.getSoLuongDV())
                     .setParameter("tongTienDV", ctHoaDon.getTongTienDV())
                     .setParameter("maCTHD", ctHoaDon.getMaCTHD())
                     .setParameter("maDV", ctHoaDon.getDichVu().getMaDV())
                     .executeUpdate();
 
-            return updatedCount > 0;
+            tx.commit();
+            updated = n > 0;
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
+        } finally {
+            em.close();
         }
+
+        return updated;
     }
 
     @Override
     public CTHoaDon getCTHoaDonByMaDV(String maDV, String maHD) {
         try {
-            TypedQuery<CTHoaDon> query = em.createQuery("""
-                        SELECT cthd 
-                        FROM CTHoaDon cthd 
-                        WHERE cthd.dichVu.id = :maDV 
-                          AND cthd.hoaDon.id = :maHD
-                    """, CTHoaDon.class);
-            query.setParameter("maDV", maDV);
-            query.setParameter("maHD", maHD);
+            String jpql = "SELECT c FROM CTHoaDon c " +
+                    "WHERE c.dichVu.maDV = :maDV " +
+                    "AND c.hoaDon.maHD = :maHD";
 
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+            cthd = em.createQuery(jpql, CTHoaDon.class)
+                    .setParameter("maDV", maDV)
+                    .setParameter("maHD", maHD)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            em.close();
         }
+
+        return cthd;
     }
 
     @Override
     public CTHoaDon getCTHoaDonByMaSP(String maSP, String maHD) {
         try {
-            TypedQuery<CTHoaDon> query = em.createQuery("""
-                        SELECT cthd FROM CTHoaDon cthd 
-                        WHERE cthd.sanPham.id = :maSP AND cthd.hoaDon.id = :maHD
-                    """, CTHoaDon.class);
-            query.setParameter("maSP", maSP);
-            query.setParameter("maHD", maHD);
+            String jpql = "SELECT c FROM CTHoaDon c " +
+                    "WHERE c.sanPham.maSP = :maSP " +
+                    "AND c.hoaDon.maHD = :maHD";
 
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+            cthd = em.createQuery(jpql, CTHoaDon.class)
+                    .setParameter("maSP", maSP)
+                    .setParameter("maHD", maHD)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            em.close();
         }
+
+        return cthd;
     }
 
     @Override

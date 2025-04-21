@@ -23,7 +23,9 @@ import java.awt.print.PrinterJob;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -57,11 +59,12 @@ public class ThanhToan_GUI extends JDialog {
     private ArrayList<SanPham> dsSP;
     private ArrayList<DichVu> dsDV;
     private ArrayList<DonDatPhong> dsDDP;
-    private ArrayList<HoaDon> dsHD;
+    private ArrayList<HoaDon>  dsHD ;
     private ArrayList<Phong> dsPhong;
     private ArrayList<CTHoaDon> dsCTHD;
     private ArrayList<KhuyenMai> dsKhuyenMai;
 
+    @SneakyThrows
     public ThanhToan_GUI(Phong phong, DonDatPhong ddp, DanhSachPhong_GUI danhSachPhong, ThongTinPhong_Dialog owner, boolean modal) {
         super(owner, modal);
         getContentPane().setBackground(new Color(255, 255, 255));
@@ -84,11 +87,7 @@ public class ThanhToan_GUI extends JDialog {
 
 			setBounds(100, 100, 1228, 645);
 			initComponents();
-        try {
             loadData();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
         loadCboMaKhuyenMai();
 		}
 
@@ -153,7 +152,7 @@ public class ThanhToan_GUI extends JDialog {
                 double tongTienDV = tongTien[1];
 
                 if (isSanPham(itemIdOrName)) {
-                    SanPham mh = sanphamdao.getSanPhamTheoMaHoacTen(itemIdOrName);
+                    SanPham mh = sanphamdao.timSanPhamTheoMaHoacTheoTen(itemIdOrName);
                     gia = mh.getGiaSP();
                     if (mh.getSoLuongSP() <= 0) {
                         JOptionPane.showMessageDialog(null, "Sản phẩm " + mh.getTenSP() + " đã hết hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -170,7 +169,7 @@ public class ThanhToan_GUI extends JDialog {
                     tongTienSP += gia;
 
                 } else {
-                    DichVu dv = (DichVu) dichvudao.getDichVuByMaHoacTen(itemIdOrName);
+                    DichVu dv = (DichVu) dichvudao.timDichVuTheoMaHoacTheoTen(itemIdOrName);
                     gia = dv.getGiaDV();
                     if (dv.getSoLuongDV() <= 0) {
                         JOptionPane.showMessageDialog(null, "Dịch vụ " + dv.getTenDV() + " đã hết hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -232,7 +231,7 @@ public class ThanhToan_GUI extends JDialog {
                     tongTienSP -= gia;
 
                 } else {
-                    DichVu dv = (DichVu) dichvudao.getDichVuByMaHoacTen(itemIdOrName);
+                    DichVu dv = (DichVu) dichvudao.timDichVuTheoMaHoacTheoTen(itemIdOrName);
                     gia = dv.getGiaDV();
                     dv.setSoLuongDV(dv.getSoLuongDV() + 1);
                     dichvudao.updateSLDV(dv, dv.getSoLuongDV());
@@ -260,7 +259,7 @@ public class ThanhToan_GUI extends JDialog {
 
             private boolean isSanPham(String itemIdOrName) {
                 try {
-                    return sanphamdao.getSanPhamTheoMaHoacTen(itemIdOrName) != null;
+                    return sanphamdao.timSanPhamTheoMaHoacTheoTen(itemIdOrName) != null;
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -370,7 +369,7 @@ public class ThanhToan_GUI extends JDialog {
         tabelPanelInfo.add(chkInHoaDon);
 
         btnKiemTra = new JButton("Kiểm tra");
-        btnKiemTra.setIcon(new ImageIcon(ThanhToan_GUI.class.getResource("/src/ICON/icon/check2_16.png")));
+        btnKiemTra.setIcon(new ImageIcon("icon/check2_16.png"));
         btnKiemTra.setBounds(545, 135, 115, 21);
         tabelPanelInfo.add(btnKiemTra);
 
@@ -382,7 +381,7 @@ public class ThanhToan_GUI extends JDialog {
 
         btnChuyenKhoan = new ButtonCustom("Chuyển khoản" , "success" , 12);
         btnChuyenKhoan.setText("Thanh toán");
-        btnChuyenKhoan.setIcon(new ImageIcon(ThanhToan_GUI.class.getResource("/src/ICON/icon/cash-on-delivery.png")));
+        btnChuyenKhoan.setIcon(new ImageIcon("icon/cash-on-delivery.png"));
         btnChuyenKhoan.setBounds(393, 405, 131, 40);
         btnChuyenKhoan.addActionListener(new ActionListener() {
 
@@ -399,6 +398,8 @@ public class ThanhToan_GUI extends JDialog {
 		                break;
 		            case "Thanh thanh toán bằng chuyển khoảng":
 		            	String qrUrl =qr.createQRUrl();
+                        System.out.println("QR URL: " + qrUrl);
+
 
 				        QuickLinkQrPanel qrDialog = new QuickLinkQrPanel(ThanhToan_GUI.this, true, qrUrl);
 				        qrDialog.setVisible(true);
@@ -438,14 +439,15 @@ public class ThanhToan_GUI extends JDialog {
     }
 
     private void loadData() throws RemoteException {
-        dsHD = (ArrayList<HoaDon>) hoadondao.getAll();
+        dsHD = (ArrayList<HoaDon>) hoadondao.getListHoaDon();
         dsPhong = (ArrayList<Phong>) phongdao.getAll();
         dsDDP = (ArrayList<DonDatPhong>) dondatphongdao.getAll();
         dsDV = (ArrayList<DichVu>) dichvudao.getAll();
         dsSP = (ArrayList<SanPham>) sanphamdao.getAll();
-
+//        loadRoomInfo(ddp);
         loadReservationInfo(ddp);
         loadThongTinHoaDon(ddp);
+//        loadRoomInfo(ddp);
         loadCTHoaDonToTable(phong);
     }
 
@@ -533,71 +535,68 @@ public class ThanhToan_GUI extends JDialog {
         return sdf.format(date);
     }
     private void loadThongTinHoaDon(DonDatPhong ddp) {
- 	   if (dsHD == null || dsHD.size() <= 0)
+        if (ddp == null) {
+            System.out.println("Đơn đặt phòng là null, không thể load thông tin hóa đơn");
             return;
+        }
 
+        if (dsHD == null || dsHD.isEmpty()) {
+            System.out.println("Danh sách hóa đơn trống");
+            return;
+        }
 
+        boolean found = false;
         for (HoaDon item: dsHD) {
-        	if (item.getDonDatPhong().getMaDDP().equals(ddp.getMaDDP())) {
-            double tienDV = item.getTienDichVu();
-            double tienKM = item.getTienKhuyenMai();
-            double tienPhat = item.getTienPhat();
-            double tienPhong = item.getTienPhong();
-            double tienSanPham = item.getTienSanPham();
-            double tongTien = item.getTongTien();
-            String ngaylaphoadon = FormatDate.formatDate(item.getThoiGianLapHD());
+            if (item.getDonDatPhong() != null && item.getDonDatPhong().getMaDDP().equals(ddp.getMaDDP())) {
+                double tienDV = item.getTienDichVu();
+                double tienKM = item.getTienKhuyenMai();
+                double tienPhat = item.getTienPhat();
+                double tienPhong = item.getTienPhong();
+                double tienSanPham = item.getTienSanPham();
+                double tongTien = item.getTongTien();
+                String ngaylaphoadon = FormatDate.formatDate(item.getThoiGianLapHD());
 
+                DecimalFormat df = new DecimalFormat("#,###.##");
+                String tiendv = df.format(tienDV);
+                String tienkm = df.format(tienKM);
+                String tienphat = df.format(tienPhat);
+                String tienphong = df.format(tienPhong);
+                String tiensp = df.format(tienSanPham);
+                String tongtien = df.format(tongTien);
 
-            DecimalFormat df = new DecimalFormat("#,###.##");
-            String tiendv = df.format(tienDV);
-            String tienkm = df.format(tienKM);
-            String tienphat = df.format(tienPhat);
-            String tienphong = df.format(tienPhong);
-            String tiensp = df.format(tienSanPham);
-            String tongtien = df.format(tongTien);
-
-            txtMaPhong.setText(item.getPhong().getMaPhong());
-            txtMaHD.setText(item.getMaHD());
-            txtTienPhong.setText(tienphong);
-            txtTienSP.setText(tiensp);
-            txtTienDV.setText(tiendv);
-//            txtTienKM.setText(tienkm);
-            txtPhuThu.setText(tienphat);
-            txtTongTien.setText(tongtien);
-            break;
-        	}
-
-
+                double total = tienDV + tienKM + tienPhat + tienPhong + tienSanPham;
+                txtMaPhong.setText(item.getPhong().getMaPhong());
+                txtMaHD.setText(item.getMaHD());
+                txtTienPhong.setText(tienphong);
+                txtTienSP.setText(tiensp);
+                txtTienDV.setText(tiendv);
+                txtPhuThu.setText(tienphat);
+                txtTongTien.setText(df.format(total));
+                found = true;
+                break;
+            }
         }
- }
 
+        if (!found) {
+            System.out.println("Không tìm thấy hóa đơn cho đơn đặt phòng: " + ddp.getMaDDP());
+        }
+    }
+
+    @SneakyThrows
     private void loadCboMaKhuyenMai() {
-        try {
+
             dsKhuyenMai = (ArrayList<KhuyenMai>) khuyenmaidao.getAll();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+
         if (dsKhuyenMai == null || dsKhuyenMai.size() <= 0)
             return;
         for (KhuyenMai item: dsKhuyenMai) {
             cboKhuyenMai.addItem(item.getMaKM());
         }
     }
+    @SneakyThrows
     public void loadCTHoaDonToTable(Phong phong) {
-        HoaDon hoaDon = null;
-        try {
-            hoaDon = hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
-        tableModelSPDV.setRowCount(0);
-
-        try {
-            dsCTHD = (ArrayList<CTHoaDon>) cthoadondao.getListCTHoaDonByMaHD(hoaDon.getMaHD());
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        HoaDon hoaDon =  hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
+        dsCTHD = (ArrayList<CTHoaDon>) cthoadondao.getListCTHoaDonByMaHD(hoaDon.getMaHD());
 
         DecimalFormat df = new DecimalFormat("#,###.##");
 
@@ -624,16 +623,10 @@ public class ThanhToan_GUI extends JDialog {
             tableModelSPDV.addRow(row);
         }
     }
-	 public void inHoaDon(String maHD) {
-         HoaDon hoaDon = null;
-         try {
-             hoaDon = hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
-         } catch (RemoteException e) {
-             throw new RuntimeException(e);
-         }
+	 @SneakyThrows
+     public void inHoaDon(String maHD) {
+         HoaDon hoaDon = hoadondao.getHoaDonTheoMa(maHD);
 
-//	        HoaDon.getInstance().setMaHD(maHD);
-//	        HoaDon.getInstance().setNhanVien(hoaDon.getNhanVien());
 	        if (hoaDon != null) {
 	            InHoaDon_GUI inHoaDonGUI = new InHoaDon_GUI(hoaDon);
 	            PrinterJob printerJob = PrinterJob.getPrinterJob();
@@ -656,32 +649,25 @@ public class ThanhToan_GUI extends JDialog {
 	 @SneakyThrows
      private void btnkiemtra() {
 		    String maKM = (String) cboKhuyenMai.getSelectedItem();
-         HoaDon hoaDon = null;
-         try {
-             hoaDon = hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
-         } catch (RemoteException e) {
-             throw new RuntimeException(e);
-         }
+         HoaDon hoaDon =  hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
+
 
          if (maKM == null || maKM.isEmpty()) {
 		        JOptionPane.showMessageDialog(this, "Vui lòng chọn mã", "Trống", JOptionPane.WARNING_MESSAGE);
 		        return;
 		    }
 
-         KhuyenMai khuyenMai = null;
-         try {
-             khuyenMai = khuyenmaidao.getKhuyenMaiTheoMa(maKM);
-         } catch (RemoteException e) {
-             throw new RuntimeException(e);
-         }
+         KhuyenMai khuyenMai = khuyenmaidao.getKhuyenMaiTheoMa(maKM);
+
          if (khuyenMai == null) {
 		        JOptionPane.showMessageDialog(this, "Mã khuyến mãi không hợp lệ", "Error", JOptionPane.ERROR_MESSAGE);
 		        return;
 		    }
 
          LocalDateTime ngayhientai = LocalDateTime.now();
-         LocalDateTime ngayketthuc = LocalDateTime.parse(FormatDate.formatDate( khuyenMai.getThoiGianKetThuc()));
-
+//         LocalDateTime ngayketthuc = LocalDateTime.parse(FormatDate.formatDate( khuyenMai.getThoiGianKetThuc()));
+         LocalDateTime ngayketthuc = LocalDate.parse(FormatDate.formatDate(khuyenMai.getThoiGianKetThuc()),
+                 DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
          if (ngayketthuc.isBefore(ngayhientai)) {
              JOptionPane.showMessageDialog(this, "Mã khuyến mãi đã hết hạn", "Error", JOptionPane.ERROR_MESSAGE);
              return;
@@ -712,6 +698,6 @@ public class ThanhToan_GUI extends JDialog {
 
 	 @SneakyThrows
      public HoaDon getNhanVienSelect() {
-		    return hoadondao.getHoaDonTheoPhong(phong.getMaPhong());
+		    return RMIClient.getInstance().getHoaDonService().getHoaDonTheoPhong(phong.getMaPhong());
 		}
 }

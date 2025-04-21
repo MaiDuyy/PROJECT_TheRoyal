@@ -53,6 +53,7 @@ public interface DonDatPhongService extends Remote, GenericService<DonDatPhong, 
 
     public boolean insert(DonDatPhong ddp)  throws RemoteException;
 
-
     public  DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon)   throws RemoteException;
+
+    public List<DonDatPhong> getListDonDatPhongByMaPhong(String maPhong) throws  RemoteException;
 }

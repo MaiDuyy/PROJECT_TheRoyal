@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 
 import com.toedter.calendar.JDateChooser;
+import formatdate.FormatDate;
 import gui.format_ui.RadiusButton;
 import gui.format_ui.RoundedBorder;
 import controller.TimDonDatDonDatPhong;
@@ -979,8 +980,9 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1_1.setBounds(20, 29, 110, 36);
 			panel_5_1.add(lblNewLabel_1_2_1_2_1_1);
 
-		LocalDateTime tgNhan = LocalDateTime.parse(formatDate(ddp.getThoiGianNhanPhong()));
-			LocalDateTime nhanPhongLocal = tgNhan.toLocalDate().atStartOfDay();
+		LocalDateTime nhanPhongLocal = LocalDate.parse(FormatDate.formatDate(ddp.getThoiGianNhanPhong()),
+						DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+				.atStartOfDay();
 			nhanPhongLocal = nhanPhongLocal.plusHours(12); 
 
 			LocalDateTime now = LocalDateTime.now();
@@ -1220,9 +1222,11 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			lblNewLabel_1_2_1_2_1_1.setFont(new Font("Segoe UI", Font.BOLD, 17));
 			lblNewLabel_1_2_1_2_1_1.setBounds(20, 29, 110, 36);
 			panel_5_1.add(lblNewLabel_1_2_1_2_1_1);
-			LocalDateTime tgNhan = LocalDateTime.parse(formatDate(ddp.getThoiGianNhanPhong()));
-			LocalDateTime nhanPhongLocal = tgNhan.toLocalDate().atStartOfDay();
-			nhanPhongLocal = nhanPhongLocal.plusHours(12); 
+			LocalDateTime nhanPhongLocal = LocalDate.parse(FormatDate.formatDate(ddp.getThoiGianNhanPhong()),
+						DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+				.atStartOfDay();
+
+		nhanPhongLocal = nhanPhongLocal.plusHours(12);
 
 			LocalDateTime now = LocalDateTime.now();
 
@@ -1260,245 +1264,208 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 	}
 	@SneakyThrows
 	private void hienThiPhongDangO(Phong phong) {
-		String maPhong = phong.getMaPhong(); // Lấy mã phòng
-		String tenPhong = phong.getTenPhong(); // Lấy tên phòng
-		String maLoai = phong.getLoaiPhong().getMaLoai(); // Lấy mã loại phòng
-		int soGiuong = phong.getSoGiuong(); // Lấy số giường
-		double giaTien = phong.getGiaTien(); // Lấy giá tiền
-		int soNguoiLon = phong.getSoNguoiLon(); // Lấy số người lớn
-		int soTreEm = phong.getSoTreEm(); // Lấy số trẻ em
+		String maPhong = phong.getMaPhong();
+		String tenPhong = phong.getTenPhong();
+		String maLoai = phong.getLoaiPhong().getMaLoai();
 		String trangThai = phong.getTrangThai();
-		
 
+		// Lấy đơn đặt phòng "Đang ở"
 		DonDatPhong ddp = donDatPhongService.getDonDatTruocTheoPhongVaTrangThai(maPhong, "Đang ở");
-		
+		if (ddp == null) {
+			System.out.println("Không tìm thấy đơn đặt phòng đang ở cho phòng " + maPhong);
+			return;
+		}
+//		if (!"Đang ở".equals(trangThai)) {
+//			System.out.println("Phòng " + maPhong + " không có trạng thái 'Đang ở'");
+//			return;
+//		}
+
+		// Panel phòng
 		RoundedBorder panelPhong = new RoundedBorder(20);
 		panelPhong.setPreferredSize(new Dimension(300, 250));
+		panelPhong.setBackground(new Color(255, 153, 51));
+		panelPhong.setLayout(null);
 		panelPhong.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				new ThongTinPhong_Dialog(phong, ddp, DanhSachPhong_GUI.this, owner, true).setVisible(true);;
-
+				new ThongTinPhong_Dialog(phong, ddp, DanhSachPhong_GUI.this, owner, true).setVisible(true);
 			}
 		});
 
-//		if ("Đang ở".equals(trangThai)) {
+		// Góc phải "Có khách"
+		JPanel panelTrangThai = new JPanel(null);
+		panelTrangThai.setBackground(new Color(255, 153, 51));
+		panelTrangThai.setBounds(203, 0, 97, 65);
+		panelPhong.add(panelTrangThai);
 
-			panelPhong.setBackground(new Color(255, 153, 51));
-			JPanel panel_1 = new JPanel();
-			panel_1.setBackground(new Color(255, 153, 51));
-			panel_1.setBounds(203, 0, 97, 65);
-			panelPhong.add(panel_1);
-			panel_1.setLayout(null);
+		JLabel iconTrangThai = new JLabel(new ImageIcon("icon/khachdango24.png"));
+		iconTrangThai.setBounds(40, 11, 24, 24);
+		panelTrangThai.add(iconTrangThai);
 
-			JLabel lblNewLabel_2 = new JLabel("");
-			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon("icon/khachdango24.png"));
-			panel_1.add(lblNewLabel_2);
+		JLabel lblTrangThai = new JLabel("Có khách", SwingConstants.CENTER);
+		lblTrangThai.setForeground(Color.WHITE);
+		lblTrangThai.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		lblTrangThai.setBounds(0, 29, 100, 36);
+		panelTrangThai.add(lblTrangThai);
 
-			JLabel lblNewLabel_1_1 = new JLabel("Có khách");
-			lblNewLabel_1_1.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_1_1.setForeground(Color.WHITE);
-			lblNewLabel_1_1.setFont(new Font("Segoe UI", Font.BOLD, 14));
-			lblNewLabel_1_1.setBounds(0, 29, 100, 36);
-			panel_1.add(lblNewLabel_1_1);
+		// Tên phòng
+		JPanel panelTenPhong = new JPanel(null);
+		panelTenPhong.setBackground(new Color(255, 153, 51));
+		panelTenPhong.setBounds(10, 0, 100, 65);
+		panelPhong.add(panelTenPhong);
 
-			// Panel chứa icon và viền tròn
-			RoundedBorder panel_3 = new RoundedBorder(94);
-			panel_3.setBackground(new Color(255, 255, 255));
-			panel_3.setForeground(new Color(204, 255, 204));
-			panel_3.setBounds(110, 70, 90, 90);
-			panelPhong.add(panel_3);
-			panel_3.setLayout(new BorderLayout(0, 0));
+		JLabel lblTenPhong = new JLabel(tenPhong, SwingConstants.CENTER);
+		lblTenPhong.setForeground(Color.WHITE);
+		lblTenPhong.setFont(new Font("Segoe UI", Font.BOLD, 25));
+		lblTenPhong.setBounds(0, 0, 100, 40);
+		panelTenPhong.add(lblTenPhong);
 
-			JLabel lblNewLabel_4 = new JLabel();
-			if (maLoai.equals("LP01")) {
-				lblNewLabel_4.setText("T");
-			} else if (maLoai.equals("LP02")) {
-				lblNewLabel_4.setText("V");
-			} else if (maLoai.equals("LP03")) {
-				lblNewLabel_4.setText("P");
-			}
-			lblNewLabel_4.setForeground(new Color(255, 153, 51));
-			lblNewLabel_4.setFont(new Font("Bookman Old Style", Font.BOLD, 50));
-			lblNewLabel_4.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_4.setIcon(null);
-			panel_3.add(lblNewLabel_4, BorderLayout.CENTER);
+		JLabel lblLoaiPhong = new JLabel("Phòng đơn", SwingConstants.CENTER);
+		lblLoaiPhong.setForeground(Color.WHITE);
+		lblLoaiPhong.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		lblLoaiPhong.setBounds(0, 29, 100, 36);
+		panelTenPhong.add(lblLoaiPhong);
 
-			// Panel chứa show
-			JPanel panel = new JPanel();
-			panel.setBackground(new Color(255, 153, 51));
-			panel.setBounds(10, 0, 100, 65);
-			panelPhong.add(panel);
+		// Icon loại phòng
+		RoundedBorder panelIconLoai = new RoundedBorder(94);
+		panelIconLoai.setBackground(Color.WHITE);
+		panelIconLoai.setForeground(new Color(204, 255, 204));
+		panelIconLoai.setBounds(110, 70, 90, 90);
+		panelPhong.add(panelIconLoai);
+		panelIconLoai.setLayout(new BorderLayout(0, 0));
 
-			JLabel lblNewLabel = new JLabel();
-			lblNewLabel.setText(tenPhong);
-			lblNewLabel.setBackground(new Color(204, 255, 153));
-			lblNewLabel.setBounds(0, 0, 100, 40);
-			lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 25));
-			lblNewLabel.setForeground(new Color(255, 255, 255));
-			lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel lblIconLoai = new JLabel("", SwingConstants.CENTER);
+		lblIconLoai.setForeground(new Color(255, 153, 51));
+		lblIconLoai.setFont(new Font("Bookman Old Style", Font.BOLD, 50));
+		if ("LP01".equals(maLoai)) lblIconLoai.setText("T");
+		else if ("LP02".equals(maLoai)) lblIconLoai.setText("V");
+		else if ("LP03".equals(maLoai)) lblIconLoai.setText("P");
+		panelIconLoai.add(lblIconLoai);
 
-			JLabel lblNewLabel_1 = new JLabel("Phòng đơn");
-			lblNewLabel_1.setBounds(0, 29, 100, 36);
-			lblNewLabel_1.setForeground(new Color(255, 255, 255));
-			lblNewLabel_1.setFont(new Font("Segoe UI", Font.BOLD, 14));
-			lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-			panel.setLayout(null);
-			panel.add(lblNewLabel);
-			panel.add(lblNewLabel_1);
+		// Panel thời gian hiện tại
+		JPanel panelThoiGianHienTai = new JPanel(null);
+		panelThoiGianHienTai.setBackground(new Color(255, 153, 51));
+		panelThoiGianHienTai.setBounds(10, 81, 90, 100);
+		panelPhong.add(panelThoiGianHienTai);
 
-			panelPhong.setLayout(null);
+		JLabel lblClock1 = new JLabel(new ImageIcon("icon/oclock.png"), SwingConstants.CENTER);
+		lblClock1.setBounds(0, 0, 90, 41);
+		panelThoiGianHienTai.add(lblClock1);
 
-			JPanel panel_4 = new JPanel();
-			panel_4.setBackground(new Color(255, 153, 51));
-			panel_4.setBounds(10, 81, 90, 100);
-			panelPhong.add(panel_4);
-			panel_4.setLayout(null);
+		JLabel lblGioHienTai = new JLabel(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")), SwingConstants.CENTER);
+		lblGioHienTai.setForeground(Color.WHITE);
+		lblGioHienTai.setFont(new Font("Segoe UI", Font.BOLD, 20));
+		lblGioHienTai.setBounds(0, 31, 90, 41);
+		panelThoiGianHienTai.add(lblGioHienTai);
 
-			JLabel lblNewLabel_5 = new JLabel("");
-			lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5.setIcon(new ImageIcon("iconicon/oclock.png"));
-			lblNewLabel_5.setBounds(0, 0, 90, 41);
-			panel_4.add(lblNewLabel_5);
+		JLabel lblNgayHienTai = new JLabel(new SimpleDateFormat("dd/MM/yyyy").format(new Date()), SwingConstants.CENTER);
+		lblNgayHienTai.setForeground(Color.WHITE);
+		lblNgayHienTai.setFont(new Font("Segoe UI", Font.BOLD, 15));
+		lblNgayHienTai.setBounds(0, 64, 90, 36);
+		panelThoiGianHienTai.add(lblNgayHienTai);
 
-			JLabel thoiGianDatPhong = new JLabel("");
-			thoiGianDatPhong.setForeground(Color.WHITE);
-			thoiGianDatPhong.setFont(new Font("Segoe UI", Font.BOLD, 20));
-			thoiGianDatPhong.setHorizontalAlignment(SwingConstants.CENTER);
-			thoiGianDatPhong.setBounds(0, 31, 90, 41);
-			panel_4.add(thoiGianDatPhong);
+		// Panel thời gian nhận phòng
+		JPanel panelNhanPhong = new JPanel(null);
+		panelNhanPhong.setBackground(new Color(255, 153, 51));
+		panelNhanPhong.setBounds(210, 81, 90, 100);
+		panelPhong.add(panelNhanPhong);
 
-			LocalTime now = LocalTime.now();
+		JLabel lblClock2 = new JLabel(new ImageIcon("icon/oclock.png"), SwingConstants.CENTER);
+		lblClock2.setBounds(0, 0, 90, 41);
+		panelNhanPhong.add(lblClock2);
 
-			// Định dạng thời gian dưới dạng "hh:mm"
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-			String formattedTime = now.format(formatter);
-			thoiGianDatPhong.setText(formattedTime);
-			
-			JLabel ngayDatPhong = new JLabel("");
-			ngayDatPhong.setHorizontalAlignment(SwingConstants.CENTER);
-			ngayDatPhong.setForeground(Color.WHITE);
-			ngayDatPhong.setFont(new Font("Segoe UI", Font.BOLD, 15));
-			ngayDatPhong.setBounds(0, 64, 90, 36);
-			panel_4.add(ngayDatPhong);
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			String formattedDate = dateFormat.format(new Date());
-			ngayDatPhong.setText(formattedDate); 
-			
-			JPanel panel_4_1 = new JPanel();
-			panel_4_1.setLayout(null);
-			panel_4_1.setBackground(new Color(255, 153, 51));
-			panel_4_1.setBounds(210, 81, 90, 100);
-			panelPhong.add(panel_4_1);
+		JLabel lblGioNhanPhong = new JLabel("12:00", SwingConstants.CENTER);
+		lblGioNhanPhong.setForeground(Color.WHITE);
+		lblGioNhanPhong.setFont(new Font("Segoe UI", Font.BOLD, 20));
+		lblGioNhanPhong.setBounds(0, 31, 90, 41);
+		panelNhanPhong.add(lblGioNhanPhong);
 
-			JLabel lblNewLabel_5_1 = new JLabel("");
-			lblNewLabel_5_1.setIcon(new ImageIcon("iconicon/oclock.png"));
-			lblNewLabel_5_1.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel_5_1.setBounds(0, 0, 90, 41);
-			panel_4_1.add(lblNewLabel_5_1);
+		JLabel lblNgayNhanPhong = new JLabel("", SwingConstants.CENTER);
+		lblNgayNhanPhong.setForeground(Color.WHITE);
+		lblNgayNhanPhong.setFont(new Font("Segoe UI", Font.BOLD, 15));
+		lblNgayNhanPhong.setBounds(0, 64, 90, 36);
+		panelNhanPhong.add(lblNgayNhanPhong);
 
-			JLabel thoiGianNhanPhong = new JLabel("12:00");
-			thoiGianNhanPhong.setHorizontalAlignment(SwingConstants.CENTER);
-			thoiGianNhanPhong.setForeground(Color.WHITE);
-			thoiGianNhanPhong.setFont(new Font("Segoe UI", Font.BOLD, 20));
-			thoiGianNhanPhong.setBounds(0, 31, 90, 41);
-			panel_4_1.add(thoiGianNhanPhong);
+		if (ddp.getThoiGianNhanPhong() != null) {
+			lblNgayNhanPhong.setText(new SimpleDateFormat("dd/MM/yyyy").format(ddp.getThoiGianNhanPhong()));
+		} else {
+			lblNgayNhanPhong.setText("N/A");
+		}
 
-			JLabel ngayNhanPhong = new JLabel("24/10/24");
-			ngayNhanPhong.setHorizontalAlignment(SwingConstants.CENTER);
-			ngayNhanPhong.setForeground(Color.WHITE);
-			ngayNhanPhong.setFont(new Font("Segoe UI", Font.BOLD, 15));
-			ngayNhanPhong.setBounds(0, 64, 90, 36);
-			panel_4_1.add(ngayNhanPhong);
-			ngayNhanPhong.setText(dateFormat.format(ddp.getThoiGianTraPhong()));
-			
-			JPanel panel_2 = new JPanel();
-			panel_2.setBackground(new Color(255, 153, 51));
-			panel_2.setBounds(20, 175, 253, 65);
-			panelPhong.add(panel_2);
-			panel_2.setLayout(null);
+		// Panel thông tin "Còn" và "Phụ thu"
+		JPanel panelThongTin = new JPanel(null);
+		panelThongTin.setBackground(new Color(255, 153, 51));
+		panelThongTin.setBounds(20, 175, 253, 65);
+		panelPhong.add(panelThongTin);
 
-			JPanel panel_5 = new JPanel();
-			panel_5.setBackground(new Color(255, 153, 51));
-			panel_5.setBounds(23, 11, 113, 54);
-			panel_2.add(panel_5);
-			panel_5.setLayout(null);
+		JPanel panelCon = new JPanel(null);
+		panelCon.setBackground(new Color(255, 153, 51));
+		panelCon.setBounds(23, 11, 113, 54);
+		panelThongTin.add(panelCon);
 
-			JLabel lblCn = new JLabel("Còn");
-			lblCn.setHorizontalAlignment(SwingConstants.CENTER);
-			lblCn.setForeground(Color.WHITE);
-			lblCn.setFont(new Font("Segoe UI", Font.BOLD, 15));
-			lblCn.setBounds(10, 0, 90, 28);
-			panel_5.add(lblCn);
+		JLabel lblCon = new JLabel("Còn", SwingConstants.CENTER);
+		lblCon.setForeground(Color.WHITE);
+		lblCon.setFont(new Font("Segoe UI", Font.BOLD, 15));
+		lblCon.setBounds(10, 0, 90, 28);
+		panelCon.add(lblCon);
 
-			JLabel lblh = new JLabel("");
-			lblh.setHorizontalAlignment(SwingConstants.CENTER);
-			lblh.setForeground(Color.WHITE);
-			lblh.setFont(new Font("Segoe UI", Font.BOLD, 13));
-			lblh.setBounds(10, 18, 90, 36);
-			panel_5.add(lblh);
+		JLabel lblThoiGianCon = new JLabel("", SwingConstants.CENTER);
+		lblThoiGianCon.setForeground(Color.WHITE);
+		lblThoiGianCon.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		lblThoiGianCon.setBounds(10, 18, 90, 36);
+		panelCon.add(lblThoiGianCon);
 
+		JPanel panelPhuThu = new JPanel(null);
+		panelPhuThu.setBackground(new Color(255, 153, 51));
+		panelPhuThu.setBounds(130, 11, 113, 54);
+		panelThongTin.add(panelPhuThu);
 
-			LocalDateTime tgTra = LocalDateTime.parse(formatDate(ddp.getThoiGianTraPhong()));
+		JLabel lblPhuThu = new JLabel("Phụ thu", SwingConstants.CENTER);
+		lblPhuThu.setForeground(Color.WHITE);
+		lblPhuThu.setFont(new Font("Segoe UI", Font.BOLD, 15));
+		lblPhuThu.setBounds(10, 0, 90, 28);
+		panelPhuThu.add(lblPhuThu);
 
-			
-			LocalDateTime traPhongLocal = tgTra.toLocalDate().atStartOfDay();
-			traPhongLocal = traPhongLocal.plusHours(12); 
+		JLabel lblSoPhuThu = new JLabel("", SwingConstants.CENTER);
+		lblSoPhuThu.setForeground(Color.WHITE);
+		lblSoPhuThu.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		lblSoPhuThu.setBounds(10, 18, 90, 36);
+		panelPhuThu.add(lblSoPhuThu);
 
+		// Xử lý thời gian trả phòng
+		LocalDateTime traPhongLocal = null;
+		if (ddp.getThoiGianTraPhong() instanceof java.sql.Timestamp ts) {
+			traPhongLocal = ts.toLocalDateTime().withHour(12);
+		} else if (ddp.getThoiGianTraPhong() instanceof java.sql.Date d) {
+			traPhongLocal = d.toLocalDate().atStartOfDay().plusHours(12);
+		}
+
+		if (traPhongLocal != null) {
 			LocalDateTime hienTai = LocalDateTime.now();
-
-
 			Duration duration = Duration.between(hienTai, traPhongLocal);
 
-
-			String labelText = "";
-
-
+			long hoursLate = 0;
 			if (duration.isNegative()) {
-			    duration = duration.negated(); 
-			    long days = duration.toDays();
-			    long hours = duration.toHours() % 24; // Lấy số giờ dư
-			    long minutes = duration.toMinutes() % 60; // Lấy số phút dư
-			    labelText = "Trễ: " + days + "N:" + hours + "H:" + minutes + "p";
-			} else {
-			    long days = duration.toDays();
-			    long hours = duration.toHours() % 24;
-			    long minutes = duration.toMinutes() % 60;
-			    labelText = days + "N:" + hours + "H:" + minutes + "p";
+				duration = duration.negated();
+				lblCon.setText("Trễ:");
+				hoursLate = duration.toHours();
 			}
 
-			// Cập nhật label với thông tin
-			lblh.setText(labelText);
+			long days = duration.toDays();
+			long hours = duration.toHours() % 24;
+			long minutes = duration.toMinutes() % 60;
+			lblThoiGianCon.setText(days + "N:" + hours + "H:" + minutes + "p");
 
-			
-			JPanel panel_5_1 = new JPanel();
-			panel_5_1.setLayout(null);
-			panel_5_1.setBackground(new Color(255, 153, 51));
-			panel_5_1.setBounds(130, 11, 113, 54);
-			panel_2.add(panel_5_1);
+			// Tính tiền phụ thu: mỗi giờ trễ 50.000 VND
+			long tienPhuThu = hoursLate * 50000;
+			lblSoPhuThu.setText(String.format("%,d", tienPhuThu) + "đ");
+		}
 
-			JLabel lblPhThu = new JLabel("Phụ thu");
-			lblPhThu.setHorizontalAlignment(SwingConstants.CENTER);
-			lblPhThu.setForeground(Color.WHITE);
-			lblPhThu.setFont(new Font("Segoe UI", Font.BOLD, 15));
-			lblPhThu.setBounds(10, 0, 90, 28);
-			panel_5_1.add(lblPhThu);
-
-			JLabel lblh_1 = new JLabel("");
-			lblh_1.setHorizontalAlignment(SwingConstants.CENTER);
-			lblh_1.setForeground(Color.WHITE);
-			lblh_1.setFont(new Font("Segoe UI", Font.BOLD, 13));
-			lblh_1.setBounds(10, 18, 90, 36);
-			panel_5_1.add(lblh_1);
-			danhSachPhong.add(panelPhong);
-//		}
-		// Refresh lại giao diện
+		danhSachPhong.add(panelPhong);
 		danhSachPhong.revalidate();
 		danhSachPhong.repaint();
 	}
+
 
 	private void hienThiPhongDangDon(Phong phong) {
 		String maPhong = phong.getMaPhong(); // Lấy mã phòng
@@ -1530,7 +1497,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			JLabel lblNewLabel_2 = new JLabel("");
 			lblNewLabel_2.setBounds(40, 11, 24, 24);
-			lblNewLabel_2.setIcon(new ImageIcon("iconicon/phongdangdon24.png"));
+			lblNewLabel_2.setIcon(new ImageIcon("icon/phongdangdon24.png"));
 			panel_1.add(lblNewLabel_2);
 
 			JLabel lblNewLabel_1_1 = new JLabel("Đang dọn");

@@ -18,6 +18,7 @@
         <class>entity.HoaDon</class>
         <class>entity.CTHoaDon</class>
         <properties>
+            <property name="jakarta.persistence.lock.timeout" value="1000" />
             <property name="hibernate.connection.pool_size" value="1000" />
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:sqlserver://localhost:1433;databaseName=TheRoyal;trustServerCertificate=true;characterEncoding=UTF-8;useUnicode=true" />
@@ -29,10 +30,12 @@
             <property name="jakarta.persistence.jdbc.dialect"
                       value="org.hibernate.dialect.SQLServer2012Dialect" />
 
-            <property name="hibernate.show_sql" value="true" />
+<!--            <property name="hibernate.show_sql" value="true" />-->
             <property name="hibernate.format_sql" value="true" />
             <property name="hibernate.hbm2ddl.auto" value="update" />
-            <property name="jakarta.persistence.lock.timeout" value="5000" />
+
+
+
         </properties>
     </persistence-unit>
 

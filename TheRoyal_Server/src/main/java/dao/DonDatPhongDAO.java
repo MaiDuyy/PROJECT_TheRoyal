@@ -52,4 +52,6 @@ public interface DonDatPhongDAO extends GenericDAO<DonDatPhong, String> {
     public  DonDatPhong getDonDatTruocTheoPhongVaNgay(String maPhong, java.util.Date thoiGianChon) ;
 
     public boolean insert(DonDatPhong ddp);
+
+    public List<DonDatPhong> getListDonDatPhongByMaPhong(String maPhong);
 }

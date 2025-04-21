@@ -47,7 +47,7 @@ public class PanelAction extends javax.swing.JPanel {
         cmdMinus = new ActionButton();
         cmdAdd = new ActionButton();
 
-        cmdMinus.setIcon(new ImageIcon("/icon/minus (4).png")); // NOI18N
+        cmdMinus.setIcon(new ImageIcon("icon/minus (4).png")); // NOI18N
         cmdMinus.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdMinus.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -55,7 +55,7 @@ public class PanelAction extends javax.swing.JPanel {
             }
         });
 
-        cmdAdd.setIcon(new ImageIcon("/icon/plus.png")); // NOI18N
+        cmdAdd.setIcon(new ImageIcon("icon/plus.png")); // NOI18N
         cmdAdd.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

@@ -36,6 +36,7 @@ import entity.KhuyenMai;
 import entity.NhanVien;
 import entity.Phong;
 import formatdate.FormatDate;
+import lombok.SneakyThrows;
 import rmi.RMIClient;
 import service.DonDatPhongService;
 import service.HoaDonService;
@@ -202,14 +203,13 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 	    btn_HuyDP.addActionListener(this);
 	}
 
+	@SneakyThrows
 	public void nhanPhong (Phong phong) {
 		String maPhong = phong.getMaPhong();
         DonDatPhong ddp = null;
-        try {
+
             ddp = donDatPhongService.getDonDatPhongByRoomId(maPhong);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+
 
         Date ngayhientai = new Date(System.currentTimeMillis());
 		String dateNhan = FormatDate.formatDate(ddp.getThoiGianNhanPhong());
@@ -235,18 +235,13 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 		      
 		        HoaDon hd = null;
 				try {
-                    String mahd = null;
-                    try {
-                        mahd = hoaDonService.taoMaHoaDonTheoNgay();
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                    hd = new HoaDon(mahd,new KhachHang(ddp.getKhachHang().getMaKH()), new Phong(ddp.getPhong().getMaPhong()),
-					                   new NhanVien(  nhanVienDangNhap.getMaNV()), ddp, new KhuyenMai(), new Date(System.currentTimeMillis()),
-					                    phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán",null);
+
+                    hd = new HoaDon(new KhachHang(ddp.getKhachHang().getMaKH()), new Phong(ddp.getPhong().getMaPhong()),
+					                   new NhanVien(  nhanVienDangNhap.getMaNV()), new DonDatPhong(ddp.getMaDDP()), new KhuyenMai(), new Date(System.currentTimeMillis()),
+					                    phong.getGiaTien(), 0, 0, 0, 0, 0, "Chưa thanh toán");
                     boolean hdInserted = false;
                     try {
-                        hdInserted = hoaDonService.save(hd);
+                        hdInserted = hoaDonService.insert(hd);
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
@@ -267,8 +262,8 @@ public class ThongTinDatPhongTruoc_DL extends JDialog implements ActionListener 
 				            DichVuSanPham_GUI dvsp = new DichVuSanPham_GUI(phong, ddp, danhSachPhong, this, true);
 				            dvsp.setVisible(true);
 				            JOptionPane.showMessageDialog(this, "Nhận phòng thành công");
-				        } 
-					
+				        }
+					System.out.println(ddp.getMaDDP());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

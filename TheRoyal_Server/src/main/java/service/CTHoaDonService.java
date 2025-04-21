@@ -5,6 +5,7 @@ import entity.CTHoaDon;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface CTHoaDonService extends GenericService<CTHoaDon, String> , Remote {
@@ -29,4 +30,22 @@ public interface CTHoaDonService extends GenericService<CTHoaDon, String> , Remo
     double getTongDVTienNgay(Date ngay) throws RemoteException;
 
     public boolean insert(CTHoaDon ctHoaDon) throws RemoteException;
+
+    ArrayList<String[]> getTopDichVuTheoNam(int nam) throws RemoteException;
+
+    ArrayList<String[]> getTOPSPNam(String nam) throws Exception;
+
+    ArrayList<String[]> getTKDVNam(String nam);
+
+    ArrayList<String[]> getTKSPNam(String nam);
+
+    ArrayList<String[]> getTOPDVThang(String thang, String nam);
+
+    ArrayList<String[]> getTOPSPThang(String thang, String nam);
+
+    ArrayList<String[]> getTOPDVNgay(Date date);
+
+    ArrayList<String[]> getTOPSPNgay(Date date);
+
+    double getTongTienSPNgay(Date ngay);
 }

@@ -1,13 +1,12 @@
 package service.impl;
 
 import dao.CTHoaDonDAO;
-import dao.GenericDAO;
 import entity.CTHoaDon;
 import service.CTHoaDonService;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CTHoaDonServiceImpl extends  GenericServiceImpl<CTHoaDon, String>  implements CTHoaDonService {
@@ -73,4 +72,48 @@ public class CTHoaDonServiceImpl extends  GenericServiceImpl<CTHoaDon, String>  
         return cthoaDonDAO.insert(ctHoaDon);
     }
 
+    @Override
+    public ArrayList<String[]> getTopDichVuTheoNam(int nam) throws RemoteException{
+        return cthoaDonDAO.getTopDichVuTheoNam(nam);
+    }
+
+    @Override
+    public ArrayList<String[]> getTOPSPNam(String nam) throws Exception{
+        return cthoaDonDAO.getTOPSPNam(nam);
+    }
+
+    @Override
+    public ArrayList<String[]> getTKDVNam(String nam){
+        return cthoaDonDAO.getTKDVNam(nam);
+    }
+
+    @Override
+    public ArrayList<String[]> getTKSPNam(String nam){
+        return cthoaDonDAO.getTKSPNam(nam);
+    }
+
+    @Override
+    public ArrayList<String[]> getTOPDVThang(String thang, String nam) {
+        return cthoaDonDAO.getTOPDVThang(thang, nam);
+    }
+
+    @Override
+    public ArrayList<String[]> getTOPSPThang(String thang, String nam) {
+        return cthoaDonDAO.getTOPSPThang(thang, nam);
+    }
+
+    @Override
+    public ArrayList<String[]> getTOPDVNgay(Date date){
+        return cthoaDonDAO.getTOPDVNgay(date);
+    }
+
+    @Override
+    public ArrayList<String[]> getTOPSPNgay(Date date){
+        return cthoaDonDAO.getTOPSPNgay(date);
+    }
+
+    @Override
+    public double getTongTienSPNgay(Date ngay){
+        return cthoaDonDAO.getTongTienSPNgay(ngay);
+    }
 }

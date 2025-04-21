@@ -135,7 +135,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		hoaDonService = RMIClient.getInstance().getHoaDonService();
 		ctHoaDonService = RMIClient.getInstance().getCtHoaDonService();
 
-		setBackground(new Color(153, 255, 204));
+		setBackground(new Color(41, 180, 55));
 		getContentPane().setBackground(new Color(244, 164, 96));
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -450,7 +450,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		soPhongTrong.setOpaque(true);
 		soPhongTrong.setHorizontalAlignment(SwingConstants.CENTER);
 		soPhongTrong.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		soPhongTrong.setBackground(new Color(153, 255, 153));
+		soPhongTrong.setBackground(new Color(41, 180, 55));
 		soPhongTrong.setBounds(10, 70, 130, 28);
 //		soPhongTrong.addMouseListener(new MouseAdapter() {
 //			public void mouseClicked(MouseEvent e) {
@@ -665,9 +665,9 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 		});
 
 //		if ("Phòng trống".equals(trangThai)) {
-			panelPhong.setBackground(new Color(153, 255, 153));
+			panelPhong.setBackground(new Color(41, 180, 55));
 			JPanel panel_1 = new JPanel();
-			panel_1.setBackground(new Color(153, 255, 153));
+			panel_1.setBackground(new Color(41, 180, 55));
 			panel_1.setBounds(203, 0, 97, 65);
 			panelPhong.add(panel_1);
 			panel_1.setLayout(null);
@@ -686,7 +686,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			// Panel chứa thời gian
 			JPanel panel_2 = new JPanel();
-			panel_2.setBackground(new Color(153, 255, 153));
+			panel_2.setBackground(new Color(41, 180, 55));
 			panel_2.setBounds(10, 192, 280, 58);
 			panelPhong.add(panel_2);
 			panel_2.setLayout(null);
@@ -738,7 +738,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 			} else if (maLoai.equals("LP03")) {
 				lblNewLabel_4.setText("P");
 			}
-			lblNewLabel_4.setForeground(new Color(153, 255, 153));
+			lblNewLabel_4.setForeground(new Color(41, 180, 55));
 			lblNewLabel_4.setFont(new Font("Bookman Old Style", Font.BOLD, 50));
 			lblNewLabel_4.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabel_4.setIcon(null);
@@ -746,7 +746,7 @@ public class DanhSachPhong_GUI extends JInternalFrame implements ActionListener 
 
 			// Panel chứa thông tin phòng
 			JPanel panel = new JPanel();
-			panel.setBackground(new Color(153, 255, 153));
+			panel.setBackground(new Color(41, 180, 55));
 			panel.setBounds(10, 0, 100, 65);
 			panelPhong.add(panel);
 

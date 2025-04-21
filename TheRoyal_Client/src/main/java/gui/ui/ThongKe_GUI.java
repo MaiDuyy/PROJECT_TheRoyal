@@ -94,7 +94,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		pnlHeader.setLayout(null);
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		
+
 		lblTKMH = new JLabel("THỐNG KÊ DOANH THU", JLabel.CENTER);
 		lblTKMH.setFont(new Font("Segoe UI", Font.BOLD, 20));
 		lblTKMH.setForeground(new Color(246, 167, 193));
@@ -119,8 +119,8 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		cmbTKTheo.setBounds(530, 62, 100, 24);
 		cmbTKTheo.setBackground(Color.WHITE);
 		cmbTKTheo.addActionListener(evt -> updateMonthData());
-		
-		
+
+
 		modelTKChiTiet = new DefaultComboBoxModel<String>();
 		cmbTKChiTiet = new JComboBox<String>(modelTKChiTiet);
 //		 hoaDonService.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
@@ -134,10 +134,10 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 				txtDatePropertyChange(evt);
 			}
 		});
-		
+
 		txtDate.setBounds(360, 62, 110, 24);
 		txtDate.setDate(new Date());
-		
+
 		txtDate.setDateFormatString("dd-MM-yyyy hh:mm");
 		txtDate.addPropertyChangeListener(evt -> updateSelectedDate());
 
@@ -167,22 +167,22 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			}
 		};
 		panelCenter.setLayout(null);
-		
+
 
 		tblTKHD = new Table();
 		tblTKHD.setModel(tableModelHoaDon);
 		tblTKHD.setBackground(Color.white);
-		tblTKHD.setFillsViewportHeight(true); 
+		tblTKHD.setFillsViewportHeight(true);
 		tblTKHD.setBackground(new Color(255, 255, 255));
 
 		scr = new JScrollPane(tblTKHD);
 		scr.setBounds(10, 5, 1281, 522);
 		panelCenter.add(scr);
 		getContentPane().add(panelCenter);
-	
+
 		lblTongTien = new JLabel("0");
 
-	
+
 
 		getContentPane().add(pnlHeader);
 
@@ -216,7 +216,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 		pnlHeader.add(lblBang);
 		pnlHeader.add(lblBieuDo);
-		
+
 		lblTongTien = new JLabel("0");
 		lblTongTien.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblTongTien.setBounds(1034, 95, 120, 22);
@@ -226,18 +226,18 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		lblTongHD.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblTongHD.setBounds(899, 94, 37, 22);
 		pnlHeader.add(lblTongHD);
-		
-		
+
+
 		lblTongSoHD = new JLabel("Tổng số hóa đơn:");
 		lblTongSoHD.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblTongSoHD.setBounds(769, 93, 120, 23);
 		pnlHeader.add(lblTongSoHD);
-		
+
 		lblTngTin = new JLabel("Tổng tiền: ");
 		lblTngTin.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblTngTin.setBounds(949, 94, 120, 23);
 		pnlHeader.add(lblTngTin);
-		
+
 		  cmbTKTheo.addActionListener(this);
 	        cmbTKChiTiet.addActionListener(this);
 
@@ -251,7 +251,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		panelCenter.revalidate();
 		panelCenter.repaint();
 
-		lblBang.setBackground(new Color(200, 200, 255)); 
+		lblBang.setBackground(new Color(200, 200, 255));
 		lblBieuDo.setBackground(Color.WHITE);
 	}
 
@@ -261,8 +261,8 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		panelCenter.revalidate();
 		panelCenter.repaint();
 
-		lblBieuDo.setBackground(new Color(200, 200, 255)); 
-		lblBang.setBackground(Color.WHITE); 
+		lblBieuDo.setBackground(new Color(200, 200, 255));
+		lblBang.setBackground(Color.WHITE);
 	}
 
 	private void updateMonthData() {
@@ -365,8 +365,8 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 							hd.getNhanVien().getMaNV(), hd.getKhuyenMai().getMaKM(), tongTien });
 		}
 	}
-	
-	private void txtDatePropertyChange(PropertyChangeEvent evt) {                                       
+
+	private void txtDatePropertyChange(PropertyChangeEvent evt) {
 	    // Định dạng ngày
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	    Date selectedDate = txtDate.getDate();
@@ -394,7 +394,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	    } else {
 	        int stt = 1;
 	        for (HoaDon hd : dsHoaDon) {
-	        	
+
 	        	  DecimalFormat df = new DecimalFormat("#,###.##");
 	    	        String tongTien = df.format(hd.getTongTien() );
 	            tableModelHoaDon.addRow(new Object[]{
@@ -422,7 +422,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 //		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(tongTien);
 //	    lblTongTien.setText(String.valueOf(str));
 	}
-     
+
 
 
 	private void clearTable() {
@@ -430,7 +430,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	}
 
 	private void updateTotalCountAndAmount(int count, double amount) {
-		
+
 		 String COUNTRY = "VN";
 		 String LANGUAGE = "vi";
 		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(amount);
@@ -440,9 +440,9 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 
 	  private void updateChart(ArrayList<String[]> list, String nam) {
-		  
-		  
-		  
+
+
+
 		  	pnlChart.removeAll();
 	        chart = new Chart();;
 
@@ -456,20 +456,20 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	            chart.addData(new ModelChart(month, new double[]{total}));
 	        }
 	        chart.start();
-	    	
+
 	        pnlChart.add(chart);
 	    }
 
-	
-	
+
+
 
 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+
 }

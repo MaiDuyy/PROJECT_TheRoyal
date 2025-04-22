@@ -26,4 +26,6 @@ public interface TaiKhoanService extends Remote , GenericService<TaiKhoan, Strin
     boolean capnhatMK(String cccd, String matkhauMoi) throws RemoteException;
 
     boolean checkCCCD(String cccd)throws RemoteException;
+
+    public boolean insert(TaiKhoan tk) throws RemoteException;
 } 

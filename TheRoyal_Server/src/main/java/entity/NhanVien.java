@@ -3,6 +3,7 @@ package entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.HashCodeExclude;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,7 +21,9 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class NhanVien implements Serializable {
     @Id
-    @Column(name = "maNV", nullable = false, columnDefinition = "varchar(50)")
+    @Column(name = "maNV", columnDefinition = "varchar(50)")
+    @GenericGenerator(name = "sequence_nv_id", strategy = "geneid.NhanVienidGenerator")
+    @GeneratedValue(generator = "sequence_nv_id")
     @EqualsAndHashCode.Include
     private String maNV;
 
@@ -42,7 +45,7 @@ public class NhanVien implements Serializable {
     @Column(name = "email", columnDefinition = "varchar(255)")
     private String email;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "maTK", columnDefinition = "nvarchar(50)")
     private TaiKhoan taiKhoan;
 
@@ -60,5 +63,18 @@ public class NhanVien implements Serializable {
 
     public NhanVien(String maNV) {
         this.maNV = maNV;
+    }
+
+    public NhanVien(String tenNV, boolean gioiTinh, String CCCD, Date ngaySinh, String sDT, String email, TaiKhoan taiKhoan, Date ngayVaoLam, String chucVu, String trangThai) {
+        this.tenNV = tenNV;
+        this.gioiTinh = gioiTinh;
+        this.CCCD = CCCD;
+        this.ngaySinh = ngaySinh;
+        this.sDT = sDT;
+        this.email = email;
+        this.taiKhoan = taiKhoan;
+        this.ngayVaoLam = ngayVaoLam;
+        this.chucVu = chucVu;
+        this.trangThai = trangThai;
     }
 }

@@ -54,13 +54,13 @@ public class Notification extends javax.swing.JComponent {
         dialog.add(this);
         dialog.setSize(getPreferredSize());
         if (type == SUCCESS) {
-            lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ICON/icon/sucess.png")));
+            lbIcon.setIcon(new javax.swing.ImageIcon("icon/sucess.png"));
             lbMessage.setText("Success");
         } else if (type == INFO) {
-            lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ICON/icon/info.png")));
+            lbIcon.setIcon(new javax.swing.ImageIcon("icon/info.png"));
             lbMessage.setText("Info");
         } else {
-            lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ICON/icon/warning.png")));
+            lbIcon.setIcon(new javax.swing.ImageIcon("icon/warning.png"));
             lbMessage.setText("Warning");
         }
         lbMessageText.setText(message);
@@ -276,7 +276,7 @@ public class Notification extends javax.swing.JComponent {
                                 .addContainerGap())
         );
 
-        cmdClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ICON/icon/close.png"))); // NOI18N
+        cmdClose.setIcon(new javax.swing.ImageIcon("icon/close.png")); // NOI18N
         cmdClose.setBorder(null);
         cmdClose.setContentAreaFilled(false);
         cmdClose.setFocusable(false);

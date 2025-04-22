@@ -215,8 +215,8 @@ public class ThemNhanVien_Dialog extends JDialog {
 
 				try {
 
-					boolean result = home.nhanVienService.save(nv);
-					String maNV = home.nhanVienService.getLatestID();
+					boolean result = nhanVienService.insert(nv);
+					String maNV = nhanVienService.getLatestID();
 					txtMaNV.setText(String.valueOf(maNV));
 					if (result == true) {
 						String ngaysinh = formatDate(nv.getNgaySinh());
@@ -268,8 +268,8 @@ public class ThemNhanVien_Dialog extends JDialog {
 
 		// NhanVien nv = new NhanVien(maNV, tenNV, gioiTinh, cccd, ngaysinh, sdt,
 		// ngayvaolam, chucvu, trangthai);
-		NhanVien nv = new NhanVien(maNV, tenNV, gioiTinh, cccd, ngaysinh, sdt, email, null, ngayvaolam,
-				chucvu, trangthai, null);
+		NhanVien nv = new NhanVien( tenNV, gioiTinh, cccd, ngaysinh, sdt, email, null, ngayvaolam,
+				chucvu, trangthai);
 		return nv;
 	}
 

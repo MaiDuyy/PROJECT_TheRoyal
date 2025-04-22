@@ -49,4 +49,9 @@ public class NhanVienServiceImpl extends GenericServiceImpl<NhanVien, String> im
     public String getTaiKhoanCuaNhanVien(String maNV) throws RemoteException {
         return nhanVienDAO.getTaiKhoanCuaNhanVien(maNV);
     }
+
+    @Override
+    public boolean insert(NhanVien nv) throws RemoteException {
+        return nhanVienDAO.insert(nv);
+    }
 } 

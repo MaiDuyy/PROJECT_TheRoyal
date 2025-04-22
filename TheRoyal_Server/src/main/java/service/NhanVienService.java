@@ -20,4 +20,6 @@ public interface NhanVienService extends Remote, GenericService<NhanVien, String
     boolean capNhatTaiKhoanNhanVien(String maNV, String maTK) throws RemoteException;
     
     String getTaiKhoanCuaNhanVien(String maNV) throws RemoteException;
+
+    public boolean insert(NhanVien nv)  throws RemoteException;
 } 

@@ -36,5 +36,16 @@ public class TaiKhoan implements Serializable {
     public TaiKhoan(String maTK) {
         this.maTK = maTK;
     }
+
+    public TaiKhoan(String maTK, String matKhau, String loaiTaiKhoan) {
+        this.maTK = maTK;
+        this.matKhau = matKhau;
+        this.loaiTaiKhoan = loaiTaiKhoan;
+    }
+
+    public TaiKhoan(String maTK, String matKhau) {
+        this.maTK = maTK;
+        this.matKhau = matKhau;
+    }
 }
 

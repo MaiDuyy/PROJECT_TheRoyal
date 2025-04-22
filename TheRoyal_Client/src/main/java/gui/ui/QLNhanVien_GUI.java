@@ -57,6 +57,7 @@ import gui.dialog.ThemNhanVien_Dialog;
 import gui.dialog.ThemTaiKhoan_Dialog;
 import gui.swing.notification.Notification;
 import gui.validata.BCrypt;
+import lombok.SneakyThrows;
 import rmi.RMIClient;
 import service.NhanVienService;
 import service.TaiKhoanService;
@@ -354,6 +355,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 
 	}
 
+	@SneakyThrows
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource().equals(tblNhanVien)) {
@@ -363,7 +365,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 			
 
 
-			dsTk = (ArrayList<TaiKhoan>) TaiKhoanDAO.getInstance().getTaiKhoanTheoMaTKNhanVien(maHD);
+			dsTk = (ArrayList<TaiKhoan>) taiKhoanService.getTaiKhoanTheoMaTKNhanVien(maHD);
 			
 			DocDuLieuTKVaoTable();
 			
@@ -406,6 +408,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 	}
 
 
+	@SneakyThrows
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -505,11 +508,11 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 		                } else {
 		                    int row = tblTaiKhoan.getSelectedRow();
 		                    String userName = tblTaiKhoan.getValueAt(row, 0).toString();
-		                    TaiKhoan accReset = TaiKhoanDAO.getInstance().getTaiKhoanTheoMaTk(userName);
+		                    TaiKhoan accReset = taiKhoanService.getTaiKhoanTheoMaTk(userName);
 		                    accReset.setMatKhau(BCrypt.hashpw(textct, BCrypt.gensalt(12)));
 //		                    accReset.setMatKhau(textct);
 		                    try {
-		                        TaiKhoanDAO.getInstance().updateMatKhau(accReset);
+		                        taiKhoanService.updateMatKhau(accReset);
 		                        tableModelTK.fireTableDataChanged();
 		                        loadListTaiKhoan();
 		                      	thongBao(0, "Thay đổi thành công !");
@@ -534,12 +537,15 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 	public static void DocDuLieuNVVaoTable() {
 		if (dsNV == null || dsNV.size() <= 0)
 			return;
+
 		for (NhanVien item : dsNV) {
+			String maTK = (item.getTaiKhoan() != null) ? item.getTaiKhoan().getMaTK() : " ";
+
 			String ngaysinh = FormatDate.formatDate(item.getNgaySinh());
 			String ngayvaolam = FormatDate.formatDate(item.getNgayVaoLam());
 			String gioiTinh = item.isGioiTinh() ? "Nữ" : "Nam";
 			tableModelNV.addRow(new Object[] { item.getMaNV(), item.getTenNV(), gioiTinh, item.getCCCD(), ngaysinh,
-					item.getSDT(),item.getEmail(), ngayvaolam, item.getTaiKhoan().getMaTK(), item.getChucVu(), item.getTrangThai() });
+					item.getSDT(),item.getEmail(), ngayvaolam, maTK , item.getChucVu(), item.getTrangThai() });
 
 		}
 	}

@@ -1,5 +1,6 @@
 package dao;
 
+import entity.CTHoaDon;
 import entity.NhanVien;
 import entity.TaiKhoan;
 
@@ -19,4 +20,6 @@ public interface NhanVienDAO extends GenericDAO<NhanVien, String> {
     boolean capNhatTaiKhoanNhanVien(String maNV, String maTK);
     
     String getTaiKhoanCuaNhanVien(String maNV);
+
+    public boolean insert(NhanVien nv) ;
 } 

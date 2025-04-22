@@ -1,6 +1,7 @@
 package dao;
 
 import dao.impl.TaiKhoanDAOImpl;
+import entity.CTHoaDon;
 import entity.TaiKhoan;
 import util.JPAUtil;
 
@@ -31,6 +32,6 @@ public interface TaiKhoanDAO  extends GenericDAO<TaiKhoan, String> , Remote {
     boolean capnhatMK(String cccd, String matkhauMoi);
 
     boolean checkCCCD(String cccd);
-
+    public boolean insert(TaiKhoan tk);
 
 }

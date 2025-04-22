@@ -196,10 +196,10 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
 
         btnTim = new JButton("Tìm Kiếm");
         btnTim.setBounds(376, 34, 107, 29);
-        btnTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/search_16.png")));
+        btnTim.setIcon(new ImageIcon("icon/search_16.png"));
         btnHuyTim = new ButtonCustom("Xem tất cả","rest", 12);
         btnHuyTim.setBounds(493, 34, 112, 29);
-        btnHuyTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/refresh.png")));
+        btnHuyTim.setIcon(new ImageIcon("icon/refresh.png"));
         searchPanel.setLayout(null);
         searchPanel.add(txtTim);
 //        searchPanel.add(btnTim);
@@ -216,7 +216,7 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
                 new Font("Segoe UI", Font.PLAIN, 12), new Color(246, 167, 193)));
 
         btnThem = new JButton("Thêm",
-            new ImageIcon(QLNhanVien_GUI.class.getResource("/src/icon/blueAdd_16.png")));
+            new ImageIcon("icon/blueAdd_16.png"));
         btnThem.setBackground(new Color(255, 255, 255));
         btnThem.setBounds(37, 25, 67, 63);
         btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -227,7 +227,7 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
         btnCapNhat = new JButton("Sửa");
         btnCapNhat.setBackground(new Color(255, 255, 255));
         btnCapNhat.setBounds(191, 25, 67, 63);
-        btnCapNhat.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/updated.png")));
+        btnCapNhat.setIcon(new ImageIcon("icon/updated.png"));
         btnCapNhat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCapNhat.setFocusable(false);
         btnCapNhat.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -240,7 +240,7 @@ public class QLDichVu_GUI extends JInternalFrame implements ActionListener {
         btnXoa = new JButton("Xóa");
         btnXoa.setBackground(new Color(255, 255, 255));
         btnXoa.setBounds(114, 25, 67, 63);
-        btnXoa.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/trash2_16.png")));
+        btnXoa.setIcon(new ImageIcon("icon/trash2_16.png"));
         btnXoa.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnXoa.setFocusable(false);
         btnXoa.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

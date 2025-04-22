@@ -149,14 +149,16 @@ public class ThemTaiKhoan_Dialog extends JDialog {
 					return;
 
 				String maNV = home.getNhanVienSelect().getMaNV();
+				System.out.println("adfasd" + maNV);
 				String existingMaTK = nhanVienService.getTaiKhoanCuaNhanVien(maNV);
 				if (existingMaTK != null && !existingMaTK.isEmpty()) {
 					home.thongBao(3, "Nhân viên này đã có tài khoản! Không thể thêm tài khoản mới.");
 					return;
 				}
+				System.out.println(existingMaTK + "ádfasfd");
 
-				boolean result = taiKhoanService.save(tk);
-
+				boolean result = taiKhoanService.insert(tk);
+				System.out.println("dfasdf " + result);
 				if (result) {
 					boolean ktra = nhanVienService.capNhatTaiKhoanNhanVien(maNV, tk.getMaTK());
 
@@ -214,7 +216,7 @@ public class ThemTaiKhoan_Dialog extends JDialog {
 		
 	        String hash = BCrypt.hashpw(matkhau, BCrypt.gensalt(12));
 
-		TaiKhoan tk = new TaiKhoan(maTk, hash, loaiTk , null);
+		TaiKhoan tk = new TaiKhoan(maTk, hash , loaiTk);
 		return tk;
 	}
 }

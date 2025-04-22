@@ -64,4 +64,9 @@ public class TaiKhoanServiceImpl extends   GenericServiceImpl<TaiKhoan, String>i
     public boolean checkCCCD(String cccd) {
         return taiKhoanDAO.checkCCCD(cccd);
     }
+
+    @Override
+    public boolean insert(TaiKhoan tk) throws RemoteException {
+        return taiKhoanDAO.insert(tk);
+    }
 }

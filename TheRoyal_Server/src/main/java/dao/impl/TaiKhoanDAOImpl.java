@@ -11,6 +11,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.Query;
+import util.JPAUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,6 +184,30 @@ public class TaiKhoanDAOImpl extends GenericDAOImpl<TaiKhoan ,String> implements
             return false;
         }
     }
-    
+
+    @Override
+    public boolean insert(TaiKhoan tk) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean success = false;
+
+        try {
+            tx.begin();
+            // Persist the new HoaDon
+            em.persist(tk);
+            tx.commit();
+            success = true;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
+        }
+
+        return success;
+    }
+
 
 } 

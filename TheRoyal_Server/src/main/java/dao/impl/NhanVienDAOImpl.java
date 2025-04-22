@@ -4,13 +4,11 @@ import dao.NhanVienDAO;
 import entity.NhanVien;
 import entity.Phong;
 import entity.TaiKhoan;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import util.JPAUtil;
 
 import java.util.List;
 
@@ -142,36 +140,78 @@ public class NhanVienDAOImpl extends GenericDAOImpl<NhanVien, String> implements
 
     @Override
     public boolean capNhatTaiKhoanNhanVien(String maNV, String maTK) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            em.getTransaction().begin();
-            NhanVien nv = em.find(NhanVien.class, maNV);
-            if (nv != null) {
-                TaiKhoan tk = em.find(TaiKhoan.class, maTK);
-                if (tk != null) {
-                    nv.setTaiKhoan(tk);
-                    em.merge(nv);
-                    em.getTransaction().commit();
-                    return true;
-                }
-            }
-            return false;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            tx.begin();
+
+            String jpql = "UPDATE NhanVien n SET n.taiKhoan.maTK = :maTK WHERE n.maNV = :maNV";
+
+            int n = em.createQuery(jpql)
+                    .setParameter("maTK", maTK)
+                    .setParameter("maNV", maNV)
+                    .executeUpdate();
+
+            tx.commit();
+            updated = n > 0;
+        } catch (PersistenceException e) {
+            if (tx.isActive()) {
+                tx.rollback();
             }
             e.printStackTrace();
-            return false;
+        } finally {
+            em.close();
         }
+
+        return updated;
     }
 
     @Override
     public String getTaiKhoanCuaNhanVien(String maNV) {
+        EntityManager em = JPAUtil.getEntityManager();
+        String maTK = null;
+
         try {
-            NhanVien nv = em.find(NhanVien.class, maNV);
-            return nv != null && nv.getTaiKhoan() != null ? nv.getTaiKhoan().getMaTK() : null;
+            String jpql = "SELECT nv.taiKhoan.maTK FROM NhanVien nv WHERE nv.maNV = :maNV ";
+
+            maTK = em.createQuery(jpql, String.class)
+                    .setParameter("maNV", maNV)
+                    .setMaxResults(1)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            em.close();
         }
+
+        return maTK;
+    }
+
+    @Override
+    public boolean insert(NhanVien nv) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean success = false;
+
+        try {
+            tx.begin();
+            // Persist the new HoaDon
+            em.persist(nv);
+            tx.commit();
+            success = true;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close(); // RẤT QUAN TRỌNG
+        }
+
+        return success;
     }
 } 

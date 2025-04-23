@@ -100,8 +100,6 @@ public class KhachHangDAOImpl extends GenericDAOImpl<KhachHang, String> implemen
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
 
         return success;

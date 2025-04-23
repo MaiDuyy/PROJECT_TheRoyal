@@ -2,6 +2,7 @@ package entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -17,6 +18,8 @@ import java.util.Set;
 public class SanPham  implements Serializable {
 
     @Id
+    @GenericGenerator(name = "sequence_sp_id", strategy = "geneid.SanPhamIdGenerator")
+    @GeneratedValue(generator = "sequence_sp_id")
     @Column(name = "maSP", nullable = false, columnDefinition = "varchar(50)")
 //    @EqualsAndHashCode.Include
     private String maSP;
@@ -39,4 +42,13 @@ public class SanPham  implements Serializable {
     // Mối quan hệ 1-n với CTHoaDon
     @OneToMany(mappedBy = "sanPham")
     private Set<CTHoaDon> ctHoaDon;
+
+
+    public SanPham(String tenSP, String moTa, double giaSP, int soLuongSP, String trangThai) {
+        this.tenSP = tenSP;
+        this.moTa = moTa;
+        this.giaSP = giaSP;
+        this.soLuongSP = soLuongSP;
+        this.trangThai = trangThai;
+    }
 }

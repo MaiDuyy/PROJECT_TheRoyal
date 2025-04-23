@@ -347,10 +347,11 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
         int stt = 1;
 		for (HoaDon hd : dsHoaDon) {
 			  DecimalFormat df = new DecimalFormat("#,###.##");
+
   	        String tongTien = df.format(hd.getTongTien() );
 			tableModelHoaDon
 					.addRow(new Object[] { stt++ + "", hd.getMaHD(), hd.getThoiGianLapHD(), hd.getKhachHang().getMaKH(),
-							hd.getNhanVien().getMaNV(), hd.getKhuyenMai().getMaKM(), tongTien });
+							hd.getNhanVien().getMaNV(), null, tongTien });
 		}
 	}
 

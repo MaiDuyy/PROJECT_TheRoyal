@@ -211,11 +211,12 @@ public class SuaPhong_Dialog extends JDialog {
       
 
     }
-    private void themNV() {
+    @SneakyThrows
+	private void themNV() {
     home.showMessage("", UPDATE);
     	if(validData(UPDATE)) {
     		 Phong nv = dataPhong();
-             PhongDAO.getInstance().update(nv);
+             RMIClient.getInstance().getPhongService().update(nv);
              this.dispose();
              home.huytim();
              home.thongBao(0, "Cập nhật thành công");

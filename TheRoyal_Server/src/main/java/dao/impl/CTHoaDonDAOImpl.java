@@ -111,10 +111,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return updated;
     }
 
@@ -148,8 +145,6 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return updated;
@@ -172,8 +167,6 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return cthd;
@@ -197,9 +190,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
+
 
         return cthd;
     }
@@ -304,10 +296,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
-
         return success;
     }
 
@@ -709,8 +698,6 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
             return top5TongTien.stream().mapToDouble(Double::doubleValue).sum();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
         return 0;
     }

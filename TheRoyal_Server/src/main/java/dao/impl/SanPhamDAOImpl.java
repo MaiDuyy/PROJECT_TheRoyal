@@ -58,19 +58,15 @@ public class SanPhamDAOImpl  extends GenericDAOImpl<SanPham, String > implements
     @Override public String getLatestID() {
         try {
             TypedQuery<String> query = em.createQuery(
-                "SELECT sp.maSP FROM SanPham sp ORDER BY sp.maSP DESC", 
-                String.class);
+                    "SELECT sp.maSP FROM SanPham sp ORDER BY sp.maSP DESC",
+                    String.class
+            );
             query.setMaxResults(1);
             List<String> results = query.getResultList();
-            
-            if (results.isEmpty()) {
-                return "";
-            }
-            
-            return results.get(0);
+            return results.isEmpty() ? null : results.get(0);
         } catch (Exception e) {
             e.printStackTrace();
-            return "";
+            return null;
         }
     }
     

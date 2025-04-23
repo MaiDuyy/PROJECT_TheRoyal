@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -190,16 +191,43 @@ public class SuaKhuyenMai_Dialog extends JDialog {
         staffInfoPanel.add(btnThem);
 
     }
+
     @SneakyThrows
     private void themNV() {
-    	 if(validData(UPDATE)) {
-        KhuyenMai nv = dataUuDai();
-        khuyenMaiService.update(nv);
-        this.dispose();
-        home.huytim();
-        home.thongBao(0, "Cập nhật thành công");
-    	 }
+        if (validData(UPDATE)) {
+            KhuyenMai newKM = dataUuDai();
+            String maKM = txtMa.getText();
+            newKM.setMaKM(maKM);
+
+
+            KhuyenMai oldKM = khuyenMaiService.findById(maKM);
+            if (oldKM == null) {
+                home.showMessage("Không tìm thấy khuyến mãi để cập nhật", txtMa);
+                return;
+            }
+            boolean daThayDoi = !Objects.equals(newKM.getTenKM(), oldKM.getTenKM())
+                    || newKM.getGiaTriKhuyenMai() != oldKM.getGiaTriKhuyenMai()
+                    || !Objects.equals(newKM.getThoiGianBatDau(), oldKM.getThoiGianBatDau())
+                    || !Objects.equals(newKM.getThoiGianKetThuc(), oldKM.getThoiGianKetThuc())
+                    || !Objects.equals(newKM.getMoTaKM(), oldKM.getMoTaKM())
+                    || newKM.getSoLuong() != oldKM.getSoLuong()
+                    || !Objects.equals(newKM.getTrangThai(), oldKM.getTrangThai());
+
+            if (daThayDoi) {
+                khuyenMaiService.update(newKM);
+                this.dispose();
+                home.huytim();
+                home.thongBao(0, "Cập nhật khuyến mãi thành công");
+
+            } else {
+                home.showMessage("Không có thay đổi nào để cập nhật", null);
+            }
+
+            home.tableModelUD.getDataVector().removeAllElements();
+            home.DocDuLieuNVVaoTable();
+        }
     }
+
     private boolean validData(int type) {
 	    // type = 1 -> thêm mới
 	    // type != 1 -> cập nhật
@@ -323,7 +351,7 @@ public class SuaKhuyenMai_Dialog extends JDialog {
          } 
      
 
-        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri , ngayBD, ngayKT, moTa, 0 , null ,null );
+        KhuyenMai ud = new KhuyenMai(tenKM, giaTri , ngayBD, ngayKT, moTa, soluong , null );
         return ud;
     }
     

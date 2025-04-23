@@ -37,18 +37,30 @@ public class KhuyenMaiDAOImpl extends GenericDAOImpl<KhuyenMai, String> implemen
 
     // Cập nhật số lượng Khuyến Mãi
     @Override public boolean updateSoLuong(String maKM) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        boolean updated = false;
+
         try {
-            EntityTransaction transaction = JPAUtil.getEntityManager().getTransaction();
-            transaction.begin();
-            TypedQuery<KhuyenMai> query = JPAUtil.getEntityManager().createQuery("UPDATE KhuyenMai k SET k.soLuong = k.soLuong - 1 WHERE k.maKM = :maKM AND k.soLuong > 0", KhuyenMai.class);
-            query.setParameter("maKM", maKM);
-            int rowsUpdated = query.executeUpdate();
-            transaction.commit();
-            return rowsUpdated > 0;
+            tx.begin();
+
+            String jpql = "UPDATE KhuyenMai k SET k.soLuong = k.soLuong - 1 " +
+                    "WHERE k.maKM = :maKM AND k.soLuong > 0";
+
+            int rowsUpdated = em.createQuery(jpql)
+                    .setParameter("maKM", maKM)
+                    .executeUpdate();
+
+            tx.commit();
+            updated = rowsUpdated > 0;
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-            return false;
         }
+
+        return updated;
     }
 
     // Lấy mã Khuyến Mãi mới nhất

@@ -42,6 +42,7 @@ import javax.swing.event.ChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
+import lombok.SneakyThrows;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
@@ -345,7 +346,7 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
             }
 
             ArrayList<String[]> dsSPNam = cthoaDonService.getTOPSPNam(nam);
-            ArrayList<String[]> dsDVNam = cthoaDonService.getTOPDVNam(nam);
+            ArrayList<String[]> dsDVNam = cthoaDonService.getTKDVNam(nam);
             clearTable();
             pieChart1.clearData();
             pieChart2.clearData();
@@ -540,6 +541,7 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
         }
     }
 
+    @SneakyThrows
     private void txtDatePropertyChange(PropertyChangeEvent evt) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -557,8 +559,9 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
                 throw new RuntimeException(e);
             }
 
-            ArrayList<String[]> dsDVNgay = dichVuService.getTOPDVNgay(sqlDate);
+//            ArrayList<String[]> dsDVNgay = dichVuService.getTOPDVNgay(sqlDate);
 
+            ArrayList<String[]> dsDVNgay = null ;
             removeData();
 
             int stt = 1;

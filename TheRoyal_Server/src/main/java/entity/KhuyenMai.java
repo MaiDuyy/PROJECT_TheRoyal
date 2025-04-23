@@ -2,6 +2,7 @@ package entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,6 +20,9 @@ import java.util.Set;
 public class KhuyenMai implements Serializable {
 
     @Id
+
+    @GenericGenerator(name = "sequence_km_id", strategy = "geneid.KhuyenMaiIdGenerator")
+    @GeneratedValue(generator = "sequence_km_id")
     @Column(name = "maKM", columnDefinition = "VARCHAR(50)")
     @EqualsAndHashCode.Include
     private String maKM;
@@ -46,4 +50,14 @@ public class KhuyenMai implements Serializable {
 
     @OneToMany(mappedBy = "khuyenMai" ,cascade = CascadeType.ALL)
     private Set<HoaDon> dsHoaDon;
+
+    public KhuyenMai(String tenKM, float giaTriKhuyenMai, Date thoiGianBatDau, Date thoiGianKetThuc, String moTaKM, int soLuong, String trangThai) {
+        this.tenKM = tenKM;
+        this.giaTriKhuyenMai = giaTriKhuyenMai;
+        this.thoiGianBatDau = thoiGianBatDau;
+        this.thoiGianKetThuc = thoiGianKetThuc;
+        this.moTaKM = moTaKM;
+        this.soLuong = soLuong;
+        this.trangThai = trangThai;
+    }
 }

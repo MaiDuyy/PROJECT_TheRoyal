@@ -362,6 +362,8 @@ public class ThanhToan_GUI extends JDialog {
         txtTongTien.setBounds(409, 273, 126, 38);
         tabelPanelInfo.add(txtTongTien);
 
+
+
         chkInHoaDon = new JCheckBox("Xuất hóa đơn");
         chkInHoaDon.setSelected(true);
         chkInHoaDon.setBackground(new Color(255, 255, 255));
@@ -385,9 +387,11 @@ public class ThanhToan_GUI extends JDialog {
         btnChuyenKhoan.setBounds(393, 405, 131, 40);
         btnChuyenKhoan.addActionListener(new ActionListener() {
 
-			@Override
+			@SneakyThrows
+            @Override
 			public void actionPerformed(ActionEvent e) {
 
+                RMIClient.getInstance().getHoaDonService().getListHoaDon();
 
 				 String luachon = (String) cbxLuachon.getSelectedItem();
 

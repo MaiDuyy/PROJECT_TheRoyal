@@ -2,6 +2,7 @@ package entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -17,6 +18,8 @@ import java.util.Set;
 public class DichVu  implements Serializable {
 
     @Id
+    @GenericGenerator(name = "sequence_dv_id", strategy = "geneid.DichVuIdGenerator")
+    @GeneratedValue(generator = "sequence_dv_id")
     @Column(name = "maDV", nullable = false, columnDefinition = "varchar(50)")
 //    @EqualsAndHashCode.Include
     private String maDV;
@@ -39,4 +42,12 @@ public class DichVu  implements Serializable {
     // Mối quan hệ 1-n với CTHoaDon
     @OneToMany(mappedBy = "dichVu")
     private Set<CTHoaDon> ctHoaDon;
+
+    public DichVu(String tenDV, String moTa, double giaDV, int soLuongDV, String trangThai) {
+        this.tenDV = tenDV;
+        this.moTa = moTa;
+        this.giaDV = giaDV;
+        this.soLuongDV = soLuongDV;
+        this.trangThai = trangThai;
+    }
 }

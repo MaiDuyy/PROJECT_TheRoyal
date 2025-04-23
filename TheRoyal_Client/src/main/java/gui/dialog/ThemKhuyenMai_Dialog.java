@@ -325,7 +325,7 @@ public class ThemKhuyenMai_Dialog extends JDialog {
          } 
      
 
-        KhuyenMai ud = new KhuyenMai(maKM, tenKM, giaTri , ngayBD, ngayKT, moTa, soluong,null, null );
+        KhuyenMai ud = new KhuyenMai( tenKM, giaTri , ngayBD, ngayKT, moTa, soluong,null );
         return ud;
     }
     

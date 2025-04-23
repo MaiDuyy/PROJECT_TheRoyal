@@ -76,14 +76,15 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
 
   
 
-	public QLHoaDon_GUI() {
+	@SneakyThrows
+    public QLHoaDon_GUI() {
 
 		getContentPane().setBackground(new Color(255, 255, 255));
         hoadondao = RMIClient.getInstance().getHoaDonService();
         cthddao = RMIClient.getInstance().getCtHoaDonService();
         sanphamdao = RMIClient.getInstance().getSanPhamService();
         dichvudao = RMIClient.getInstance().getDichVuService();
-        dsHD = (ArrayList<HoaDon>) RMIClient.getInstance().getHoaDonService();
+        dsHD =  RMIClient.getInstance().getHoaDonService().getAll();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
       
         tieuDeLabel = new JLabel("Quản lý Hóa Đơn");
@@ -175,10 +176,10 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
         });
         btnTim = new JButton("Tìm Kiếm");
         btnTim.setBounds(624, 23, 110, 21);
-        btnTim.setIcon(new ImageIcon(QLHoaDon_GUI.class.getResource("/src/icon/search_16.png")));
+        btnTim.setIcon(new ImageIcon("icon/search_16.png"));
         btnXemTatCa = new ButtonCustom("Xem tất cả","rest", 12);
         btnXemTatCa.setBounds(661, 25, 110, 24);
-        btnXemTatCa.setIcon(new ImageIcon(QLHoaDon_GUI.class.getResource("/src/icon/refresh.png")));
+        btnXemTatCa.setIcon(new ImageIcon("icon/refresh.png"));
         searchPanel.setLayout(null);
 
         searchPanel.add(searchLabel);
@@ -359,26 +360,26 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
             new Color(246, 167, 193)
         ));
 
-        btnThem = new JButton("Thêm ", new ImageIcon("src/icon/blueAdd_16.png"));
+        btnThem = new JButton("Thêm ", new ImageIcon("icon/blueAdd_16.png"));
         btnThem.setBounds(45, 23, 132, 21);
         btnCapNhat = new JButton("Cập Nhật ");
         btnCapNhat.setBounds(222, 23, 145, 21);
-        btnCapNhat.setIcon(new ImageIcon("src/icon/check2_16.png"));
+        btnCapNhat.setIcon(new ImageIcon("icon/check2_16.png"));
 
         btnLamLai = new JButton("Làm Lại");
         btnLamLai.setBounds(222, 47, 145, 21);
-        btnLamLai.setIcon(new ImageIcon("src/icon/refresh_16.png"));
+        btnLamLai.setIcon(new ImageIcon("icon/refresh_16.png"));
 
         btnThemTaiKhoanNV = new JButton("Đổi mật khẩu");
         btnThemTaiKhoanNV.setBounds(397, 23, 145, 21);
-        btnThemTaiKhoanNV.setIcon(new ImageIcon("src/icon/check2_16.png"));
+        btnThemTaiKhoanNV.setIcon(new ImageIcon("icon/check2_16.png"));
         controlPanel.setLayout(null);
 
         controlPanel.add(btnThem);
 
         btnXoa = new JButton("Xóa");
         btnXoa.setBounds(45, 47, 132, 21);
-        btnXoa.setIcon(new ImageIcon("src/icon/trash2_16.png"));
+        btnXoa.setIcon(new ImageIcon("icon/trash2_16.png"));
 
         lbShowMessages = new JLabel("");
         lbShowMessages.setBounds(170, 61, 295, 37);
@@ -410,67 +411,119 @@ public class QLHoaDon_GUI extends JInternalFrame  implements ActionListener,Mous
     	dsCTHD = (ArrayList<CTHoaDon>) cthddao.getAll();
     }
     private void DocDuLieuSPVaoTable() {
-//    	dsCT = cthddao.getCTHoaDonDetails();
-    	tableModelSP.setRowCount(0);
-    	 for (CTHoaDon detail : dsCT) {
-    		  DecimalFormat df = new DecimalFormat("#,###.##");
-  	        String giaSP = df.format(detail.getSanPham().getGiaSP());
-    		 tableModelSP.addRow(new Object[]{
-                     detail.getSanPham().getMaSP(), 
-                     detail.getSanPham().getTenSP(),
-                     detail.getSoLuongSP(), 
-                     giaSP
-             });
-         }
+        tableModelSP.setRowCount(0);
+        DecimalFormat df = new DecimalFormat("#,###.##");
+
+        for (CTHoaDon detail : dsCT) {
+            String giaSP = "Không có";
+            String maSP = "Không có";
+            String tenSP = "Không có";
+            String soLuongSP = "Không có";
+
+            if (detail.getSanPham() != null) {
+                Double gia = detail.getSanPham().getGiaSP();
+                giaSP = gia != null ? df.format(gia) : "Không có";
+
+                String ma = detail.getSanPham().getMaSP();
+                maSP = ma != null ? ma : "Không có";
+
+                String ten = detail.getSanPham().getTenSP();
+                tenSP = ten != null ? ten : "Không có";
+            }
+
+            Integer sl = detail.getSoLuongSP();
+            soLuongSP = sl != null ? String.valueOf(sl) : "Không có";
+
+            tableModelSP.addRow(new Object[]{
+                    maSP,
+                    tenSP,
+                    soLuongSP,
+                    giaSP
+            });
+        }
     }
-    
+
+
     private void DocDuLieuDVVaoTable() {
-//    	dsCT = cthddao.getCTHoaDonDetails();
-    	tableModelDV.setRowCount(0);
-      
-    	 for (CTHoaDon detail : dsCT) {
-    		  DecimalFormat df = new DecimalFormat("#,###.##");
-    	        String giaDV = df.format(detail.getDichVu().getGiaDV());
-    		 tableModelDV.addRow(new Object[]{
-    				 
-    				 
-                     detail.getDichVu().getMaDV(), 
-                     detail.getDichVu().getTenDV(),
-                     detail.getSoLuongDV(), 
-                     giaDV
-             });
-         }
+        tableModelDV.setRowCount(0);
+        DecimalFormat df = new DecimalFormat("#,###.##");
+
+        for (CTHoaDon detail : dsCT) {
+            String giaDV = "Không có";
+            String maDV = "Không có";
+            String tenDV = "Không có";
+            String soLuongDV = "Không có";
+
+            if (detail.getDichVu() != null) {
+                Double gia = detail.getDichVu().getGiaDV();
+                giaDV = gia != null ? df.format(gia) : "Không có";
+
+                String ma = detail.getDichVu().getMaDV();
+                maDV = ma != null ? ma : "Không có";
+
+                String ten = detail.getDichVu().getTenDV();
+                tenDV = ten != null ? ten : "Không có";
+            }
+
+            // Kiểm tra số lượng dịch vụ
+            Integer sl = detail.getSoLuongDV();
+            soLuongDV = sl != null ? String.valueOf(sl) : "Không có";
+
+            tableModelDV.addRow(new Object[]{
+                    maDV,
+                    tenDV,
+                    soLuongDV,
+                    giaDV
+            });
+        }
     }
-    
-    
-    
+
+
+
+
     private void DocDuLieuHoaDonVaoTable() {
-    	   if (dsHD == null || dsHD.size() <= 0)
-               return;
-           for (HoaDon item: dsHD) {
-               double tienDV = item.getTienDichVu();
-               double tienKM = item.getTienKhuyenMai();
-               double tienPhat = item.getTienPhat();
-               double tienPhong = item.getTienPhong();
-               double tienSanPham = item.getTienSanPham();
-               double tongTien = item.getTongTien();
-               String ngaylaphoadon = formatDate(item.getThoiGianLapHD());
-               
-   
-               DecimalFormat df = new DecimalFormat("#,###.##");
-               String tiendv = df.format(tienDV);
-               String tienkm = df.format(tienKM);
-               String tienphat = df.format(tienPhat);
-               String tienphong = df.format(tienPhong);
-               String tiensp = df.format(tienSanPham);
-               String tongtien = df.format(tongTien);
-               tableModelHoaDon.addRow(new Object[] {
-                   item.getMaHD(), item.getKhachHang().getMaKH(), item.getPhong().getMaPhong(), item.getNhanVien().getMaNV(), item.getDonDatPhong().getMaDDP(), item.getKhuyenMai().getMaKM(), ngaylaphoadon, 
-                   tienphong,tienphat,tienkm, tiendv,tiensp,tongtien
-               });
-           }
+        if (dsHD == null || dsHD.size() <= 0)
+            return;
+
+        for (HoaDon item : dsHD) {
+            double tienDV = item.getTienDichVu();
+            double tienKM = item.getTienKhuyenMai();
+            double tienPhat = item.getTienPhat();
+            double tienPhong = item.getTienPhong();
+            double tienSanPham = item.getTienSanPham();
+            double tongTien = item.getTongTien();
+            String ngaylaphoadon = formatDate(item.getThoiGianLapHD());
+
+            DecimalFormat df = new DecimalFormat("#,###.##");
+            String tiendv = df.format(tienDV);
+            String tienkm = df.format(tienKM);
+            String tienphat = df.format(tienPhat);
+            String tienphong = df.format(tienPhong);
+            String tiensp = df.format(tienSanPham);
+            String tongtien = df.format(tongTien);
+
+            // Kiểm tra null trước khi gọi getMaKM()
+            String maKM = item.getKhuyenMai() != null ? item.getKhuyenMai().getMaKM() : "Không có";
+
+            tableModelHoaDon.addRow(new Object[]{
+                    item.getMaHD(),
+                    item.getKhachHang().getMaKH(),
+                    item.getPhong().getMaPhong(),
+                    item.getNhanVien().getMaNV(),
+                    item.getDonDatPhong().getMaDDP(),
+                    maKM,
+                    ngaylaphoadon,
+                    tienphong,
+                    tienphat,
+                    tienkm,
+                    tiendv,
+                    tiensp,
+                    tongtien
+            });
+        }
     }
-    
+
+
     private void DocDuLieuCTHDVaoTable() {
     	
     	tableModelCTHD.setRowCount(0);

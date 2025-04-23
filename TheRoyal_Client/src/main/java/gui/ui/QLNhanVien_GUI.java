@@ -182,7 +182,7 @@ public class QLNhanVien_GUI extends JInternalFrame implements ActionListener, Mo
 								new Font("Segoe UI", Font.PLAIN, 12), new Color(246, 167, 193)));
 
 				btnThem = new JButton("Thêm",
-						new ImageIcon("/icon/blueAdd_16.png"));
+						new ImageIcon("icon/blueAdd_16.png"));
 				btnThem.setBackground(new Color(255, 255, 255));
 				btnThem.setBounds(37, 25, 67, 63);
 				btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

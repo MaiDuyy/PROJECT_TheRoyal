@@ -171,16 +171,21 @@ public class DichVuDAOImpl extends GenericDAOImpl<DichVu, String> implements Dic
     public Double getTongTienNam(int nam) {
         try {
             TypedQuery<Double> query = em.createQuery(
-                    "SELECT SUM(tongTien) FROM (SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV * dv.giaDV) as tongTien FROM CTHoaDon od JOIN HoaDon o ON od.hoaDon = o JOIN DichVu dv ON od.dichVu = dv WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam GROUP BY dv.maDV, dv.tenDV as subquery",
+                    "SELECT COALESCE(SUM(od.soLuongDV * dv.giaDV), 0) " +
+                            "FROM CTHoaDon od " +
+                            "JOIN od.hoaDon o " +
+                            "JOIN od.dichVu dv " +
+                            "WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam",
                     Double.class
             );
             query.setParameter("nam", nam);
-            return query.getSingleResult() != null ? query.getSingleResult() : 0.0;
+            return query.getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return 0.0;
         }
     }
+
 
     @Override
     public String getLatestID() {

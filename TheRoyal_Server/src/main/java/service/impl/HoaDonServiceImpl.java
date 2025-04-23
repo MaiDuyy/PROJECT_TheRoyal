@@ -6,6 +6,7 @@ import entity.HoaDon;
 import service.HoaDonService;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,13 +59,18 @@ public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> imple
         return hoaDonDAO.updateKM(maKM, maHD);
     }
 
+    @Override
+    public int getTongTienNgay(Date ngay) throws RemoteException {
+        return hoaDonDAO.getTongTienNgay(ngay);
+    }
+
     // Tính doanh thu theo ngày
-    @Override public List<HoaDon> getDoanhThuNgay(LocalDate ngay) throws RemoteException {
+    @Override public List<HoaDon> getDoanhThuNgay(Date ngay) throws RemoteException {
         return hoaDonDAO.getDoanhThuNgay(ngay);
     }
 
     // Lấy số lượng hóa đơn trong ngày
-    @Override public int getSoLuongHoaDonNgay(LocalDate ngay)  throws RemoteException{
+    @Override public int getSoLuongHoaDonNgay(Date ngay)  throws RemoteException{
         return hoaDonDAO.getSoLuongHoaDonNgay(ngay);
     }
 
@@ -76,6 +82,11 @@ public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> imple
     // Lấy doanh thu theo năm
     @Override public List<HoaDon> getDoanhThuNam(String nam)throws RemoteException {
         return hoaDonDAO.getDoanhThuNam(nam);
+    }
+
+    @Override
+    public List<Object[]> getDoanhThuTungThangNam(String nam) throws RemoteException {
+        return hoaDonDAO.getDoanhThuTungThangNam(nam);
     }
 
     @Override

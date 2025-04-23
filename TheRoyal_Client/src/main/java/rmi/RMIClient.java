@@ -10,7 +10,7 @@ public class RMIClient {
     private static RMIClient instance;
     private Context context;
     private String rmiHost = "DESKTOP-Q4NO7E1";
-    private int rmiPort = 9090;
+    private int rmiPort = 9091;
 
     // Các dịch vụ RMI
     private PhongService phongService;

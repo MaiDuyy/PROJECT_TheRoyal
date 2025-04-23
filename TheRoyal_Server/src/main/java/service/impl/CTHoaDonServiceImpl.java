@@ -6,7 +6,6 @@ import service.CTHoaDonService;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CTHoaDonServiceImpl extends  GenericServiceImpl<CTHoaDon, String>  implements CTHoaDonService {
@@ -73,47 +72,52 @@ public class CTHoaDonServiceImpl extends  GenericServiceImpl<CTHoaDon, String>  
     }
 
     @Override
-    public ArrayList<String[]> getTopDichVuTheoNam(int nam) throws RemoteException{
+    public List<String[]> getTopDichVuTheoNam(int nam) throws RemoteException{
         return cthoaDonDAO.getTopDichVuTheoNam(nam);
     }
 
     @Override
-    public ArrayList<String[]> getTOPSPNam(String nam) throws Exception{
+    public List<String[]> getTOPSPNam(String nam) throws RemoteException{
         return cthoaDonDAO.getTOPSPNam(nam);
     }
 
     @Override
-    public ArrayList<String[]> getTKDVNam(String nam){
+    public List<String[]> getTKDVNam(String nam) throws RemoteException{
         return cthoaDonDAO.getTKDVNam(nam);
     }
 
     @Override
-    public ArrayList<String[]> getTKSPNam(String nam){
+    public List<String[]> getTKSPNam(String nam) throws RemoteException{
         return cthoaDonDAO.getTKSPNam(nam);
     }
 
     @Override
-    public ArrayList<String[]> getTOPDVThang(String thang, String nam) {
+    public List<String[]> getTOPDVThang(String thang, String nam) throws RemoteException {
         return cthoaDonDAO.getTOPDVThang(thang, nam);
     }
 
     @Override
-    public ArrayList<String[]> getTOPSPThang(String thang, String nam) {
+    public List<String[]> getTOPSPThang(String thang, String nam) throws RemoteException {
         return cthoaDonDAO.getTOPSPThang(thang, nam);
     }
 
     @Override
-    public ArrayList<String[]> getTOPDVNgay(Date date){
+    public List<String[]> getTOPDVNgay(Date date) throws RemoteException{
         return cthoaDonDAO.getTOPDVNgay(date);
     }
 
     @Override
-    public ArrayList<String[]> getTOPSPNgay(Date date){
+    public List<String[]> getTOPSPNgay(Date date) throws RemoteException{
         return cthoaDonDAO.getTOPSPNgay(date);
     }
 
     @Override
-    public double getTongTienSPNgay(Date ngay){
+    public double getTongTienSPNgay(Date ngay) throws RemoteException{
         return cthoaDonDAO.getTongTienSPNgay(ngay);
+    }
+
+    @Override
+    public List<String[]> getTOPDVNam(String nam) throws RemoteException{
+        return cthoaDonDAO.getTOPDVNam(nam);
     }
 }

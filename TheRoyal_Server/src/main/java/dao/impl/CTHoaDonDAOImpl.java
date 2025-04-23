@@ -7,11 +7,12 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import util.JPAUtil;
+//import util.JPAUtil;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import java.util.Calendar;
 
 public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements CTHoaDonDAO {
 
@@ -312,7 +313,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public ArrayList<String[]> getTOPSPNam(String nam) {
+    public List<String[]> getTOPSPNam(String nam) {
         String sql = """
                 SELECT TOP 5 
                     sp.maSP, 
@@ -340,7 +341,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     SUM(od.soLuongSP) DESC
                 """;
 
-        ArrayList<String[]> list = new ArrayList<>();
+        List<String[]> list = new ArrayList<>();
 
         try {
             List<Object[]> resultList = em.createNativeQuery(sql)
@@ -362,7 +363,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
 
 
     @Override
-    public ArrayList<String[]> getTopDichVuTheoNam(int nam) {
+    public List<String[]> getTopDichVuTheoNam(int nam) {
         String sql = """
                 SELECT TOP 5 
                     dv.maDV, 
@@ -390,7 +391,7 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
                     SUM(od.soLuongDV) DESC
                 """;
 
-        ArrayList<String[]> list = new ArrayList<>();
+        List<String[]> list = new ArrayList<>();
 
         try {
             List<Object[]> resultList = em.createNativeQuery(sql)
@@ -411,8 +412,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public ArrayList<String[]> getTKSPNam(String nam) {
-        ArrayList<String[]> list = new ArrayList<>();
+    public List<String[]> getTKSPNam(String nam) {
+        List<String[]> list = new ArrayList<>();
         try {
             String jpql = """
                         SELECT sp.maSP, sp.tenSP, SUM(od.soLuongSP), ROUND(SUM(od.soLuongSP * sp.giaSP), 2)
@@ -455,8 +456,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
 
 
     @Override
-    public ArrayList<String[]> getTKDVNam(String nam) {
-        ArrayList<String[]> list = new ArrayList<>();
+    public List<String[]> getTKDVNam(String nam) {
+        List<String[]> list = new ArrayList<>();
         try {
             String jpql = """
                         SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV), ROUND(SUM(od.soLuongDV * dv.giaDV), 2)
@@ -498,8 +499,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public ArrayList<String[]> getTOPSPThang(String thang, String nam) {
-        ArrayList<String[]> list = new ArrayList<>();
+    public List<String[]> getTOPSPThang(String thang, String nam) {
+        List<String[]> list = new ArrayList<>();
         try {
             String jpql = """
                         SELECT sp.maSP, sp.tenSP, SUM(od.soLuongSP), ROUND(SUM(od.soLuongSP * sp.giaSP), 2)
@@ -540,8 +541,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public ArrayList<String[]> getTOPDVThang(String thang, String nam) {
-        ArrayList<String[]> list = new ArrayList<>();
+    public List<String[]> getTOPDVThang(String thang, String nam) {
+        List<String[]> list = new ArrayList<>();
         try {
             String jpql = """
                         SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV), ROUND(SUM(od.soLuongDV * dv.giaDV), 2)
@@ -583,8 +584,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public ArrayList<String[]> getTOPDVNgay(Date date) {
-        ArrayList<String[]> list = new ArrayList<>();
+    public List<String[]> getTOPDVNgay(Date date) {
+        List<String[]> list = new ArrayList<>();
         try {
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
@@ -638,8 +639,8 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public ArrayList<String[]> getTOPSPNgay(Date date) {
-        ArrayList<String[]> list = new ArrayList<>();
+    public List<String[]> getTOPSPNgay(Date date) {
+        List<String[]> list = new ArrayList<>();
         try {
             // Tách ngày, tháng, năm từ Date
             Calendar cal = Calendar.getInstance();
@@ -715,5 +716,63 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
         return 0;
     }
 
+    @Override
+    public List<String[]> getTOPDVNam(String nam) {
+        List<String[]> list = new ArrayList<>();
+        try {
+            String subQuery = """
+                SELECT SUM(od.soLuongDV) 
+                FROM CTHoaDon od 
+                JOIN od.hoaDon o 
+                JOIN od.dichVu dv 
+                WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam 
+                GROUP BY dv.maDV, dv.tenDV 
+                ORDER BY SUM(od.soLuongDV) DESC
+                """;
+
+            List<Object> top5SoLuong = em.createQuery(subQuery)
+                    .setParameter("nam", Integer.parseInt(nam))
+                    .setMaxResults(5)
+                    .getResultList();
+
+            long tongSoLuongTop5 = top5SoLuong.stream()
+                    .mapToLong(o -> ((Number) o).longValue())
+                    .sum();
+
+            String jpql = """
+                SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV), ROUND(SUM(od.soLuongDV * dv.giaDV), 2)
+                FROM CTHoaDon od 
+                JOIN od.hoaDon o 
+                JOIN od.dichVu dv 
+                WHERE FUNCTION('YEAR', o.thoiGianLapHD) = :nam 
+                GROUP BY dv.maDV, dv.tenDV 
+                ORDER BY SUM(od.soLuongDV) DESC
+                """;
+
+            List<Object[]> resultList = em.createQuery(jpql)
+                    .setParameter("nam", Integer.parseInt(nam))
+                    .setMaxResults(5) // lấy top 5
+                    .getResultList();
+
+            for (Object[] row : resultList) {
+                String[] arr = new String[5];
+                arr[0] = String.valueOf(row[0]);  // maDV
+                arr[1] = String.valueOf(row[1]);  // tenDV
+                arr[2] = String.valueOf(row[2]);  // SoLuong
+
+                double tyLe = (tongSoLuongTop5 != 0)
+                        ? ((Number) row[2]).doubleValue() * 100.0 / tongSoLuongTop5
+                        : 0.0;
+                arr[3] = String.format("%.2f", tyLe);  // TyLe %
+
+                arr[4] = String.valueOf(row[3]);  // TongTien
+
+                list.add(arr);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 }

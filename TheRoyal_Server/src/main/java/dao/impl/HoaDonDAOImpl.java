@@ -9,6 +9,7 @@ import util.JPAUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -203,10 +204,14 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
     }
 
     // Tính doanh thu theo ngày
-    @Override public List<HoaDon> getDoanhThuNgay(LocalDate ngay) {
+    @Override
+    public List<HoaDon> getDoanhThuNgay(LocalDate ngay) {
+        Date utilDate = Date.from(ngay.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
         TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery(
                 "SELECT h FROM HoaDon h WHERE FUNCTION('DATE', h.thoiGianLapHD) = :ngay", HoaDon.class);
-        query.setParameter("ngay", ngay);
+        query.setParameter("ngay", utilDate);
+
         return query.getResultList();
     }
 

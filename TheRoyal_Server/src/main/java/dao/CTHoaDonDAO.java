@@ -5,7 +5,7 @@ import entity.HoaDon;
 
 import java.sql.Array;
 import java.sql.Date;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.List;
 
 public interface CTHoaDonDAO extends GenericDAO<CTHoaDon, String> {
@@ -31,21 +31,23 @@ public interface CTHoaDonDAO extends GenericDAO<CTHoaDon, String> {
 
     public boolean insert(CTHoaDon ctHoaDon);
 
-    ArrayList<String[]> getTOPSPNam(String nam);
+    List<String[]> getTOPSPNam(String nam);
 
-    ArrayList<String[]> getTopDichVuTheoNam(int nam);
+    List<String[]> getTopDichVuTheoNam(int nam);
 
-    ArrayList<String[]> getTKSPNam(String nam);
+    List<String[]> getTKSPNam(String nam);
 
-    ArrayList<String[]> getTKDVNam(String nam);
+    List<String[]> getTKDVNam(String nam);
 
-    ArrayList<String[]> getTOPSPThang(String thang, String nam);
+    List<String[]> getTOPSPThang(String thang, String nam);
 
-    ArrayList<String[]> getTOPDVThang(String thang, String nam);
+    List<String[]> getTOPDVThang(String thang, String nam);
 
-    ArrayList<String[]> getTOPDVNgay(Date date);
+    List<String[]> getTOPDVNgay(Date date);
 
-    ArrayList<String[]> getTOPSPNgay(Date date);
+    List<String[]> getTOPSPNgay(Date date);
 
     double getTongTienSPNgay(Date ngay);
+
+    List<String[]> getTOPDVNam(String nam);
 }

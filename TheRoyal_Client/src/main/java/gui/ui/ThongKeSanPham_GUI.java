@@ -345,8 +345,13 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
                 return;
             }
 
+<<<<<<< HEAD
             ArrayList<String[]> dsSPNam = cthoaDonService.getTOPSPNam(nam);
             ArrayList<String[]> dsDVNam = cthoaDonService.getTKDVNam(nam);
+=======
+            ArrayList<String[]> dsSPNam = (ArrayList<String[]>) cthoaDonService.getTOPSPNam(nam);
+            ArrayList<String[]> dsDVNam = (ArrayList<String[]>) cthoaDonService.getTOPDVNam(nam);
+>>>>>>> main
             clearTable();
             pieChart1.clearData();
             pieChart2.clearData();
@@ -381,8 +386,8 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
 
             dataset = new DefaultPieDataset();
             dataset2 = new DefaultPieDataset();
-                ArrayList<String[]> data = cthoaDonService.getTKSPNam(nam);
-            ArrayList<String[]> data2 =cthoaDonService.getTKDVNam(nam);
+            ArrayList<String[]> data = (ArrayList<String[]>) cthoaDonService.getTKSPNam(nam);
+            ArrayList<String[]> data2 = (ArrayList<String[]>) cthoaDonService.getTKDVNam(nam);
 
             pnlChart.removeAll();
             pnlChart.setLayout(new BorderLayout());
@@ -452,8 +457,8 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
                 return;
             }
 
-            ArrayList<String[]> dsSPThang = cthoaDonService.getTOPSPThang(thang, nam);
-            ArrayList<String[]> dsDVThang = cthoaDonService.getTOPDVThang(thang, nam);
+            ArrayList<String[]> dsSPThang = (ArrayList<String[]>) cthoaDonService.getTOPSPThang(thang, nam);
+            ArrayList<String[]> dsDVThang = (ArrayList<String[]>) cthoaDonService.getTOPDVThang(thang, nam);
             clearTable();
             pieChart1.clearData();
             pieChart2.clearData();
@@ -552,14 +557,18 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
 
             java.sql.Date sqlDate = new java.sql.Date(dateFormat.parse(formattedDate).getTime());
 
-            ArrayList<String[]> dsSPNgay = cthoaDonService.getTOPSPNgay(sqlDate);
+            ArrayList<String[]> dsSPNgay = (ArrayList<String[]>) cthoaDonService.getTOPSPNgay(sqlDate);
             try {
                 ArrayList<String[]> dsMHNgay = (ArrayList<String[]>) sanPhamService.getSPNgay(sqlDate);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
 
+<<<<<<< HEAD
 //            ArrayList<String[]> dsDVNgay = dichVuService.getTOPDVNgay(sqlDate);
+=======
+            ArrayList<String[]> dsDVNgay = (ArrayList<String[]>) cthoaDonService.getTOPDVNgay(sqlDate);
+>>>>>>> main
 
             ArrayList<String[]> dsDVNgay = null ;
             removeData();
@@ -609,6 +618,8 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
 
         } catch (ParseException e) {
             e.printStackTrace();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 

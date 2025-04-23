@@ -37,10 +37,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .getResultList();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return dataList;
     }
 
@@ -74,8 +71,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return id;
@@ -97,8 +92,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return ddp;
@@ -122,8 +115,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return ddp;
@@ -147,10 +138,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return ddp;
     }
 
@@ -170,8 +158,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return ddp;
@@ -200,8 +186,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return updated;
@@ -263,8 +247,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
             available = (count == 0);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return available;
@@ -300,10 +282,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .getResultList();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return dsDonDatPhong;
     }
 
@@ -351,10 +330,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
             e.printStackTrace();
         }
 
-//        finally {
-//            em.close();
-//        }
-//
+
 
         return donDatPhong;
     }
@@ -430,8 +406,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return ddp;
@@ -496,8 +470,6 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
 
         return success;
@@ -519,9 +491,7 @@ public class DonDatPhongDAOImpl extends GenericDAOImpl<DonDatPhong, String> impl
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        finally {
-//            em.close();
-//        }
+
 
         return donDatPhongList;
     }

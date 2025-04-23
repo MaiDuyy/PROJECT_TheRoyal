@@ -46,12 +46,13 @@ public class SuaDichVu_Dialog extends JDialog {
 
 
 
+    @SneakyThrows
     public SuaDichVu_Dialog(javax.swing.JInternalFrame parent, javax.swing.JFrame owner, boolean modal) {
         super(owner, modal);
         GUI();
         setLocationRelativeTo(null);
         home = (QLDichVu_GUI) parent;
-        dsDV = (ArrayList<DichVu>) RMIClient.getInstance().getDichVuService();
+        dsDV = (ArrayList<DichVu>) RMIClient.getInstance().getDichVuService().getAll();
         DichVu sp = home.getSanPhanSelect();
         txtMa.setText(sp.getMaDV());
         txtTen.setText(sp.getTenDV());

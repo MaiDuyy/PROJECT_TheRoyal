@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import util.JPAUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NhanVienDAOImpl extends GenericDAOImpl<NhanVien, String> implements NhanVienDAO {
@@ -34,17 +35,19 @@ public class NhanVienDAOImpl extends GenericDAOImpl<NhanVien, String> implements
 
     @Override
     public List<NhanVien> getNhanVienTheoMa(String maTK) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<NhanVien> dataList = new ArrayList<>();
+
         try {
-            TypedQuery<NhanVien> query = em.createQuery(
-                "SELECT nv FROM NhanVien nv WHERE nv.taiKhoan.maTK = :maTK", 
-                NhanVien.class
-            );
-            query.setParameter("maTK", maTK);
-            return query.getResultList();
+            String jpql = "SELECT n FROM NhanVien n WHERE n.taiKhoan.maTK = :maTK";
+
+            dataList = em.createQuery(jpql, NhanVien.class)
+                    .setParameter("maTK", maTK)
+                    .getResultList();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return dataList;
     }
 
     @Override
@@ -161,10 +164,7 @@ public class NhanVienDAOImpl extends GenericDAOImpl<NhanVien, String> implements
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return updated;
     }
 
@@ -184,8 +184,6 @@ public class NhanVienDAOImpl extends GenericDAOImpl<NhanVien, String> implements
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return maTK;
@@ -208,8 +206,6 @@ public class NhanVienDAOImpl extends GenericDAOImpl<NhanVien, String> implements
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
 
         return success;

@@ -202,10 +202,7 @@ public class TaiKhoanDAOImpl extends GenericDAOImpl<TaiKhoan ,String> implements
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
-
         return success;
     }
 

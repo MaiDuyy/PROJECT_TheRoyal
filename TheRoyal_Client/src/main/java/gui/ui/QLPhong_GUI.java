@@ -55,6 +55,7 @@ import gui.dialog.SuaPhong_Dialog;
 import gui.dialog.ThemKhuyenMai_Dialog;
 import gui.dialog.ThemPhong_Dialog;
 import gui.swing.notification.Notification;
+import lombok.SneakyThrows;
 import rmi.RMIClient;
 import service.LoaiPhongService;
 import service.PhongService;
@@ -64,7 +65,7 @@ import java.awt.Dimension;
 
 public class QLPhong_GUI extends JInternalFrame implements ActionListener {
     private final PhongService phongService;
-    private LoaiPhongService loaiPhongService;
+    private LoaiPhongService loaiPhongService  ;
     private final JLabel tieuDeLabel;
     private final JSeparator phanCach;
     private Table tblPhong;
@@ -85,6 +86,7 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
 
     public QLPhong_GUI() {
         phongService = RMIClient.getInstance().getPhongService();
+        loaiPhongService=  RMIClient.getInstance().getLoaiPhongService() ;
         getContentPane().setBackground(new Color(255, 255, 255));
         themphongdialog = new ThemPhong_Dialog(this, (JFrame) SwingUtilities.getWindowAncestor(this), rootPaneCheckingEnabled);
 
@@ -197,10 +199,10 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
 
         btnTim = new JButton("Tìm Kiếm");
         btnTim.setBounds(376, 34, 107, 29);
-        btnTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/search_16.png")));
+        btnTim.setIcon(new ImageIcon("icon/search_16.png"));
         btnHuyTim = new ButtonCustom("Xem tất cả", "rest", 12);
         btnHuyTim.setBounds(493, 34, 112, 29);
-        btnHuyTim.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/refresh.png")));
+        btnHuyTim.setIcon(new ImageIcon("icon/refresh.png"));
         searchPanel.setLayout(null);
         searchPanel.add(txtTim);
 //	        searchPanel.add(btnTim);
@@ -264,7 +266,7 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
                         new Font("Segoe UI", Font.PLAIN, 12), new Color(246, 167, 193)));
 
         btnThem = new JButton("Thêm",
-                new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/blueAdd_16.png")));
+                new ImageIcon("icon/blueAdd_16.png"));
         btnThem.setBackground(new Color(255, 255, 255));
         btnThem.setBounds(37, 25, 67, 63);
         btnThem.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -275,7 +277,7 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
         btnCapNhat = new JButton("Sửa");
         btnCapNhat.setBackground(new Color(255, 255, 255));
         btnCapNhat.setBounds(191, 25, 67, 63);
-        btnCapNhat.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/updated.png")));
+        btnCapNhat.setIcon(new ImageIcon("icon/updated.png"));
         btnCapNhat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCapNhat.setFocusable(false);
         btnCapNhat.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -288,7 +290,7 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
         btnXoa = new JButton("Xóa");
         btnXoa.setBackground(new Color(255, 255, 255));
         btnXoa.setBounds(114, 25, 67, 63);
-        btnXoa.setIcon(new ImageIcon(QLNhanVien_GUI.class.getResource("/src/ICON/icon/trash2_16.png")));
+        btnXoa.setIcon(new ImageIcon("icon/trash2_16.png"));
         btnXoa.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnXoa.setFocusable(false);
         btnXoa.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -309,7 +311,7 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
             }
         });
         btnLocNgayKetThuc.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btnLocNgayKetThuc.setIcon(new ImageIcon(QLUuDai_GUI.class.getResource("/ICON/icon/cancel-event.png")));
+        btnLocNgayKetThuc.setIcon(new ImageIcon("icon/cancel-event.png"));
         btnLocNgayKetThuc.setHorizontalTextPosition(SwingConstants.CENTER);
         btnLocNgayKetThuc.setFocusable(false);
         btnLocNgayKetThuc.setBackground(Color.WHITE);
@@ -363,12 +365,11 @@ public class QLPhong_GUI extends JInternalFrame implements ActionListener {
         }
     }
 
+    @SneakyThrows
     public void loadDataLoaiPhong() {
-        try {
+
             dsLoaiPhong = (ArrayList<LoaiPhong>) loaiPhongService.getAll();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     private void DocDuLieuPhongVaoTable() {

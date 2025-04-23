@@ -260,6 +260,7 @@ public class DatLaiMatKhau extends JDialog {
         }
     	
     }
+    @SneakyThrows
     public void checkpass() {
 		String password = txtNewPass.getText();
 		String repassword = txtRePass.getText();
@@ -275,7 +276,7 @@ public class DatLaiMatKhau extends JDialog {
 			 txtRePass.requestFocus();
                 return;
 		}else {
-			 TaiKhoanDAO.getInstance().capnhatMK(txtEmail.getText(),BCrypt.hashpw(password,BCrypt.gensalt(12)));
+			 RMIClient.getInstance().getTaiKhoanService().capnhatMK(txtEmail.getText(),BCrypt.hashpw(password,BCrypt.gensalt(12)));
 		        JOptionPane.showMessageDialog(DatLaiMatKhau.this, "Đổi mật khẩu thành công", "Thành công", JOptionPane.INFORMATION_MESSAGE);
 		        switchPanel("RePass");
 		        dispose(); 
@@ -290,7 +291,7 @@ public class DatLaiMatKhau extends JDialog {
     }
 
     private boolean checkEmail(String email) throws RemoteException {
-        ArrayList<NhanVien> nv = (ArrayList<NhanVien>) nhanVienService.getNhanVienTheoMa(email);
+        ArrayList<NhanVien> nv = (ArrayList<NhanVien>) nhanVienService.getAll();
         for (NhanVien i : nv) {
             if (i.getEmail().equalsIgnoreCase(email)) {
                 return true;

@@ -268,7 +268,7 @@ public class ThemSanPham_Dialog extends JDialog {
             }
         }
 
-        SanPham dv = new SanPham(maDV, tenDV, moTaDV, giaTri, soLuong , null ,null);
+        SanPham dv = new SanPham(tenDV, moTaDV, giaTri, soLuong , null );
         return dv;
     }
 

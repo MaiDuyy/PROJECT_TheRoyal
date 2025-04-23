@@ -61,9 +61,9 @@ public class InHoaDon_GUI implements Printable {
 
         g2.drawString("----------------------------------------------------", 12, y);
         y += yShift;
-        g2.drawString("HOTEL TENTWO                      Ngày:" + formatNgay.format(hoaDon.getThoiGianLapHD()), 12, y);
+        g2.drawString("HOTEL The-Royal                      Ngày:" + formatNgay.format(hoaDon.getThoiGianLapHD()), 12, y);
         y += yShift;
-        g2.drawString("TENTWO GÒ VẤP                     Gio:" +currentTime.getHour() +":"+ currentTime.getMinute() , 12, y);
+        g2.drawString("The-Royal GÒ VẤP                     Gio:" +currentTime.getHour() +":"+ currentTime.getMinute() , 12, y);
         y += yShift;
         g2.drawString("DT:0365338606                     So HD:" + hoaDon.getMaHD(), 12, y);
         y += yShift ; 

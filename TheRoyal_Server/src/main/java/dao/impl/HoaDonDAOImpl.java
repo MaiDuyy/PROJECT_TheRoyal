@@ -80,8 +80,6 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                     .orElse(null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return hoaDon;
@@ -145,8 +143,6 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
 
         return updated;
@@ -175,10 +171,7 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
-
         return updated;
     }
 
@@ -205,8 +198,6 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return updated;
@@ -298,8 +289,6 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close(); // RẤT QUAN TRỌNG
         }
 
         return success;
@@ -351,8 +340,6 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
                 tx.rollback();
             }
             e.printStackTrace();
-        } finally {
-            em.close();
         }
 
         return dataList;

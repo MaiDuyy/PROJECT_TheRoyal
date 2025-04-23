@@ -159,10 +159,11 @@ public class SuaSanPham_Dialog extends JDialog {
         staffInfoPanel.add(btnThem);
 
     }
+    @SneakyThrows
     private void themNV() {
     	 if(validData(UPDATE)) {
         SanPham nv = dataDichVu();
-        SanPhamDAO.getInstance().suaSanPham(nv);
+        sanPhamService.suaSanPham(nv);
         this.dispose();
         home.huytim();
         home.thongBao(0, "Cập nhật thành công");

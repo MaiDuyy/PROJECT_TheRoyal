@@ -269,7 +269,7 @@ public class ThemDichVu_Dialog extends JDialog {
             }
         }
 
-        DichVu dv = new DichVu(maDV, tenDV, moTaDV, giaTri, soLuong, null ,null);
+        DichVu dv = new DichVu( tenDV, moTaDV, giaTri, soLuong, null );
         return dv;
     }
 

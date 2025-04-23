@@ -19,6 +19,7 @@ import entity.HoaDon;
 import gui.chart.Chart;
 import gui.chart.ModelChart;
 import gui.chart.blankchart.BlankPlotChart;
+import lombok.SneakyThrows;
 import rmi.RMIClient;
 import service.HoaDonService;
 
@@ -367,6 +368,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		}
 	}
 
+	@SneakyThrows
 	private void txtDatePropertyChange(PropertyChangeEvent evt) {
 	    // Định dạng ngày
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -381,47 +383,52 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	    java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
 
-        List<HoaDon> dsHoaDon = null;
+		List<HoaDon> dsHoaDon = null;
+		try {
+			dsHoaDon = hoaDonService.getDoanhThuNgay(java.sql.Date.valueOf(sqlDate.toLocalDate()));
+		} catch (RemoteException e) {
+			throw new RuntimeException(e);
+		}
+
+		removeData();
+
+		if (dsHoaDon == null || dsHoaDon.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Không có hóa đơn trong ngày");
+		} else {
+			int stt = 1;
+			for (HoaDon hd : dsHoaDon) {
+				String maKM = "Không có";
+				if (hd.getKhuyenMai() != null && hd.getKhuyenMai().getMaKM() != null) {
+					maKM = hd.getKhuyenMai().getMaKM();
+				}
+
+				DecimalFormat df = new DecimalFormat("#,###.##");
+				String tongTien = df.format(hd.getTongTien());
+
+				tableModelHoaDon.addRow(new Object[]{
+						String.valueOf(stt++),
+						hd.getMaHD(),
+						hd.getThoiGianLapHD(),
+						hd.getKhachHang().getMaKH(),
+						hd.getNhanVien().getMaNV(),
+						maKM,
+						tongTien
+				});
+			}
+		}
+
+		int tongHD = 0;
         try {
-            dsHoaDon = hoaDonService.getDoanhThuNgay(sqlDate.toLocalDate());
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
-        removeData();
-
-	    if (dsHoaDon == null || dsHoaDon.isEmpty()) {
-	        JOptionPane.showMessageDialog(null, "Không có hóa đơn trong ngày");
-	    } else {
-	        int stt = 1;
-	        for (HoaDon hd : dsHoaDon) {
-
-	        	  DecimalFormat df = new DecimalFormat("#,###.##");
-	    	        String tongTien = df.format(hd.getTongTien() );
-	            tableModelHoaDon.addRow(new Object[]{
-	                String.valueOf(stt++),
-	                hd.getMaHD(),
-	                hd.getThoiGianLapHD(),
-	                hd.getKhachHang().getMaKH(),
-	                hd.getNhanVien().getMaNV(),
-	                hd.getKhuyenMai().getMaKM(),
-	                tongTien
-	            });
-	        }
-	    }
-
-        int tongHD = 0;
-        try {
-            tongHD = hoaDonService.getSoLuongHoaDonNgay(sqlDate.toLocalDate());
+            tongHD = hoaDonService.getSoLuongHoaDonNgay(sqlDate);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
         lblTongHD.setText(String.valueOf(tongHD));
-//	    double tongTien = hoaDonService.getTongTienNgay(sqlDate);
+	    double tongTien = hoaDonService.getTongTienNgay(sqlDate);
 		 String COUNTRY = "VN";
 		 String LANGUAGE = "vi";
-//		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(tongTien);
-//	    lblTongTien.setText(String.valueOf(str));
+		 String str = NumberFormat.getCurrencyInstance(new Locale(LANGUAGE,COUNTRY)).format(tongTien);
+	    lblTongTien.setText(String.valueOf(str));
 	}
 
 
@@ -440,6 +447,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	}
 
 
+	  @SneakyThrows
 	  private void updateChart(ArrayList<String[]> list, String nam) {
 
 
@@ -449,7 +457,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	        pnlChart.removeAll();
 
-//	        list = hoaDonService.getDoanhThuTungThangNam(nam);
+	        list = hoaDonService.getDoanhThuTungThangNam(nam);
 	        chart.addLegend("Tổng tiền", new Color(12, 84, 175), new Color(0, 108, 247));
 	        for (String[] arr : list) {
 	            String month = arr[0];

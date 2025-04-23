@@ -7,6 +7,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import util.JPAUtil;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -203,41 +204,161 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
         return updated;
     }
 
+    @Override
+    public int getTongTienNgay(java.sql.Date ngay) {
+        EntityManager em = JPAUtil.getEntityManager();
+        int tongTien = 0;
+
+        try {
+            LocalDate localDate = ngay.toLocalDate();
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+            String jpql = "SELECT SUM(h.tongTien) FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfDay AND h.thoiGianLapHD < :endOfDay";
+
+            Double result = em.createQuery(jpql, Double.class)
+                    .setParameter("startOfDay", Timestamp.valueOf(startOfDay))
+                    .setParameter("endOfDay", Timestamp.valueOf(endOfDay))
+                    .getSingleResult();
+
+            tongTien = (result != null) ? result.intValue() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return tongTien;
+    }
+
     // Tính doanh thu theo ngày
     @Override
-    public List<HoaDon> getDoanhThuNgay(LocalDate ngay) {
-        Date utilDate = Date.from(ngay.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    public List<HoaDon> getDoanhThuNgay(java.sql.Date ngay) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<HoaDon> dsHD = new ArrayList<>();
 
-        TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery(
-                "SELECT h FROM HoaDon h WHERE FUNCTION('DATE', h.thoiGianLapHD) = :ngay", HoaDon.class);
-        query.setParameter("ngay", utilDate);
+        try {
+            LocalDate localDate = ngay.toLocalDate();
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
 
-        return query.getResultList();
+            String jpql = "SELECT h FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfDay AND h.thoiGianLapHD < :endOfDay";
+
+            dsHD = em.createQuery(jpql, HoaDon.class)
+                    .setParameter("startOfDay", Timestamp.valueOf(startOfDay))
+                    .setParameter("endOfDay", Timestamp.valueOf(endOfDay))
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dsHD;
     }
 
     // Lấy số lượng hóa đơn trong ngày
-    @Override public int getSoLuongHoaDonNgay(LocalDate ngay) {
-        TypedQuery<Long> query = JPAUtil.getEntityManager().createQuery("SELECT COUNT(h) FROM HoaDon h WHERE FUNCTION('DATE', h.thoiGianLapHD) = :ngay", Long.class);
-        query.setParameter("ngay", ngay);
-        return query.getSingleResult().intValue();
+    @Override public int getSoLuongHoaDonNgay(java.sql.Date ngay) {
+        EntityManager em = JPAUtil.getEntityManager();
+        int count = 0;
+
+        try {
+            LocalDate localDate = ngay.toLocalDate();
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
+
+            String jpql = "SELECT COUNT(h) FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfDay AND h.thoiGianLapHD < :endOfDay";
+
+            count = ((Long) em.createQuery(jpql)
+                    .setParameter("startOfDay", Timestamp.valueOf(startOfDay))
+                    .setParameter("endOfDay", Timestamp.valueOf(endOfDay))
+                    .getSingleResult()).intValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        return count;
     }
 
     // Lấy doanh thu theo tháng
     @Override public List<HoaDon> getDoanhThuThang(String thang, String nam) {
-        TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery(
-                "SELECT h FROM HoaDon h WHERE FUNCTION('MONTH', h.thoiGianLapHD) = :thang AND FUNCTION('YEAR', h.thoiGianLapHD) = :nam", HoaDon.class);
-        query.setParameter("thang", thang);
-        query.setParameter("nam", nam);
-        return query.getResultList();
+        EntityManager em = JPAUtil.getEntityManager();
+        List<HoaDon> dsHD = new ArrayList<>();
+
+        try {
+            int year = Integer.parseInt(nam);
+            int month = Integer.parseInt(thang);
+
+            // Tạo mốc thời gian từ ngày đầu tháng đến đầu tháng sau
+            LocalDateTime startOfMonth = LocalDate.of(year, month, 1).atStartOfDay();
+            LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
+
+            String jpql = "SELECT h FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfMonth AND h.thoiGianLapHD < :startOfNextMonth";
+
+            dsHD = em.createQuery(jpql, HoaDon.class)
+                    .setParameter("startOfMonth", Timestamp.valueOf(startOfMonth))
+                    .setParameter("startOfNextMonth", Timestamp.valueOf(startOfNextMonth))
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dsHD;
     }
 
     // Lấy doanh thu theo năm
     @Override public List<HoaDon> getDoanhThuNam(String nam) {
-        TypedQuery<HoaDon> query = JPAUtil.getEntityManager().createQuery(
-                "SELECT h FROM HoaDon h WHERE FUNCTION('YEAR', h.thoiGianLapHD) = :nam", HoaDon.class);
-        query.setParameter("nam", nam);
-        return query.getResultList();
+        EntityManager em = JPAUtil.getEntityManager();
+        List<HoaDon> dsHD = new ArrayList<>();
+
+        try {
+            int year = Integer.parseInt(nam);
+
+            LocalDateTime startOfYear = LocalDate.of(year, 1, 1).atStartOfDay();
+            LocalDateTime startOfNextYear = startOfYear.plusYears(1);
+
+            String jpql = "SELECT h FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfYear " +
+                    "AND h.thoiGianLapHD < :startOfNextYear";
+
+            dsHD = em.createQuery(jpql, HoaDon.class)
+                    .setParameter("startOfYear", Timestamp.valueOf(startOfYear))
+                    .setParameter("startOfNextYear", Timestamp.valueOf(startOfNextYear))
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dsHD;
     }
+
+    @Override
+    public List<Object[]> getDoanhThuTungThangNam(String nam) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Object[]> result = new ArrayList<>();
+
+        try {
+            int year = Integer.parseInt(nam);
+
+            String jpql = "SELECT FUNCTION('MONTH', h.thoiGianLapHD), SUM(h.tongTien) " +
+                    "FROM HoaDon h " +
+                    "WHERE FUNCTION('YEAR', h.thoiGianLapHD) = :nam " +
+                    "GROUP BY FUNCTION('MONTH', h.thoiGianLapHD) " +
+                    "ORDER BY FUNCTION('MONTH', h.thoiGianLapHD)";
+
+            result = em.createQuery(jpql, Object[].class)
+                    .setParameter("nam", year)
+                    .getResultList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result; // Mỗi phần tử là Object[]{tháng, tổng tiền}
+    }
+
     public int soLuongHoaDonTrongNgay() {
         EntityManager em = JPAUtil.getEntityManager();
         int count = 0;

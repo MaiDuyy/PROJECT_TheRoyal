@@ -33,23 +33,7 @@ public interface CTHoaDonService extends GenericService<CTHoaDon, String> , Remo
 
     List<String[]> getTopDichVuTheoNam(int nam) throws RemoteException;
 
-<<<<<<< HEAD
-    ArrayList<String[]> getTOPSPNam(String nam) throws RemoteException;
 
-    ArrayList<String[]> getTKDVNam(String nam) throws RemoteException;
-
-    ArrayList<String[]> getTKSPNam(String nam) throws RemoteException;
-
-    ArrayList<String[]> getTOPDVThang(String thang, String nam) throws RemoteException;
-
-    ArrayList<String[]> getTOPSPThang(String thang, String nam) throws RemoteException;
-
-    ArrayList<String[]> getTOPDVNgay(Date date) throws RemoteException;
-
-    ArrayList<String[]> getTOPSPNgay(Date date) throws RemoteException;
-
-    double getTongTienSPNgay(Date ngay) throws RemoteException;
-=======
     List<String[]> getTOPSPNam(String nam) throws Exception;
 
     List<String[]> getTKDVNam(String nam) throws RemoteException;
@@ -67,5 +51,5 @@ public interface CTHoaDonService extends GenericService<CTHoaDon, String> , Remo
     double getTongTienSPNgay(Date ngay) throws RemoteException;
 
     List<String[]> getTOPDVNam(String nam) throws RemoteException;
->>>>>>> main
+
 }

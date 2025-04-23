@@ -75,67 +75,52 @@ public class CTHoaDonServiceImpl extends  GenericServiceImpl<CTHoaDon, String>  
     public List<String[]> getTopDichVuTheoNam(int nam) throws RemoteException{
         return cthoaDonDAO.getTopDichVuTheoNam(nam);
     }
-
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTOPSPNam(String nam) throws RemoteException{
-=======
     public List<String[]> getTOPSPNam(String nam) throws RemoteException{
->>>>>>> main
+
         return cthoaDonDAO.getTOPSPNam(nam);
     }
 
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTKDVNam(String nam) throws RemoteException{
-=======
+
+
     public List<String[]> getTKDVNam(String nam) throws RemoteException{
->>>>>>> main
         return cthoaDonDAO.getTKDVNam(nam);
     }
 
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTKSPNam(String nam)throws RemoteException{
-=======
+
+
     public List<String[]> getTKSPNam(String nam) throws RemoteException{
->>>>>>> main
+
         return cthoaDonDAO.getTKSPNam(nam);
     }
 
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTOPDVThang(String thang, String nam) throws RemoteException {
-=======
+
     public List<String[]> getTOPDVThang(String thang, String nam) throws RemoteException {
->>>>>>> main
+
         return cthoaDonDAO.getTOPDVThang(thang, nam);
     }
 
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTOPSPThang(String thang, String nam) throws RemoteException {
-=======
+
     public List<String[]> getTOPSPThang(String thang, String nam) throws RemoteException {
->>>>>>> main
+
         return cthoaDonDAO.getTOPSPThang(thang, nam);
     }
 
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTOPDVNgay(Date date) throws RemoteException{
-=======
+
     public List<String[]> getTOPDVNgay(Date date) throws RemoteException{
->>>>>>> main
+
         return cthoaDonDAO.getTOPDVNgay(date);
     }
 
     @Override
-<<<<<<< HEAD
-    public ArrayList<String[]> getTOPSPNgay(Date date)throws RemoteException{
-=======
+
     public List<String[]> getTOPSPNgay(Date date) throws RemoteException{
->>>>>>> main
+
         return cthoaDonDAO.getTOPSPNgay(date);
     }
 

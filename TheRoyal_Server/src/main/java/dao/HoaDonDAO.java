@@ -2,6 +2,7 @@ package dao;
 
 import entity.HoaDon;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,18 +31,21 @@ public interface HoaDonDAO extends GenericDAO<HoaDon, String> {
     // Cập nhật mã khuyến mãi cho hóa đơn
     boolean updateKM(String maKM, String maHD);
 
+    //Tính tổng tiền hóa đơn ngày
+    public int getTongTienNgay(Date ngay);
     // Tính doanh thu theo ngày
-    List<HoaDon> getDoanhThuNgay(LocalDate ngay);
+    List<HoaDon> getDoanhThuNgay(Date ngay);
 
     // Lấy số lượng hóa đơn trong ngày
-    int getSoLuongHoaDonNgay(LocalDate ngay);
+    int getSoLuongHoaDonNgay(Date ngay);
 
     // Lấy doanh thu theo tháng
     List<HoaDon> getDoanhThuThang(String thang, String nam);
 
     // Lấy doanh thu theo năm
     List<HoaDon> getDoanhThuNam(String nam);
-
+    //Lấy doanh thu theo tháng năm
+    public List<Object[]> getDoanhThuTungThangNam(String nam);
     public String taoMaHoaDonTheoNgay();
 
     public boolean insert(HoaDon hd) ;

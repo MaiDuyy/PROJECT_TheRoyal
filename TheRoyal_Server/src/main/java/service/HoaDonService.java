@@ -4,6 +4,7 @@ import entity.HoaDon;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +33,21 @@ public interface HoaDonService extends GenericService<HoaDon, String> , Remote {
     // Cập nhật mã khuyến mãi cho hóa đơn
     boolean updateKM(String maKM, String maHD) throws RemoteException;
 
+    //Tính tổng tiền hóa đơn ngày
+    public int getTongTienNgay(Date ngay) throws RemoteException;
     // Tính doanh thu theo ngày
-    List<HoaDon> getDoanhThuNgay(LocalDate ngay) throws RemoteException;
+    List<HoaDon> getDoanhThuNgay(Date ngay) throws RemoteException;
 
     // Lấy số lượng hóa đơn trong ngày
-    int getSoLuongHoaDonNgay(LocalDate ngay) throws RemoteException;
+    int getSoLuongHoaDonNgay(Date ngay) throws RemoteException;
 
     // Lấy doanh thu theo tháng
     List<HoaDon> getDoanhThuThang(String thang, String nam) throws RemoteException;
 
     // Lấy doanh thu theo năm
     List<HoaDon> getDoanhThuNam(String nam) throws RemoteException;
-
+    //Lấy doanh thu theo tháng năm
+    public List<Object[]> getDoanhThuTungThangNam(String nam) throws  RemoteException;
     public String taoMaHoaDonTheoNgay() throws  RemoteException;
 
     public boolean insert(HoaDon hd) throws  RemoteException;

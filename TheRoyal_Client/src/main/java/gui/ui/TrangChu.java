@@ -58,12 +58,12 @@ public class TrangChu extends JInternalFrame {
 
         top = new JPanel();
         top.setBackground(new Color(255, 255, 255));
-        top.setPreferredSize(new Dimension(1100, 200));
+        top.setPreferredSize(new Dimension(1100, 300));
         top.setLayout(null);
 
         JLabel slogan = new JLabel();
-        slogan.setBounds(60, 10, 1081, 161);
-        slogan.setIcon(new ImageIcon("icon/sologan.png"));
+        slogan.setBounds(60, 10, 1864, 600);
+        slogan.setIcon(new ImageIcon("icon/slogan.png"));
         top.add(slogan);
 
         getContentPane().add(top, BorderLayout.NORTH);

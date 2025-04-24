@@ -104,7 +104,7 @@ public class Dasboard_UI extends JFrame {
 		Jpanel_MenuLogo.add(label_7);
 
 		JLabel lblNewLabel = new JLabel("THE ROYAL");
-		lblNewLabel.setForeground(new Color(255, 51, 51));
+		lblNewLabel.setForeground(new Color(185, 106, 49));
 		lblNewLabel.setFont(new Font("Serif", Font.BOLD, 20));
 		lblNewLabel.setBounds(50, 0, 137, 83);
 		Jpanel_MenuLogo.add(lblNewLabel);

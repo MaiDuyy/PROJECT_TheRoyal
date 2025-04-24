@@ -90,7 +90,7 @@ public class Login extends JFrame {
 
         ImageIcon originalIcon = new ImageIcon("icon/logo.png");
 
-        Image scaledImage = originalIcon.getImage().getScaledInstance(281, 354, Image.SCALE_SMOOTH);
+        Image scaledImage = originalIcon.getImage().getScaledInstance(350, 354, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         JLabel imgBottom = new JLabel(scaledIcon);
         imgBottom.setBounds(0, 0, 281, 354);
@@ -149,7 +149,7 @@ public class Login extends JFrame {
 
         btnLogin = new ButtonCustom("Đăng Nhập" , "success" , 12 );
         btnLogin.setBounds(332, 240, 370, 40);
-//        btnLogin.setBackground(Color.WHITE);
+        btnLogin.setBackground(new Color(185,162, 145));
 //        btnLogin.setForeground(new Color(246, 167, 193));
 //        btnLogin.setFocusPainted(false);
 //        btnLogin.setBorder(BorderFactory.createLineBorder(new Color(246, 167, 193), 1));

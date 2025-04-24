@@ -123,7 +123,8 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 
 		modelTKChiTiet = new DefaultComboBoxModel<String>();
-		cmbTKChiTiet = new JComboBox<String>(modelTKChiTiet);
+		cmbTKChiTiet = new JComboBox<>(
+				new String[]{"2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"});
 //		 hoaDonService.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
 
 		cmbTKChiTiet.setBounds(708, 62, 143, 24);
@@ -457,7 +458,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	        pnlChart.removeAll();
 
-	        list = hoaDonService.getDoanhThuTungThangNam(nam);
+//	        list = hoaDonService.getDoanhThuTungThangNam(nam);
 	        chart.addLegend("Tổng tiền", new Color(12, 84, 175), new Color(0, 108, 247));
 	        for (String[] arr : list) {
 	            String month = arr[0];

@@ -144,7 +144,7 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
         cmbTKTheo.addActionListener(evt -> cmbTKTheoActionPerformed());
 
         cmbTKChiTiet = new JComboBox<>(
-                new String[]{"2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"});
+                new String[]{"2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"});
         cmbTKChiTiet.setBounds(708, 62, 143, 21);
         cmbTKChiTiet.addActionListener(evt -> cmbTKChiTietActionPerformed());
 
@@ -345,13 +345,9 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
                 return;
             }
 
-<<<<<<< HEAD
-            ArrayList<String[]> dsSPNam = cthoaDonService.getTOPSPNam(nam);
-            ArrayList<String[]> dsDVNam = cthoaDonService.getTKDVNam(nam);
-=======
+
             ArrayList<String[]> dsSPNam = (ArrayList<String[]>) cthoaDonService.getTOPSPNam(nam);
             ArrayList<String[]> dsDVNam = (ArrayList<String[]>) cthoaDonService.getTOPDVNam(nam);
->>>>>>> main
             clearTable();
             pieChart1.clearData();
             pieChart2.clearData();
@@ -564,13 +560,9 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
                 throw new RuntimeException(e);
             }
 
-<<<<<<< HEAD
-//            ArrayList<String[]> dsDVNgay = dichVuService.getTOPDVNgay(sqlDate);
-=======
-            ArrayList<String[]> dsDVNgay = (ArrayList<String[]>) cthoaDonService.getTOPDVNgay(sqlDate);
->>>>>>> main
 
-            ArrayList<String[]> dsDVNgay = null ;
+            ArrayList<String[]> dsDVNgay = (ArrayList<String[]>) cthoaDonService.getTOPDVNgay(sqlDate);
+
             removeData();
 
             int stt = 1;
@@ -628,4 +620,5 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
         tableModelSanPham.setRowCount(0);
         tableModelDichVu.setRowCount(0);
     }
+
 }

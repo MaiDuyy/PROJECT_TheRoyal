@@ -683,12 +683,12 @@ public class Dasboard_UI extends JFrame {
 	
 	private void openThongKeSanPham_GUI() {
 		desktopPaneDashBoard.removeAll();
-//		ThongKeSanPham_GUI ThongKe_GUI = new ThongKeSanPham_GUI();
-//		desktopPaneDashBoard.add(ThongKe_GUI);
-//		Dimension desktopSize = desktopPaneDashBoard.getSize();
-//		ThongKe_GUI.setSize(desktopSize.width, desktopSize.height);
-//		ThongKe_GUI.setLocation(0, 0);
-//		ThongKe_GUI.setVisible(true);
+		ThongKeSanPham_GUI ThongKe_GUI = new ThongKeSanPham_GUI();
+		desktopPaneDashBoard.add(ThongKe_GUI);
+		Dimension desktopSize = desktopPaneDashBoard.getSize();
+		ThongKe_GUI.setSize(desktopSize.width, desktopSize.height);
+		ThongKe_GUI.setLocation(0, 0);
+		ThongKe_GUI.setVisible(true);
 	}
 	  public void resetChange(){
 //	       this.nhanVienDangNhap =  NhanVienDAO.getInstance().getNhanVienTheoMaNV(String.valueOf(nhanVienDangNhap.getMaNV()));

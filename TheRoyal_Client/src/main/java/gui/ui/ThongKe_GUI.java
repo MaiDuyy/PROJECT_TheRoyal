@@ -33,11 +33,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.awt.event.MouseEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -294,18 +290,16 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			JOptionPane.showMessageDialog(this, "Không có hóa đơn trong tháng của năm "+nam +".");
 			lblTongTien.setText("");
 			lblTongHD.setText("");
-//			chart.clear();?
-//			pnlChart.removeAll();
+			chart.clear();
+			pnlChart.removeAll();
 			clearTable();
 			return;
 		}
 		populateTable(dsHoaDon);
-//        try {
-//            updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonThang(thang, nam), hoaDonService.getDoanhThuThang(thang, nam));
-//        } catch (RemoteException e) {
-//            throw new RuntimeException(e);
-//        }
-//		updateChart(new ArrayList<>(),nam);
+
+            updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonThang(thang, nam), hoaDonService.getTongTienThang(thang, nam));
+
+		updateChart(new ArrayList<>(),nam);
 
 	}
 
@@ -329,7 +323,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 			clearTable();
 		}
 		populateTable(dsHoaDon);
-//		updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonNam(nam), hoaDonService.getTongTienNam(nam));
+		updateTotalCountAndAmount(hoaDonService.getSoLuongHoaDonNam(nam), hoaDonService.getTongTienNam(nam));
 		updateChart(new ArrayList<>(),nam);
 	}
 
@@ -358,11 +352,14 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
         int stt = 1;
 		for (HoaDon hd : dsHoaDon) {
 			  DecimalFormat df = new DecimalFormat("#,###.##");
-
+			String maKM = "Không có";
+			if (hd.getKhuyenMai() != null && hd.getKhuyenMai().getMaKM() != null) {
+				maKM = hd.getKhuyenMai().getMaKM();
+			}
   	        String tongTien = df.format(hd.getTongTien() );
 			tableModelHoaDon
 					.addRow(new Object[] { stt++ + "", hd.getMaHD(), hd.getThoiGianLapHD(), hd.getKhachHang().getMaKH(),
-							hd.getNhanVien().getMaNV(), null, tongTien });
+							hd.getNhanVien().getMaNV(), maKM, tongTien });
 		}
 	}
 
@@ -372,9 +369,13 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 		for (HoaDon hd : dsHoaDon) {
 			  DecimalFormat df = new DecimalFormat("#,###.##");
 	  	        String tongTien = df.format(hd.getTongTien() );
+			String maKM = "Không có";
+			if (hd.getKhuyenMai() != null && hd.getKhuyenMai().getMaKM() != null) {
+				maKM = hd.getKhuyenMai().getMaKM();
+			}
 			tableModelHoaDon
 					.addRow(new Object[] { stt++, hd.getMaHD(), hd.getThoiGianLapHD(), hd.getKhachHang().getMaKH(),
-							hd.getNhanVien().getMaNV(), hd.getKhuyenMai().getMaKM(), tongTien });
+							hd.getNhanVien().getMaNV(), maKM, tongTien });
 		}
 	}
 
@@ -467,7 +468,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 	        pnlChart.removeAll();
 
-//	        list = hoaDonService.getDoanhThuTungThangNam(nam);
+	        list = (ArrayList<String[]>) getDoanhThuTungThangNam(nam);
 	        chart.addLegend("Tổng tiền", new Color(12, 84, 175), new Color(0, 108, 247));
 	        for (String[] arr : list) {
 	            String month = arr[0];
@@ -482,7 +483,25 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 
 
+	@SneakyThrows
+	public List<String[]> getDoanhThuTungThangNam(String nam) {
+		List<Object[]> raw = hoaDonService.getDoanhThuTungThangNam(nam); // Gọi hàm JPQL bên trên
+		Map<Integer, Double> map = new HashMap<>();
 
+		// Đưa dữ liệu vào Map theo tháng
+		for (Object[] row : raw) {
+			map.put((Integer) row[0], ((Number) row[1]).doubleValue());
+		}
+
+		// Tạo kết quả đủ 12 tháng
+		List<String[]> result = new ArrayList<>();
+		for (int month = 1; month <= 12; month++) {
+			double total = map.getOrDefault(month, 0.0);
+			result.add(new String[]{String.valueOf(month), String.valueOf((int) total)});
+		}
+
+		return result;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

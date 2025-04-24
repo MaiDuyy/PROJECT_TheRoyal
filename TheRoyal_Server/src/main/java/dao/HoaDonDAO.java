@@ -55,4 +55,14 @@ public interface HoaDonDAO extends GenericDAO<HoaDon, String> {
     public List<HoaDon> getListHoaDon();
 
     List<String> getNamHoaDon();
+
+    public int getSoLuongHoaDonThang(String thang, String nam);
+
+    public int getSoLuongHoaDonNam(String nam);
+
+    public int getTongTienNam(String nam);
+
+    public int getTongTienThang(String thang, String nam);
+
+
 }

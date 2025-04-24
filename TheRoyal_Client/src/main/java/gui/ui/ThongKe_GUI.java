@@ -20,6 +20,7 @@ import gui.chart.Chart;
 import gui.chart.ModelChart;
 import gui.chart.blankchart.BlankPlotChart;
 import lombok.SneakyThrows;
+import org.checkerframework.checker.index.qual.LTEqLengthOf;
 import rmi.RMIClient;
 import service.HoaDonService;
 
@@ -49,7 +50,7 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 	private JPanel pnlTKDT, pnlHeader, pnlBottom, pnlChart;
 	private JLabel lblTKMH, lblNgay, lblThang, lblNam, lblTongSoHD, lblTongHD, lblTongTien, lblTong;
 	private JComboBox<String> cmbTKTheo, cmbTKChiTiet;
-	 private DefaultComboBoxModel < String > modelTKTheo, modelTKChiTiet;
+	private DefaultComboBoxModel < String > modelTKTheo, modelTKChiTiet;
 	private JDateChooser txtDate;
 	private Table tblTKHD;
 	private JScrollPane scr;
@@ -123,8 +124,16 @@ public class ThongKe_GUI extends JInternalFrame  implements ActionListener{
 
 
 		modelTKChiTiet = new DefaultComboBoxModel<String>();
-		cmbTKChiTiet = new JComboBox<>(
-				new String[]{"2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"});
+        List<String> list = null;
+        try {
+            list = hoaDonService.getNamHoaDon();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        cmbTKChiTiet = new JComboBox<>(modelTKChiTiet);
+		for (String s : list) {
+			cmbTKChiTiet.addItem(s);
+		}
 //		 hoaDonService.getDSNamTheoNgayLap().forEach(doc -> cmbTKChiTiet.addItem(String.valueOf(doc)));
 
 		cmbTKChiTiet.setBounds(708, 62, 143, 24);

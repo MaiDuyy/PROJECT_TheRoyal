@@ -103,7 +103,7 @@ public class Dasboard_UI extends JFrame {
 		label_7.setBounds(0, 0, 93, 83);
 		Jpanel_MenuLogo.add(label_7);
 
-		JLabel lblNewLabel = new JLabel("TENTWO");
+		JLabel lblNewLabel = new JLabel("THE ROYAL");
 		lblNewLabel.setForeground(new Color(255, 51, 51));
 		lblNewLabel.setFont(new Font("Serif", Font.BOLD, 20));
 		lblNewLabel.setBounds(50, 0, 137, 83);

@@ -10,7 +10,6 @@ import util.JPAUtil;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -464,5 +463,21 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
         }
 
         return dataList;
+    }
+
+    @Override
+    public List<String> getNamHoaDon() {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<String> list = new ArrayList<>();
+        try {
+            String jpql = "SELECT DISTINCT YEAR(h.thoiGianLapHD) FROM HoaDon h";
+            List<Integer> years = em.createQuery(jpql, Integer.class).getResultList();
+            for (Integer year : years) {
+                list.add(year.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

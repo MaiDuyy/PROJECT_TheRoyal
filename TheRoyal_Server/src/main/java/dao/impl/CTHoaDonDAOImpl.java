@@ -254,31 +254,42 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public double getTongDVTienNgay(Date ngay) {
+    public double getTongDVTienNgay(Date date) {
         try {
+            // Tách ngày, tháng, năm từ Date
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int ngay = cal.get(Calendar.DAY_OF_MONTH);
+            int thang = cal.get(Calendar.MONTH) + 1;
+            int nam = cal.get(Calendar.YEAR);
+
             List<Double> top5TongTien = em.createQuery("""
-                                SELECT SUM(od.soLuongDV * dv.giaDV)
-                                FROM CTHoaDon od
-                                JOIN od.hoaDon o
-                                JOIN od.dichVu dv
-                                WHERE o.thoiGianLapHD = :ngay
-                                GROUP BY dv.maDV, dv.tenDV
-                                ORDER BY SUM(od.soLuongDV) DESC
-                            """, Double.class)
+                            SELECT SUM(od.soLuongDV * dv.giaDV)
+                            FROM CTHoaDon od
+                            JOIN od.hoaDon o
+                            JOIN od.dichVu dv
+                            WHERE FUNCTION('DAY', o.thoiGianLapHD) = :ngay
+                              AND FUNCTION('MONTH', o.thoiGianLapHD) = :thang
+                              AND FUNCTION('YEAR', o.thoiGianLapHD) = :nam
+                            GROUP BY dv.maDV, dv.tenDV
+                            ORDER BY SUM(od.soLuongDV) DESC
+                        """, Double.class)
                     .setParameter("ngay", ngay)
+                    .setParameter("thang", thang)
+                    .setParameter("nam", nam)
                     .setMaxResults(5)
                     .getResultList();
 
-            double tongTien = top5TongTien.stream()
+            return top5TongTien.stream()
                     .mapToDouble(Double::doubleValue)
                     .sum();
 
-            return tongTien;
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
     }
+
 
     @Override
     public boolean insert(CTHoaDon ctHoaDon) {
@@ -577,31 +588,26 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
         List<String[]> list = new ArrayList<>();
         try {
             Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            Date startOfDay = (Date) cal.getTime();
-
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            cal.add(Calendar.MILLISECOND, -1);
-            Date endOfDay = (Date) cal.getTime();
+            int ngay = cal.get(Calendar.DAY_OF_MONTH);
+            int thang = cal.get(Calendar.MONTH) + 1;  // Tháng tính từ 0 -> cần +1
+            int nam = cal.get(Calendar.YEAR);
 
             String jpql = """
             SELECT dv.maDV, dv.tenDV, SUM(od.soLuongDV), ROUND(SUM(od.soLuongDV * dv.giaDV), 2)
             FROM CTHoaDon od
             JOIN od.hoaDon o
             JOIN od.dichVu dv
-            WHERE o.thoiGianLapHD >= :startOfDay
-              AND o.thoiGianLapHD <= :endOfDay
+            WHERE FUNCTION('DAY', o.thoiGianLapHD) = :ngay
+              AND FUNCTION('MONTH', o.thoiGianLapHD) = :thang
+              AND FUNCTION('YEAR', o.thoiGianLapHD) = :nam
             GROUP BY dv.maDV, dv.tenDV
             ORDER BY SUM(od.soLuongDV) DESC
         """;
 
             List<Object[]> resultList = em.createQuery(jpql)
-                    .setParameter("startOfDay", startOfDay)
-                    .setParameter("endOfDay", endOfDay)
+                    .setParameter("ngay", ngay)
+                    .setParameter("thang", thang)
+                    .setParameter("nam", nam)
                     .setMaxResults(5)
                     .getResultList();
 
@@ -680,18 +686,31 @@ public class CTHoaDonDAOImpl extends GenericDAOImpl<CTHoaDon, String> implements
     }
 
     @Override
-    public double getTongTienSPNgay(Date ngay) {
+    public double getTongTienSPNgay(Date date) {
         try {
-            String jpqlTop5 = "SELECT ROUND(SUM(od.soLuongSP * sp.giaSP), 2) " +
-                    "FROM CTHoaDon od " +
-                    "JOIN od.hoaDon o " +
-                    "JOIN od.sanPham sp " +
-                    "WHERE FUNCTION('DATE', o.thoiGianLapHD) = :ngay " +
-                    "GROUP BY sp.maSP, sp.tenSP " +
-                    "ORDER BY SUM(od.soLuongSP) DESC";
+            // Tách ngày, tháng, năm từ Date
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int ngay = cal.get(Calendar.DAY_OF_MONTH);
+            int thang = cal.get(Calendar.MONTH) + 1;
+            int nam = cal.get(Calendar.YEAR);
 
-            TypedQuery<Double> query = em.createQuery(jpqlTop5, Double.class);
+            String jpql = """
+            SELECT ROUND(SUM(od.soLuongSP * sp.giaSP), 2)
+            FROM CTHoaDon od
+            JOIN od.hoaDon o
+            JOIN od.sanPham sp
+            WHERE FUNCTION('DAY', o.thoiGianLapHD) = :ngay
+              AND FUNCTION('MONTH', o.thoiGianLapHD) = :thang
+              AND FUNCTION('YEAR', o.thoiGianLapHD) = :nam
+            GROUP BY sp.maSP, sp.tenSP
+            ORDER BY SUM(od.soLuongSP) DESC
+        """;
+
+            TypedQuery<Double> query = em.createQuery(jpql, Double.class);
             query.setParameter("ngay", ngay);
+            query.setParameter("thang", thang);
+            query.setParameter("nam", nam);
             query.setMaxResults(5);
 
             List<Double> top5TongTien = query.getResultList();

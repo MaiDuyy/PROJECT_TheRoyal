@@ -54,6 +54,7 @@ import org.jfree.data.general.PieDataset;
 import rmi.RMIClient;
 import service.CTHoaDonService;
 import service.DichVuService;
+import service.HoaDonService;
 import service.SanPhamService;
 
 public class ThongKeSanPham_GUI extends JInternalFrame {
@@ -62,6 +63,7 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
     private JPanel pnlTKDT, pnlHeader, pnlBottom, pnlChart, pnlChart2;
     private JLabel lblTKMH, lblNgay, lblThang, lblNam, lblTongHD, lblTongTien, lblTong;
     private JComboBox<String> cmbTKTheo, cmbTKChiTiet;
+    private DefaultComboBoxModel < String > modelTKChiTiet;
     private JDateChooser txtDate;
     private Table tblTKSP, tblTKDV;
     private JScrollPane scr, scrDV;
@@ -70,6 +72,7 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
     private SanPhamService sanPhamService;
     private CTHoaDonService cthoaDonService;
     private DichVuService dichVuService;
+    private HoaDonService hoaDonService;
 
     private PieChart pieChart1, pieChart2;
     private JPanel panelCenter;
@@ -112,6 +115,7 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
         cthoaDonService = RMIClient.getInstance().getCtHoaDonService();
         sanPhamService = RMIClient.getInstance().getSanPhamService();
         dichVuService = RMIClient.getInstance().getDichVuService();
+        hoaDonService = RMIClient.getInstance().getHoaDonService();
         pnlHeader = new JPanel();
         pieChart1 = new PieChart();
         pieChart2 = new PieChart();
@@ -143,8 +147,17 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
         cmbTKTheo.setBackground(Color.WHITE);
         cmbTKTheo.addActionListener(evt -> cmbTKTheoActionPerformed());
 
-        cmbTKChiTiet = new JComboBox<>(
-                new String[]{"2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"});
+        modelTKChiTiet = new DefaultComboBoxModel<String>();
+        List<String> list = null;
+        try {
+            list = hoaDonService.getNamHoaDon();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        cmbTKChiTiet = new JComboBox<>(modelTKChiTiet);
+        for (String s : list) {
+            cmbTKChiTiet.addItem(s);
+        }
         cmbTKChiTiet.setBounds(708, 62, 143, 21);
         cmbTKChiTiet.addActionListener(evt -> cmbTKChiTietActionPerformed());
 

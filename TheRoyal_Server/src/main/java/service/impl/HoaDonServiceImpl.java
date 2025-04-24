@@ -1,14 +1,11 @@
 package service.impl;
 
-import dao.GenericDAO;
 import dao.HoaDonDAO;
 import entity.HoaDon;
 import service.HoaDonService;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> implements HoaDonService {
@@ -107,5 +104,10 @@ public class HoaDonServiceImpl  extends GenericServiceImpl<HoaDon, String> imple
     @Override
     public List<HoaDon> getListHoaDon() throws RemoteException {
         return hoaDonDAO.getListHoaDon();
+    }
+
+    @Override
+    public List<String> getNamHoaDon() throws RemoteException{
+        return hoaDonDAO.getNamHoaDon();
     }
 }

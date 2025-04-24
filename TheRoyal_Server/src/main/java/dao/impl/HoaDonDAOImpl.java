@@ -480,4 +480,108 @@ public class HoaDonDAOImpl extends GenericDAOImpl<HoaDon, String>  implements Ho
         }
         return list;
     }
+
+    @Override
+    public int getSoLuongHoaDonThang(String thang, String nam) {
+        EntityManager em = JPAUtil.getEntityManager();
+        int count = 0;
+
+        try {
+            int month = Integer.parseInt(thang);
+            int year = Integer.parseInt(nam);
+
+            String jpql = "SELECT COUNT(h) FROM HoaDon h " +
+                    "WHERE FUNCTION('MONTH', h.thoiGianLapHD) = :thang " +
+                    "AND FUNCTION('YEAR', h.thoiGianLapHD) = :nam";
+
+            Long result = em.createQuery(jpql, Long.class)
+                    .setParameter("thang", month)
+                    .setParameter("nam", year)
+                    .getSingleResult();
+
+            count = (result != null) ? result.intValue() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
+    @Override
+    public int getSoLuongHoaDonNam(String nam) {
+        EntityManager em = JPAUtil.getEntityManager();
+        int count = 0;
+
+        try {
+            int year = Integer.parseInt(nam);
+
+            String jpql = "SELECT COUNT(h) FROM HoaDon h " +
+                    "WHERE FUNCTION('YEAR', h.thoiGianLapHD) = :nam";
+
+            Long result = em.createQuery(jpql, Long.class)
+                    .setParameter("nam", year)
+                    .getSingleResult();
+
+            count = (result != null) ? result.intValue() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
+    @Override
+    public int getTongTienNam(String nam) {
+        EntityManager em = JPAUtil.getEntityManager();
+        int tongTien = 0;
+
+        try {
+            int year = Integer.parseInt(nam);
+
+            String jpql = "SELECT SUM(h.tongTien) FROM HoaDon h " +
+                    "WHERE FUNCTION('YEAR', h.thoiGianLapHD) = :nam";
+
+            Double result = em.createQuery(jpql, Double.class)
+                    .setParameter("nam", year)
+                    .getSingleResult();
+
+            tongTien = (result != null) ? result.intValue() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return tongTien;
+
+    }
+
+    @Override
+    public int getTongTienThang(String thang, String nam) {
+        EntityManager em = JPAUtil.getEntityManager();
+        int tongTien = 0;
+
+        try {
+            int year = Integer.parseInt(nam);
+            int month = Integer.parseInt(thang);
+
+            // Xác định khoảng đầu tháng và đầu tháng sau
+            LocalDateTime startOfMonth = LocalDate.of(year, month, 1).atStartOfDay();
+            LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
+
+            String jpql = "SELECT SUM(h.tongTien) FROM HoaDon h " +
+                    "WHERE h.thoiGianLapHD >= :startOfMonth AND h.thoiGianLapHD < :startOfNextMonth";
+
+            Double result = em.createQuery(jpql, Double.class)
+                    .setParameter("startOfMonth", Timestamp.valueOf(startOfMonth))
+                    .setParameter("startOfNextMonth", Timestamp.valueOf(startOfNextMonth))
+                    .getSingleResult();
+
+            tongTien = (result != null) ? result.intValue() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return tongTien;
+    }
+
+
 }

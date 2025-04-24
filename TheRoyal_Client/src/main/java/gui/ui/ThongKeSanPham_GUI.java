@@ -88,8 +88,9 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
 
 
     public ThongKeSanPham_GUI() {
-        initUI();
         initComponents();
+        initUI();
+
     }
 
     private void initUI() {
@@ -333,14 +334,40 @@ public class ThongKeSanPham_GUI extends JInternalFrame {
 
     private void switchToChartTab() {
         panelCenter.removeAll();
-        panelCenter.add(pnlChart, BorderLayout.WEST);
-        panelCenter.add(pnlChart2, BorderLayout.EAST);
+
+        // Thiết lập layout null, cần setBounds cho từng thành phần
+        panelCenter.setLayout(null);
+
+        // Đặt kích thước và vị trí cho pnlChart và pnlChart2
+        pnlChart.setBounds(0, 0, 682, 600);
+        pnlChart2.setBounds(682, 0, 682, 600);
+
+        // Đảm bảo pnlChart và pnlChart2 có layout BorderLayout để CENTER hoạt động
+        pnlChart.setLayout(new BorderLayout());
+        pnlChart2.setLayout(new BorderLayout());
+
+        // Đặt lại kích thước PieChart nếu cần
+        pieChart1.setPreferredSize(new Dimension(682, 600));
+        pieChart2.setPreferredSize(new Dimension(682, 600));
+        pieChart1.setOpaque(false);
+        pieChart2.setOpaque(false);
+
+        pnlChart.add(pieChart1, BorderLayout.CENTER);
+        pnlChart2.add(pieChart2, BorderLayout.CENTER);
+
+        // Thêm panel biểu đồ vào panelCenter
+        panelCenter.add(pnlChart);
+        panelCenter.add(pnlChart2);
+
+        // Cập nhật lại UI
         panelCenter.revalidate();
         panelCenter.repaint();
 
+        // Cập nhật màu nền tab để phản ánh trạng thái active
         lblBieuDo.setBackground(new Color(200, 200, 255));
         lblBang.setBackground(Color.WHITE);
     }
+
 
     private void removeData() {
         DefaultTableModel dv = (DefaultTableModel) tblTKDV.getModel();
